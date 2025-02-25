@@ -4,18 +4,18 @@
 
 #include "CoreMinimal.h"
 #include "BaseGun.h"
-#include "SubMachineGun.generated.h"
+#include "Rifle.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class STARHUNT_API ASubMachineGun : public ABaseGun
+class STARHUNT_API ARifle : public ABaseGun
 {
 	GENERATED_BODY()
-	
+
 public:
-	ASubMachineGun();
+	ARifle();
 
 	virtual void Fire() override;
 

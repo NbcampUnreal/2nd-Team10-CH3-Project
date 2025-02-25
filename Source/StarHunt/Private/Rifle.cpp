@@ -1,12 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "SubMachineGun.h"
+#include "Rifle.h"
 #include "TimerManager.h"
 #include "Engine/World.h"
 #include "BaseBullet.h"
 
-ASubMachineGun::ASubMachineGun()
+ARifle::ARifle()
 {
 	bIsFiring = false;
 
@@ -17,7 +17,7 @@ ASubMachineGun::ASubMachineGun()
 	CurrentAmmo = MaxAmmo;
 }
 
-void ASubMachineGun::Fire()
+void ARifle::Fire()
 {
 	// 이미 발사 중이라면 추가 호출 무시
 	if (bIsFiring)
@@ -28,10 +28,10 @@ void ASubMachineGun::Fire()
 	FireProgress();
 
 	// 마우스를 누르고 있는 동안에는 계속 FireProgress 함수가 실행
-	GetWorld()->GetTimerManager().SetTimer(FireRateTimerHandle, this, &ASubMachineGun::FireProgress, FireRate, true);
+	GetWorld()->GetTimerManager().SetTimer(FireRateTimerHandle, this, &ARifle::FireProgress, FireRate, true);
 }
 
-void ASubMachineGun::StopFire()
+void ARifle::StopFire()
 {
 	bIsFiring = false;
 	GetWorld()->GetTimerManager().ClearTimer(FireRateTimerHandle);
