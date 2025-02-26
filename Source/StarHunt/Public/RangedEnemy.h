@@ -14,4 +14,7 @@ class STARHUNT_API ARangedEnemy : public ABaseEnemy
 {
 	GENERATED_BODY()
 	
+public:
+	ARangedEnemy();
+
 };
