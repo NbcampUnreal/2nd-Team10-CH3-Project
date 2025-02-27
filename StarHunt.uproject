@@ -10,7 +10,9 @@
 			"LoadingPhase": "Default",
 			"AdditionalDependencies": [
 
+				"CoreUObject",
 				"Engine",
+				"UMG",
 				"AIModule"
 
 			]
