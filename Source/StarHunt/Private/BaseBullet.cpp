@@ -6,7 +6,6 @@
 #include "Components/StaticMeshComponent.h"
 #include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
-//#include "You.h" // 테스트용
 
 // Sets default values
 ABaseBullet::ABaseBullet()
@@ -52,18 +51,26 @@ float ABaseBullet::GetBulletDamage() const
 void ABaseBullet::OnOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor,
     UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep,
     const FHitResult& SweepResult)
-{
-    if (OtherActor)
-    {
-        if (OtherActor->IsA(ABaseBullet::StaticClass())) return;
+{    
+    if (!OtherActor || OtherActor->IsA(ABaseBullet::StaticClass())) return;
+    if (!OtherActor->CanBeDamaged()) return;
 
-        /*
-        if (AYou* Enemy = Cast<AYou>(OtherActor))
-        {
-            Enemy->TakeDamage(BulletDamage);
-        }
-        */
+    // 총(총알 소유자) -> 플레이어(총 소유자)
+    AActor* BulletOwner = GetOwner();
+    if (!BulletOwner) return;
 
-        Destroy();
-    }
+    AActor* GunOwner = BulletOwner->GetOwner();
+    if (!GunOwner) return;
+
+    APawn* Player = Cast<APawn>(GunOwner);
+    if (!Player) return;
+    
+    // ApplyDamage 인수로 들어갈 컨트롤러 변수
+    AController* PlayerController = nullptr;
+    PlayerController = Player->GetController();
+    
+    UGameplayStatics::ApplyDamage(OtherActor, BulletDamage, PlayerController, this, UDamageType::StaticClass());
+    
+    Destroy();
+    
 }

@@ -8,9 +8,6 @@
 #include "RarityInterface.h"
 #include "BaseGun.generated.h"
 
-class USceneComponent;
-class ABaseBullet;
-
 UCLASS(Abstract)
 class STARHUNT_API ABaseGun : public AActor, public IGunInterface, public IRarityInterface
 {
@@ -49,14 +46,14 @@ protected:
 	USceneComponent* Scene;
 	// 스태틱 메시
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GunIComponent")
-	UStaticMeshComponent* StaticMesh;
+	USkeletalMeshComponent* GunMesh;
 	// 총알 스포너
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GunIComponent")
 	USceneComponent* BulletSpawnLocation;
 	// 총알 클래스
 	// 에디터에서 총알 종류 선택 가능
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Gun|Bullet")
-	TSubclassOf<ABaseBullet> BulletClass;
+	TSubclassOf<class ABaseBullet> BulletClass;
 
 	// 데미지
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "GunIStatus")
@@ -86,6 +83,7 @@ protected:
 	FTimerHandle FireRateTimerHandle;
 
 	// 타이머 관련 변수
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GunIStatus")
 	bool bIsFiring;
 
 	/*
