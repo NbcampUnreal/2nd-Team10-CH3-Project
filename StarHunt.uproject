@@ -7,7 +7,12 @@
 		{
 			"Name": "StarHunt",
 			"Type": "Runtime",
-			"LoadingPhase": "Default"
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"CoreUObject",
+				"Engine",
+				"UMG"
+			]
 		}
 	],
 	"Plugins": [
