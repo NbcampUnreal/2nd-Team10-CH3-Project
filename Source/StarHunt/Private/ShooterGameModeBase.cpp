@@ -3,12 +3,13 @@
 
 #include "ShooterGameModeBase.h"
 #include "ShooterGameStateBase.h"
+#include "PlayerCharacter.h"
+#include "WraithPlayerController.h"
 
 AShooterGameModeBase::AShooterGameModeBase()
 {
 	GameStateClass = AShooterGameStateBase::StaticClass();
-	/*
-	DefaultPawnClass = 플레이어 클래스::StaticClass();
-	PlayerControllerClass = 플레이어 컨트롤러::StaticClass();
-	*/
+	
+	DefaultPawnClass = APlayerCharacter::StaticClass();
+	PlayerControllerClass = AWraithPlayerController::StaticClass();
 }

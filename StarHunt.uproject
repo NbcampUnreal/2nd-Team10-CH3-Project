@@ -25,11 +25,6 @@
 			"TargetAllowList": [
 				"Editor"
 			]
-		},
-		{
-			"Name": "RMATextureTools",
-			"Enabled": true,
-			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/0b9f8926aaf746e89b4cd3eb92954a7b"
 		}
 	]
 }
