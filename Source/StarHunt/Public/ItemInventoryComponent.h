@@ -22,14 +22,10 @@ protected:
 
 public:
 	UFUNCTION(BlueprintCallable)
-	AActor* DropItem(const FString& ItemID);
-	UFUNCTION(BlueprintCallable)
 	AActor* GetWeapon(int32 EquipmentIndex);
 	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item|Equipment")
-	TArray<AActor*> Equipment;
 private:
 };
 
