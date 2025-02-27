@@ -40,6 +40,11 @@ APlayerCharacter::APlayerCharacter()
 	IsTPSMode = true;
 }
 
+void APlayerCharacter::SetCurrentState(ECurrentCharacterState CharacterState)
+{
+	CurrentCharacterState = CharacterState;
+}
+
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
