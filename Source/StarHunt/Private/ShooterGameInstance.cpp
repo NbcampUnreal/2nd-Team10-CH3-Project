@@ -2,6 +2,7 @@
 
 
 #include "ShooterGameInstance.h"
+#include "ItemSubsystem.h"
 
 UShooterGameInstance::UShooterGameInstance()
 {

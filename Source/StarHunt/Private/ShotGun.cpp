@@ -32,7 +32,8 @@ void AShotGun::FireProgress()
         ABaseBullet* SpawnedBullet = GetWorld()->SpawnActor<ABaseBullet>(BulletClass, SpawnLocation, BulletRotation);
 
         if (!SpawnedBullet) return;
-        
+
+        SpawnedBullet->SetOwner(this);
         SpawnedBullet->SetBulletDamage(Damage / NumberOfBullets);
         
     }

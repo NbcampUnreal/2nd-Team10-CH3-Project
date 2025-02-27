@@ -40,6 +40,11 @@ APlayerCharacter::APlayerCharacter()
 	IsTPSMode = true;
 }
 
+void APlayerCharacter::SetCurrentState(ECurrentCharacterState CharacterState)
+{
+	CurrentCharacterState = CharacterState;
+}
+
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
@@ -205,7 +210,7 @@ void APlayerCharacter::Look(const FInputActionValue& value)
 
 	auto Delta = GetControlRotation() - GetActorRotation();
 	Delta.Normalize();
-
+	
 	AimDirection = FMath::RInterpTo(AimDirection, Delta, GetWorld()->GetDeltaSeconds(), 45.0f);
 	AimDirection = FRotator(
 		FMath::ClampAngle(AimDirection.Pitch, -90, 90),

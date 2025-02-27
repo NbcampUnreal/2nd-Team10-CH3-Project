@@ -12,9 +12,9 @@ ABaseGun::ABaseGun()
 	SetRootComponent(Scene);
 
 	// 스태틱 메시 생성
-	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
-	StaticMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	StaticMesh->SetupAttachment(Scene);
+	GunMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("SkeletalMesh"));
+	GunMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GunMesh->SetupAttachment(Scene);
 
 	BulletSpawnLocation = CreateDefaultSubobject<USceneComponent>(TEXT("BulletSpawnLocation"));
 	BulletSpawnLocation->SetupAttachment(Scene);
@@ -84,6 +84,8 @@ void ABaseGun::FireProgress()
 
 	if (!SpawnedBullet) return;
 
+	// 총알의 소유자를 총으로 설정
+	SpawnedBullet->SetOwner(this);
 	// 총알에 데미지 전달
 	SpawnedBullet->SetBulletDamage(Damage);
 	// 총알 감소
