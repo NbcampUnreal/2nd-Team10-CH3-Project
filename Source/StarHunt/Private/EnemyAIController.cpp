@@ -1,5 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
-
+// Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "EnemyAIController.h"
 #include "GameFramework/Character.h"
@@ -11,10 +11,10 @@ void AEnemyAIController::OnPossess(APawn* InPawn)
 	Super::OnPossess(InPawn);
 
 	// Use Acceleration when move along path (associated with Animation)
-	ACharacter* Character = Cast<ACharacter>(InPawn);
-	if (Character)
+	ACharacter* Character1 = Cast<ACharacter>(InPawn);
+	if (Character1)
 	{
-		UCharacterMovementComponent* MovementComp = Character->GetCharacterMovement();
+		UCharacterMovementComponent* MovementComp = Character1->GetCharacterMovement();
 		if (MovementComp)
 		{
 			MovementComp->bRequestedMoveUseAcceleration=true;
