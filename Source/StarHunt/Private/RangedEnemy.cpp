@@ -8,4 +8,5 @@ ARangedEnemy::ARangedEnemy()
 	Score = 150;
 	Health = 300;
 	MaxHealth = Health;
+	Power=10;
 }

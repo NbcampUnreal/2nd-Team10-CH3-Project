@@ -3,6 +3,10 @@
 
 #include "BaseEnemy.h"
 #include "EnemyAIController.h"
+#include "Animation/AnimInstance.h"
+#include "Animation/AnimMontage.h"
+#include "Animation/AnimSequence.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
 ABaseEnemy::ABaseEnemy()
@@ -13,6 +17,11 @@ ABaseEnemy::ABaseEnemy()
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
 	PatrolPath=nullptr;
+	BehaviorTree=nullptr;
+	AttackMontage=nullptr;
+	Power=0;
+	Health=MaxHealth=0.0f;
+	Score=0;
 }
 
 // Called when the game starts or when spawned
@@ -21,6 +30,7 @@ void ABaseEnemy::BeginPlay()
 	Super::BeginPlay();
 	
 }
+
 
 float ABaseEnemy::GetHealth() const
 {
@@ -59,6 +69,56 @@ float ABaseEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent
 APatrolPath* ABaseEnemy::GetPatrolPath() const
 {
 	return PatrolPath;
+}
+
+void ABaseEnemy::SetMovementSpeed(const EMovementSpeed Speed)
+{
+	if (UCharacterMovementComponent* MovementComp = GetCharacterMovement())
+	{
+		switch (Speed)
+		{
+			case EMovementSpeed::Idle:
+				MovementComp->MaxWalkSpeed = 0.0f;
+			case EMovementSpeed::Walking:
+				MovementComp->MaxWalkSpeed = 100.0f;
+			case EMovementSpeed::Jogging:
+				MovementComp->MaxWalkSpeed = 300.0f;
+			case EMovementSpeed::Sprinting:
+				MovementComp->MaxWalkSpeed = 500.0f;
+			default:
+				break;
+		}
+	}
+}
+
+UBehaviorTree* ABaseEnemy::GetBehaviorTree() const
+{
+	return BehaviorTree;
+}
+
+void ABaseEnemy::Attack()
+{
+	//메시 유효 
+	if (!GetMesh()) return;
+
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	//둘다 유효
+	if (AnimInstance&&AttackMontage)
+	{
+		//몽타주 실행
+		AnimInstance->Montage_Play(AttackMontage);
+		//몽타주 끝났을 때 이벤트 바인딩
+		AnimInstance->OnMontageEnded.Clear();
+		AnimInstance->OnMontageEnded.AddDynamic(this,&ABaseEnemy::OnMontageEnded);
+	}
+}
+
+void ABaseEnemy::OnMontageEnded(UAnimMontage* Montage, bool bInterrupted)
+{
+	if (Montage==AttackMontage)
+	{
+		OnAttackEnd.Broadcast();
+	}
 }
 
 // Called every frame
