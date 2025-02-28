@@ -97,7 +97,7 @@ void UEquipmentSlot::NativeOnDragDetected(const FGeometry& InGeometry, const FPo
 bool UEquipmentSlot::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
 {
 	Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation);
-	if (IBaseDragDropOperationInterface* Operation = Cast<IBaseDragDropOperationInterface>(InOperation))
+	if (IItemDragDropOperationInterface* Operation = Cast<IItemDragDropOperationInterface>(InOperation))
 	{
 		if (Operation->DropEquipment(SlotIndex, SlotType))
 		{

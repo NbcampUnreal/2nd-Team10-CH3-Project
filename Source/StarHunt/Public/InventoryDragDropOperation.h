@@ -5,14 +5,14 @@
 #include "CoreMinimal.h"
 #include "Blueprint/DragDropOperation.h"
 #include "ItemSlot.h"
-#include "BaseDragDropOperationInterface.h"
+#include "ItemDragDropOperationInterface.h"
 #include "InventoryDragDropOperation.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class STARHUNT_API UInventoryDragDropOperation : public UDragDropOperation, public IBaseDragDropOperationInterface
+class STARHUNT_API UInventoryDragDropOperation : public UDragDropOperation, public IItemDragDropOperationInterface
 {
 	GENERATED_BODY()
 	

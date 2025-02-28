@@ -50,12 +50,4 @@ void AWraithPlayerController::BeginPlay()
     		}
     	}
 
-    if (HUDWidgetClass)
-    {
-        HUDWidgetInstance = CreateWidget<UInventoryUserWidget>(this, HUDWidgetClass);
-        if (HUDWidgetInstance)
-        {
-            HUDWidgetInstance->AddToViewport();
-        }
-    }
 }

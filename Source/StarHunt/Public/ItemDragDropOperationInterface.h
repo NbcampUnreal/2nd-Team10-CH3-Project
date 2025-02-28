@@ -5,11 +5,11 @@
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
 #include "ItemEnumClass.h"
-#include "BaseDragDropOperationInterface.generated.h"
+#include "ItemDragDropOperationInterface.generated.h"
 
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
-class UBaseDragDropOperationInterface : public UInterface
+class UItemDragDropOperationInterface : public UInterface
 {
 	GENERATED_BODY()
 };
@@ -17,7 +17,7 @@ class UBaseDragDropOperationInterface : public UInterface
 /**
  * 
  */
-class STARHUNT_API IBaseDragDropOperationInterface
+class STARHUNT_API IItemDragDropOperationInterface
 {
 	GENERATED_BODY()
 
