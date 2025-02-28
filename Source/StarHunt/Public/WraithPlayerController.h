@@ -31,6 +31,8 @@ public:
 	UInputAction* CameraMode;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Input")
 	UInputAction* Zoom;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Input")
+	UInputAction* Crouch;
 	//Inventory
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
 	UInputAction* InventoryOpenAction;

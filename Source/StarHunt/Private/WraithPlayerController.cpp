@@ -9,7 +9,8 @@ AWraithPlayerController::AWraithPlayerController()
 	  SprintAction(nullptr),
 	  LookAction(nullptr),
 	  CameraMode(nullptr),
-	  Zoom(nullptr)
+	  Zoom(nullptr),
+	  Crouch(nullptr)
 {
 }
 
@@ -37,7 +38,7 @@ void AWraithPlayerController::CloseInventory()
 void AWraithPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	if (ULocalPlayer* LocalPlayer = GetLocalPlayer())
     	{
     		if (UEnhancedInputLocalPlayerSubsystem* SubSystem = LocalPlayer->GetSubsystem<
