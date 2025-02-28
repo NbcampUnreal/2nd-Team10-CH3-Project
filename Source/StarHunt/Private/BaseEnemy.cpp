@@ -1,5 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
-
+// Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "BaseEnemy.h"
 #include "EnemyAIController.h"
@@ -11,6 +11,8 @@ ABaseEnemy::ABaseEnemy()
 	//PrimaryActorTick.bCanEverTick = true;
 	AIControllerClass = AEnemyAIController::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
+
+	PatrolPath=nullptr;
 }
 
 // Called when the game starts or when spawned
@@ -30,7 +32,7 @@ float ABaseEnemy::GetMaxHealth() const
 	return MaxHealth;
 }
 
-void ABaseEnemy::AddHealth(float Amount)
+void ABaseEnemy::AddHealth(const float Amount)
 {
 	Health = FMath::Clamp(Health + Amount, 0.0f, MaxHealth);
 }
@@ -52,6 +54,11 @@ float ABaseEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent
 		OnDeath();
 	}
 	return ActualDamage;
+}
+
+APatrolPath* ABaseEnemy::GetPatrolPath() const
+{
+	return PatrolPath;
 }
 
 // Called every frame
