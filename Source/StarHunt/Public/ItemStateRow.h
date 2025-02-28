@@ -26,7 +26,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FText Name;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UTexture* InventoryIcon;
+	UTexture2D* InventoryIcon;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 StockMax;
 
@@ -65,6 +65,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float MaxAmmo;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	EGunType GunType;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSet<EGunFixtureType> FixtureTypes;

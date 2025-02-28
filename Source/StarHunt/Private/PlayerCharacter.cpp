@@ -3,6 +3,7 @@
 #include "EnhancedInputComponent.h"
 #include "WraithPlayerController.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "ItemInventoryComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 APlayerCharacter::APlayerCharacter()
@@ -30,7 +31,6 @@ APlayerCharacter::APlayerCharacter()
 	FPSCamera = CreateDefaultSubobject<UChildActorComponent>(TEXT("FPSCamera"));
 	FPSCamera->SetupAttachment(FPSSpringArm);
 
-	//Inventory
 	ItemInventoryComponent = CreateDefaultSubobject<UItemInventoryComponent>(TEXT("Inventory"));
 
 	NormalSpeed = 600.0f;
@@ -208,7 +208,7 @@ void APlayerCharacter::StartJump(const FInputActionValue& value)
 	}
 	if (ItemInventoryComponent)
 	{
-		ItemInventoryComponent->GetWeapon(0);
+		 ItemInventoryComponent->GetWeapon(0);
 	}
 }
 

@@ -54,6 +54,7 @@ void ABaseGun::SetAbility(FGunItemStateRow* GunItemStateRow)
 		Damage = GunItemStateRow->DamageAmount;
 		FireRate = GunItemStateRow->FireRate;
 		MaxAmmo =GunItemStateRow->MaxAmmo;
+		GunType =GunItemStateRow->GunType;
 	}
 }
 

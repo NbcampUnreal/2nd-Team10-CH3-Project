@@ -49,6 +49,8 @@ struct FEquipment
  */
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnInventoryChange, int32);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnEquipmentChange, int32);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnGunFixtureChange, const int32, EGunFixtureType);
+
 UCLASS()
 class STARHUNT_API UItemSubsystem : public UGameInstanceSubsystem
 {
@@ -82,12 +84,14 @@ public:
 	const TSharedPtr<FString> GetEquipmentGunItemID(const int32 EquipmentIndex) const;
 	
 	//부착물 관련 로직
-	bool AddGunFixtureEquipment(int32 EquipmentIndex, const FString& ItemId);
-	bool RemoveGunFixtureEquipment(int32 EquipmentIndex, const FString& ItemId);
-	bool ValidAddGunFixtureEquipment(int32 EquipmentIndex, const FString& ItemId);
+	bool AddGunFixtureEquipment(const int32 EquipmentIndex, const int32 InventoryIndex);
+	bool SwapGunFixtureEquipment(const int32 EquipmentIndexFrom, const int32 EquipmentIndexTo, EGunFixtureType GunFixtureType);
+	bool RemoveGunFixtureEquipment(const int32 EquipmentIndex, EGunFixtureType GunFixtureType);
+	bool ValidGunFixtureEquipment(const int32 EquipmentIndex, EGunFixtureType ItemId);
 
 	// 부착물 관련 Get
-	const TMap<EGunFixtureType, TSharedPtr<FString>> GetEquipmentGunFixtureItemID(const int32 EquipmentIndex) const;
+	const TMap<EGunFixtureType, TSharedPtr<FString>> GetEquipmentGunFixtureItemIDs(const int32 EquipmentIndex) const;
+	const TSharedPtr<FString> GetEquipmentGunFixtureItemID(const int32 EquipmentIndex, EGunFixtureType GunFixtureType) const;
 
 
 	//아이템관련 DB
@@ -108,6 +112,7 @@ public:
 	
 	FOnInventoryChange OnInventoryChange;
 	FOnEquipmentChange OnEquipmentChange;
+	FOnGunFixtureChange OnGunFixtureChange;
 
 private:
 	TMap<EInventoryType, TArray<TSharedPtr<FInventoryItem>>> Inventorys;

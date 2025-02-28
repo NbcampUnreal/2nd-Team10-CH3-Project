@@ -82,6 +82,10 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GunIStatus")
 	ERarity Rarity;
 
+	//총 종류
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GunIStatus")
+	EGunType GunType;
+
 	// 발사 속도 타이머
 	FTimerHandle FireRateTimerHandle;
 
@@ -89,13 +93,4 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GunIStatus")
 	bool bIsFiring;
 
-	/*
-	// 허용할 부착물 목록
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GunIAttachments")
-	TMap<enum class EAttachmentType, bool> AvailableSlots;
-
-	// 장착된 부착물 목록
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GunIAttachments")
-	TMap<EAttachmentType, class AAttachment*> AttachedAttachments;
-	*/
 };

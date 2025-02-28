@@ -4,17 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "BaseSlot.h"
-#include "EquipmentSlot.generated.h"
+#include "GunFixtureSlot.generated.h"
 
-class UGunFixtureSlot;
 /**
  * 
  */
 UCLASS()
-class STARHUNT_API UEquipmentSlot : public UBaseSlot
+class STARHUNT_API UGunFixtureSlot : public UBaseSlot
 {
 	GENERATED_BODY()
-	
 public:
 	virtual void NativeConstruct() override;
 	virtual void NativeDestruct() override;
@@ -26,10 +24,9 @@ public:
 
 	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)override;
 
-	UPROPERTY(EditAnywhere, Category = "Slot", meta = (BindWidget = "true"))
-	UGunFixtureSlot* Muffle;
-	UPROPERTY(EditAnywhere, Category = "Slot", meta = (BindWidget = "true"))
-	UGunFixtureSlot* Magazine;
+	void UpdateSlotAt(int32 EquipmentIndex, EGunFixtureType Type);
 
-	FDelegateHandle EquipmentChangeHandler;
+	EGunFixtureType GunFixtureType;
+	FGunFixtureItemStateRow* GunFixtureItemStateRow;
+	FDelegateHandle GunFixtureChangeHandler;
 };

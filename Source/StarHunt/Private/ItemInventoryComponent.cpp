@@ -36,6 +36,7 @@ AActor* UItemInventoryComponent::GetWeapon(int32 EquipmentIndex)
 			}
 		}
 	}
+
 	return nullptr;
 }
 

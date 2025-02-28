@@ -37,5 +37,19 @@ bool UInventoryDragDropOperation::DropEquipment(int32 DropSlotIndex, EInventoryT
 			}
 		}
 	}
+	else if (SlotType == EInventoryType::GunFixture && DropSlotType == EInventoryType::Gun)
+	{
+
+		if (UItemSubsystem* ItemSubsystem = UItemBlueprintFunctionLibrary::GetItemSubsystem())
+		{
+
+			if (ItemSubsystem->AddGunFixtureEquipment(DropSlotIndex, SlotIndex))
+			{
+				ItemSubsystem->RemoveItem(SlotType, SlotIndex);
+				ItemSubsystem->OnInventoryChange.Broadcast(SlotIndex);
+				return true;
+			}
+		}
+	}
 	return false;
 }

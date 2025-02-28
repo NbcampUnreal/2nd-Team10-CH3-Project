@@ -10,6 +10,8 @@ void UItemSlot::NativeConstruct()
 {
 	Super::NativeConstruct();
 
+	SlotIndex = 0;
+	SlotType = EInventoryType::Gun;
 	if (UItemSubsystem* ItemSubsystem = UItemBlueprintFunctionLibrary::GetItemSubsystem())
 	{
 		InventoryChangeHandler = ItemSubsystem->OnInventoryChange.AddUObject(this, &UItemSlot::UpdateSlotAt);

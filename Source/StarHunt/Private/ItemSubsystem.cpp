@@ -251,9 +251,17 @@ bool UItemSubsystem::AddGunEquipment(int32 EquipmentIndex, int32 InventoryIndex)
 
 				}
 
+				RemoveItem(EInventoryType::Gun, InventoryIndex);
+				Equipments[EquipmentIndex] = MakeShared<FEquipment>(FEquipment(*GunItemID, GunItemStateRow->FixtureTypes));
+				
 				OnEquipmentChange.Broadcast(EquipmentIndex);
 				OnInventoryChange.Broadcast(InventoryIndex);
-				Equipments[EquipmentIndex] = MakeShared<FEquipment>(FEquipment(*GunItemID, GunItemStateRow->FixtureTypes));
+
+
+				for (EGunFixtureType GunFixtureType : GunItemStateRow->FixtureTypes)
+				{
+					OnGunFixtureChange.Broadcast(EquipmentIndex, GunFixtureType);
+				}
 				return true;
 
 			}
@@ -272,18 +280,24 @@ bool UItemSubsystem::RemoveGunEquipment(int32 EquipmentIndex)
 	{
 		if (Equipments[EquipmentIndex].IsValid())
 		{
+			TSet<EGunFixtureType> FixtureTypes;
 			for (auto& FixtureItemPair : Equipments[EquipmentIndex]->FixtureItemIDs)
 			{
 				if (FixtureItemPair.Value != nullptr)
 				{
 					AddItem(*FixtureItemPair.Value);
 				}
+				FixtureTypes.Add(FixtureItemPair.Key);
 				FixtureItemPair.Value = nullptr;
 			}
 			if (AddItem(*Equipments[EquipmentIndex]->ItemID))
 			{
 				Equipments[EquipmentIndex] = nullptr;
 				OnEquipmentChange.Broadcast(EquipmentIndex);
+				for (EGunFixtureType GunFixtureType : FixtureTypes)
+				{
+					OnGunFixtureChange.Broadcast(EquipmentIndex, GunFixtureType);
+				}
 				return true;
 			}
 		}
@@ -303,41 +317,33 @@ bool UItemSubsystem::ValidAddGunEquipment(int32 EquipmentIndex, const FString& I
 	return false;
 }
 
-bool UItemSubsystem::AddGunFixtureEquipment(int32 EquipmentIndex, const FString& ItemId)
+bool UItemSubsystem::AddGunFixtureEquipment(const int32 EquipmentIndex, const int32 InventoryIndex)
 {
-	if (Equipments.IsValidIndex(EquipmentIndex))
+	if (Equipments.IsValidIndex(EquipmentIndex) && Inventorys[EInventoryType::GunFixture].IsValidIndex(InventoryIndex))
 	{
-
-		FGunFixtureItemStateRow* GunFixtureItemStateRow = ItemDB->GetGunFixtureItemStateRow(ItemId);
-		if (Equipments[EquipmentIndex]->FixtureItemIDs.Contains(GunFixtureItemStateRow->FixtureType))
+		if (TSharedPtr<FString> ItemID = GetInventoryItemID(EInventoryType::GunFixture, InventoryIndex))
 		{
-			if (TSharedPtr<FString> EquipedGunFixtureItemId = *Equipments[EquipmentIndex]->FixtureItemIDs.Find(GunFixtureItemStateRow->FixtureType))
-			{
-				if (AddItem(*EquipedGunFixtureItemId))
-				{
-					Equipments[EquipmentIndex]->FixtureItemIDs[GunFixtureItemStateRow->FixtureType] = MakeShared<FString>(ItemId);
-					return true;
-				}
-			}
 
-		}
-	}
-	return false;
-}
-
-bool UItemSubsystem::RemoveGunFixtureEquipment(int32 EquipmentIndex, const FString& ItemId)
-{
-	if (Equipments.IsValidIndex(EquipmentIndex))
-	{
-		if (Equipments[EquipmentIndex].IsValid())
-		{
-			for (auto& FixtureItemPair : Equipments[EquipmentIndex]->FixtureItemIDs)
+			if (ItemID.IsValid())
 			{
-				if (*FixtureItemPair.Value == ItemId)
+
+				if (FGunFixtureItemStateRow* GunFixtureItemStateRow = GetGunFixtureItemStateRow(*ItemID))
 				{
-					if (AddItem(ItemId))
+
+					if (Equipments[EquipmentIndex]->FixtureItemIDs.Contains(GunFixtureItemStateRow->FixtureType))
 					{
-						return true;
+						TSharedPtr<FString>* EquipedGunFixtureItemId = Equipments[EquipmentIndex]->FixtureItemIDs.Find(GunFixtureItemStateRow->FixtureType);
+
+						RemoveItem(EInventoryType::GunFixture, InventoryIndex);
+						Equipments[EquipmentIndex]->FixtureItemIDs[GunFixtureItemStateRow->FixtureType] = MakeShared<FString>(*ItemID); 
+
+						OnGunFixtureChange.Broadcast(EquipmentIndex, GunFixtureItemStateRow->FixtureType);
+						OnInventoryChange.Broadcast(InventoryIndex);
+
+						if (EquipedGunFixtureItemId)
+						{
+							return AddItem(**EquipedGunFixtureItemId);
+						}
 					}
 				}
 			}
@@ -345,15 +351,61 @@ bool UItemSubsystem::RemoveGunFixtureEquipment(int32 EquipmentIndex, const FStri
 	}
 	return false;
 }
-bool UItemSubsystem::ValidAddGunFixtureEquipment(int32 EquipmentIndex, const FString& ItemId)
+
+bool UItemSubsystem::SwapGunFixtureEquipment(const int32 EquipmentIndexFrom, const int32 EquipmentIndexTo, EGunFixtureType GunFixtureType)
+{
+	if (EquipmentIndexFrom != EquipmentIndexTo &&
+		Equipments.IsValidIndex(EquipmentIndexFrom) &&
+		Equipments.IsValidIndex(EquipmentIndexTo))
+	{
+		if (Equipments[EquipmentIndexFrom].IsValid() && Equipments[EquipmentIndexTo].IsValid())
+		{
+			if (TSharedPtr<FString>* ItemIDFrom = Equipments[EquipmentIndexFrom]->FixtureItemIDs.Find(GunFixtureType))
+			{
+				if (TSharedPtr<FString>* ItemIDTo = Equipments[EquipmentIndexTo]->FixtureItemIDs.Find(GunFixtureType))
+				{
+					TSharedPtr<FString> Temp = *ItemIDTo;
+
+					*ItemIDTo = *ItemIDFrom;
+					*ItemIDFrom = Temp;
+					OnGunFixtureChange.Broadcast(EquipmentIndexFrom, GunFixtureType);
+					OnGunFixtureChange.Broadcast(EquipmentIndexTo, GunFixtureType);
+				}
+			}
+		}
+	}
+	return false;
+}
+
+bool UItemSubsystem::RemoveGunFixtureEquipment(const int32 EquipmentIndex, EGunFixtureType GunFixtureType)
 {
 	if (Equipments.IsValidIndex(EquipmentIndex))
 	{
-
-		FGunFixtureItemStateRow* GunFixtureItemStateRow = ItemDB->GetGunFixtureItemStateRow(ItemId);
-		if (Equipments[EquipmentIndex]->FixtureItemIDs.Contains(GunFixtureItemStateRow->FixtureType))
+		if (Equipments[EquipmentIndex].IsValid())
 		{
-			if (TSharedPtr<FString> EquipedGunFixtureItemId = *Equipments[EquipmentIndex]->FixtureItemIDs.Find(GunFixtureItemStateRow->FixtureType))
+
+			if (TSharedPtr<FString>* ItemID = Equipments[EquipmentIndex]->FixtureItemIDs.Find(GunFixtureType))
+			{
+
+				if (ItemID->IsValid() && AddItem(**ItemID))
+				{
+
+					*ItemID = nullptr;
+					OnGunFixtureChange.Broadcast(EquipmentIndex, GunFixtureType);
+					return true;
+				}
+			}
+		}
+	}
+	return false;
+}
+bool UItemSubsystem::ValidGunFixtureEquipment(const int32 EquipmentIndex, EGunFixtureType GunFixtureType)
+{
+	if (Equipments.IsValidIndex(EquipmentIndex))
+	{
+		if (Equipments[EquipmentIndex].IsValid())
+		{
+			if (Equipments[EquipmentIndex]->FixtureItemIDs.Contains(GunFixtureType))
 			{
 				return true;
 			}
@@ -362,12 +414,36 @@ bool UItemSubsystem::ValidAddGunFixtureEquipment(int32 EquipmentIndex, const FSt
 	return false;
 }
 
+const TSharedPtr<FString> UItemSubsystem::GetEquipmentGunFixtureItemID(const int32 EquipmentIndex, EGunFixtureType GunFixtureType) const
+{
+	if (Equipments.IsValidIndex(EquipmentIndex))
+	{
+
+		if (TSharedPtr<FEquipment> Equipment = Equipments[EquipmentIndex])
+		{
+
+			if (Equipment.IsValid())
+			{
+				if (TSharedPtr<FString>* ItemID = Equipment->FixtureItemIDs.Find(GunFixtureType))
+				{
+					if (ItemID->IsValid())
+					{
+						return *ItemID;
+					}
+
+				}
+			}
+		}
+	}
+	return nullptr;
+}
+
 const TArray<TSharedPtr<FEquipment>>* UItemSubsystem::GetEquipments() const
 {
 	return &Equipments;
 }
 
-const TMap<EGunFixtureType, TSharedPtr<FString>> UItemSubsystem::GetEquipmentGunFixtureItemID(const int32 EquipmentIndex) const
+const TMap<EGunFixtureType, TSharedPtr<FString>> UItemSubsystem::GetEquipmentGunFixtureItemIDs(const int32 EquipmentIndex) const
 {
 	if (Equipments.IsValidIndex(EquipmentIndex))
 	{

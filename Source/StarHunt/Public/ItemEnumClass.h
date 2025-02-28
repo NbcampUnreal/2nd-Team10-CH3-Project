@@ -32,3 +32,11 @@ enum class ERarity : uint8
 	Epic       UMETA(DisplayName = "Epic"),
 	Legendary  UMETA(DisplayName = "Legendary")
 };
+
+UENUM(BlueprintType)
+enum class EGunType : uint8
+{
+	Pistol     UMETA(DisplayName = "Pistol"),
+	Rifle       UMETA(DisplayName = "Rifle"),
+	ShotGun       UMETA(DisplayName = "ShotGun")
+};

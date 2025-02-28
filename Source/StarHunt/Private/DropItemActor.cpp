@@ -4,6 +4,7 @@
 #include "DropItemActor.h"
 #include "Components/SphereComponent.h"
 #include "ItemSubsystem.h"
+#include "Components/WidgetComponent.h"
 #include "ItemBlueprintFunctionLibrary.h"
 // Sets default values
 ADropItemActor::ADropItemActor()
@@ -17,12 +18,12 @@ ADropItemActor::ADropItemActor()
 	CollisionComponent = CreateDefaultSubobject<USphereComponent>(TEXT("CollisionComponent"));
 	CollisionComponent->SetupAttachment(RootComponent);
 
-	StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComponent"));
-	StaticMeshComponent->SetupAttachment(RootComponent);
-
 	CollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &ADropItemActor::OnItemBeginOverlap);
 	CollisionComponent->OnComponentEndOverlap.AddDynamic(this, &ADropItemActor::OnItemEndOverlap);
 
+	OverheadWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("OverHeadWidget"));
+	OverheadWidgetComponent->AddLocalOffset(FVector(0.0f, 0.0f, 20.0f));
+	OverheadWidgetComponent->SetupAttachment(RootComponent);
 }
 
 FBaseItemStateRow* ADropItemActor::GetItemState()
@@ -38,11 +39,12 @@ void ADropItemActor::ItemDestroy()
 void ADropItemActor::BeginPlay()
 {
 	Super::BeginPlay();
+
 }
 
 void ADropItemActor::OnItemBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (OtherActor && OtherActor->ActorHasTag("Player"))
+	if (OtherActor)
 	{
 		if (UItemSubsystem* ItemSubSystem = Cast<UItemSubsystem>(UItemBlueprintFunctionLibrary::GetGameInstanceSubsystem()))
 		{
