@@ -13,6 +13,27 @@ AWraithPlayerController::AWraithPlayerController()
 {
 }
 
+void AWraithPlayerController::ShowInventory()
+{
+    if (HUDWidgetClass)
+    {
+        HUDWidgetInstance = CreateWidget<UInventoryUserWidget>(this, HUDWidgetClass);
+        if (HUDWidgetInstance)
+        {
+            HUDWidgetInstance->AddToViewport();
+        }
+    }
+}
+
+void AWraithPlayerController::CloseInventory()
+{
+    if (HUDWidgetInstance)
+    {
+        HUDWidgetInstance->RemoveFromParent();
+        HUDWidgetInstance = nullptr;
+    }
+}
+
 void AWraithPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
@@ -28,4 +49,13 @@ void AWraithPlayerController::BeginPlay()
     			}
     		}
     	}
+
+    if (HUDWidgetClass)
+    {
+        HUDWidgetInstance = CreateWidget<UInventoryUserWidget>(this, HUDWidgetClass);
+        if (HUDWidgetInstance)
+        {
+            HUDWidgetInstance->AddToViewport();
+        }
+    }
 }

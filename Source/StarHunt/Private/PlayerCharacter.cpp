@@ -30,6 +30,8 @@ APlayerCharacter::APlayerCharacter()
 	FPSCamera = CreateDefaultSubobject<UChildActorComponent>(TEXT("FPSCamera"));
 	FPSCamera->SetupAttachment(FPSSpringArm);
 
+	//Inventory
+	ItemInventoryComponent = CreateDefaultSubobject<UItemInventoryComponent>(TEXT("Inventory"));
 
 	NormalSpeed = 600.0f;
 	SprintSpeedMultiplier = 1.7f;
@@ -38,6 +40,7 @@ APlayerCharacter::APlayerCharacter()
 	GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
 
 	IsTPSMode = true;
+	bIsInventoryOpen = false;
 }
 
 void APlayerCharacter::SetCurrentState(ECurrentCharacterState CharacterState)
@@ -148,6 +151,17 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 					&APlayerCharacter::ResetZoom
 				);
 			}
+
+			//Inventory
+			if (PlayerController->InventoryOpenAction)
+			{
+				EnhancedInput->BindAction(
+					PlayerController->InventoryOpenAction,
+					ETriggerEvent::Started,
+					this,
+					&APlayerCharacter::ShowInventory
+				);
+			}
 		}
 	}
 }
@@ -174,6 +188,10 @@ void APlayerCharacter::StartJump(const FInputActionValue& value)
 	if (value.Get<bool>())
 	{
 		Jump();
+	}
+	if (ItemInventoryComponent)
+	{
+		ItemInventoryComponent->GetWeapon(0);
 	}
 }
 
@@ -269,4 +287,23 @@ void APlayerCharacter::ResetZoom()
 	PlayerController->SetViewTargetWithBlend(TPSCamera->GetChildActor(), 0, VTBlend_Linear, 0, false);
 
 	IsZoomed = false;
+}
+
+void APlayerCharacter::ShowInventory()
+{
+	if (AWraithPlayerController* PlayerController = Cast<AWraithPlayerController>(GetController()))
+	{
+		if (bIsInventoryOpen)
+		{
+			PlayerController->CloseInventory();
+			PlayerController->bShowMouseCursor = false;
+			bIsInventoryOpen = false;
+		}
+		else
+		{
+			PlayerController->ShowInventory();
+			PlayerController->bShowMouseCursor = true;
+			bIsInventoryOpen = true;
+		}
+	}
 }

@@ -25,12 +25,12 @@ struct FInventoryItem
 struct FEquipment
 {
 	TSharedPtr<FString> ItemID;
-	TMap<FString, TSharedPtr<FString>> FixtureItemIDs;
+	TMap<EGunFixtureType, TSharedPtr<FString>> FixtureItemIDs;
 
-	FEquipment(const FString& Id, const TSet<FString> FixtureItemTypes)
+	FEquipment(const FString& Id, const TSet<EGunFixtureType> FixtureItemTypes)
 		:ItemID(MakeShared<FString>(Id))
 	{
-		for (const FString& FixtureItemType : FixtureItemTypes)
+		for (const EGunFixtureType& FixtureItemType : FixtureItemTypes)
 		{
 			FixtureItemIDs.Add(FixtureItemType, nullptr);
 		}
@@ -55,42 +55,42 @@ class STARHUNT_API UItemSubsystem : public UGameInstanceSubsystem
 	GENERATED_BODY()
 	
 public:
-	// ¾ÆÀÌÅÛ °ü·Ã ·ÎÁ÷
+	// ì•„ì´í…œ ê´€ë ¨ ë¡œì§
 	UItemSubsystem();
 	bool AddItem(const FString& ItemId);
-	bool SwapItem(const FString&ItemType, const int32 IndexFrom, const int32 IndexTo);
-	bool RemoveItem(const FString& ItemType, int32 InventoryIndex);
-	const TSharedPtr<FString> GetInventoryItemID(const FString& ItemType, int32 InventoryIndex) const;
+	bool SwapItem(EInventoryType ItemType, const int32 IndexFrom, const int32 IndexTo);
+	bool RemoveItem(EInventoryType ItemType, int32 InventoryIndex);
+	const TSharedPtr<FString> GetInventoryItemID(EInventoryType ItemType, int32 InventoryIndex) const;
 	bool ValidAddInventory(const FString& ItemId);
 
 	AActor* SpawnDropItem(const FString& ItemId);
 
-	// ¾ÆÀÌÅÛ °ü·Ã Get
-	const TMap<FString, TArray<TSharedPtr<FInventoryItem>>>* GetInventorys() const;
-	const TArray<TSharedPtr<FInventoryItem>>* GetInventory(const FString& ItemType) const;
-	const int32 GetInventoryEmptyNum(const FString& ItemType) const;
+	// ì•„ì´í…œ ê´€ë ¨ Get
+	const TMap<EInventoryType, TArray<TSharedPtr<FInventoryItem>>>* GetInventorys() const;
+	const TArray<TSharedPtr<FInventoryItem>>* GetInventory(EInventoryType ItemType) const;
+	const int32 GetInventoryEmptyNum(EInventoryType ItemType) const;
 	const int32 GetInventoryMaxStock() const;
 
-	//ÃÑ±â °ü·Ã ·ÎÁ÷
+	//ì´ê¸° ê´€ë ¨ ë¡œì§
 	bool AddGunEquipment(int32 EquipmentIndex, const int32 InventoryIndex);
 	bool RemoveGunEquipment(int32 EquipmentIndex);
 	bool ValidAddGunEquipment(int32 EquipmentIndex, const FString& ItemId);
 	bool SwapGunEquipment(const int32 IndexFrom, const int32 IndexTo);
 
-	//ÃÑ±â °ü·Ã Get
+	//ì´ê¸° ê´€ë ¨ Get
 	const TArray< TSharedPtr<FEquipment>>* GetEquipments() const;
 	const TSharedPtr<FString> GetEquipmentGunItemID(const int32 EquipmentIndex) const;
 	
-	//ºÎÂø¹° °ü·Ã ·ÎÁ÷
+	//ë¶€ì°©ë¬¼ ê´€ë ¨ ë¡œì§
 	bool AddGunFixtureEquipment(int32 EquipmentIndex, const FString& ItemId);
 	bool RemoveGunFixtureEquipment(int32 EquipmentIndex, const FString& ItemId);
 	bool ValidAddGunFixtureEquipment(int32 EquipmentIndex, const FString& ItemId);
 
-	// ºÎÂø¹° °ü·Ã Get
-	const TMap<FString, TSharedPtr<FString>> GetEquipmentGunFixtureItemID(const int32 EquipmentIndex) const;
+	// ë¶€ì°©ë¬¼ ê´€ë ¨ Get
+	const TMap<EGunFixtureType, TSharedPtr<FString>> GetEquipmentGunFixtureItemID(const int32 EquipmentIndex) const;
 
 
-	//¾ÆÀÌÅÛ°ü·Ã DB
+	//ì•„ì´í…œê´€ë ¨ DB
 	void SetItemDb(TSubclassOf<UItemDB> DB);
 
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
@@ -110,7 +110,7 @@ public:
 	FOnEquipmentChange OnEquipmentChange;
 
 private:
-	TMap<FString, TArray<TSharedPtr<FInventoryItem>>> Inventorys;
+	TMap<EInventoryType, TArray<TSharedPtr<FInventoryItem>>> Inventorys;
 	TArray< TSharedPtr<FEquipment>> Equipments;
 
 	int32 InventoryMaxStock;

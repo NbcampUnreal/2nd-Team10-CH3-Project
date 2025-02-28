@@ -15,9 +15,9 @@ void UItemSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	Super::Initialize(Collection);
 
 	
-	Inventorys.Add(FString("Gun"), TArray<TSharedPtr<FInventoryItem>>());
-	Inventorys.Add(FString("GunFixture"), TArray<TSharedPtr<FInventoryItem>>());
-	Inventorys.Add(FString("Consumable"), TArray<TSharedPtr<FInventoryItem>>());
+	Inventorys.Add(EInventoryType::Gun, TArray<TSharedPtr<FInventoryItem>>());
+	Inventorys.Add(EInventoryType::GunFixture, TArray<TSharedPtr<FInventoryItem>>());
+	Inventorys.Add(EInventoryType::Consumable, TArray<TSharedPtr<FInventoryItem>>());
 
 	for (auto& InventoryPair : Inventorys)
 	{
@@ -103,7 +103,7 @@ bool UItemSubsystem::AddItem(const FString& ItemId)
 	return false;
 }
 
-bool UItemSubsystem::SwapItem(const FString& ItemType, const int32 IndexFrom, const int32 IndexTo)
+bool UItemSubsystem::SwapItem(EInventoryType ItemType, const int32 IndexFrom, const int32 IndexTo)
 {
 	if (TArray<TSharedPtr<FInventoryItem>>* TargetInventory = Inventorys.Find(ItemType))
 	{
@@ -130,7 +130,7 @@ bool UItemSubsystem::SwapGunEquipment(const int32 IndexFrom, const int32 IndexTo
 	return false;
 }
 
-bool UItemSubsystem::RemoveItem(const FString& ItemType, int32 InventoryIndex)
+bool UItemSubsystem::RemoveItem(EInventoryType ItemType, int32 InventoryIndex)
 {
 	if (TArray<TSharedPtr<FInventoryItem>>* TargetInventory = Inventorys.Find(ItemType))
 	{
@@ -156,7 +156,7 @@ bool UItemSubsystem::RemoveItem(const FString& ItemType, int32 InventoryIndex)
 	return false;
 }
 
-const TSharedPtr<FString> UItemSubsystem::GetInventoryItemID(const FString& ItemType, int32 InventoryIndex) const
+const TSharedPtr<FString> UItemSubsystem::GetInventoryItemID(EInventoryType ItemType, int32 InventoryIndex) const
 {
 	if (const TArray<TSharedPtr<FInventoryItem>>* TargetInventory = Inventorys.Find(ItemType))
 	{
@@ -203,17 +203,17 @@ AActor* UItemSubsystem::SpawnDropItem(const FString& ItemId)
 	return nullptr;
 }
 
-const TMap<FString, TArray<TSharedPtr<FInventoryItem>>>* UItemSubsystem::GetInventorys() const
+const TMap<EInventoryType, TArray<TSharedPtr<FInventoryItem>>>* UItemSubsystem::GetInventorys() const
 {
 	return &Inventorys;
 }
 
-const TArray<TSharedPtr<FInventoryItem>>* UItemSubsystem::GetInventory(const FString& ItemType) const
+const TArray<TSharedPtr<FInventoryItem>>* UItemSubsystem::GetInventory(EInventoryType ItemType) const
 {
 	return Inventorys.Find(ItemType);
 }
 
-const int32 UItemSubsystem::GetInventoryEmptyNum(const FString& ItemType) const
+const int32 UItemSubsystem::GetInventoryEmptyNum(EInventoryType ItemType) const
 {
 	return InventoryMaxStock - (*GetInventory(ItemType)).Num();
 }
@@ -226,7 +226,7 @@ const int32 UItemSubsystem::GetInventoryMaxStock() const
 
 bool UItemSubsystem::AddGunEquipment(int32 EquipmentIndex, int32 InventoryIndex)
 {
-	if (TSharedPtr<FString> GunItemID = GetInventoryItemID("Gun", InventoryIndex))
+	if (TSharedPtr<FString> GunItemID = GetInventoryItemID(EInventoryType::Gun, InventoryIndex))
 	{
 		if (FGunItemStateRow* GunItemStateRow = ItemDB->GetGunItemStateRow(*GunItemID))
 		{
@@ -234,7 +234,7 @@ bool UItemSubsystem::AddGunEquipment(int32 EquipmentIndex, int32 InventoryIndex)
 			{
 				if (Equipments[EquipmentIndex])
 				{
-					//ºÎÂø¹° Á¦°Å
+					//ë¶€ì°©ë¬¼ ì œê±°
 					for (auto& FixtureItemPair : Equipments[EquipmentIndex]->FixtureItemIDs)
 					{
 						if (FixtureItemPair.Value != nullptr)
@@ -243,7 +243,7 @@ bool UItemSubsystem::AddGunEquipment(int32 EquipmentIndex, int32 InventoryIndex)
 						}
 					}
 
-					//Á¦°ÅÀü Àá½Ãº¸°ü
+					//ì œê±°ì „ ìž ì‹œë³´ê´€
 					if (TSharedPtr<FString> EquipedGunItemID = Equipments[EquipmentIndex]->ItemID)
 					{
 						/*AddItem(*EquipedGunItemID);*/
@@ -367,13 +367,13 @@ const TArray<TSharedPtr<FEquipment>>* UItemSubsystem::GetEquipments() const
 	return &Equipments;
 }
 
-const TMap<FString, TSharedPtr<FString>> UItemSubsystem::GetEquipmentGunFixtureItemID(const int32 EquipmentIndex) const
+const TMap<EGunFixtureType, TSharedPtr<FString>> UItemSubsystem::GetEquipmentGunFixtureItemID(const int32 EquipmentIndex) const
 {
 	if (Equipments.IsValidIndex(EquipmentIndex))
 	{
 		return Equipments[EquipmentIndex]->FixtureItemIDs;
 	}
-	return TMap<FString, TSharedPtr<FString>>();
+	return TMap<EGunFixtureType, TSharedPtr<FString>>();
 }
 
 const TSharedPtr<FString> UItemSubsystem::GetEquipmentGunItemID(const int32 EquipmentIndex) const
@@ -390,7 +390,6 @@ void UItemSubsystem::SetItemDb(TSubclassOf<UItemDB> DB)
 	ItemDB = NewObject<UItemDB>(this, DB);
 	if (ItemDB)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("SetItemDb"));
 
 	}
 }

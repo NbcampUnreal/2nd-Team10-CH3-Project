@@ -20,12 +20,12 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	int32 SlotIndex;
 	UPROPERTY(VisibleAnywhere)
-	FString SlotType;
+	EInventoryType SlotType;
 
 
-	// IBaseDragDropOperationInterface¿ª(∏¶) ≈Î«ÿ ªÛº”µ 
-	bool DropInventory(int32 DropSlotIndex, const FString& DropSlotType) override;
+	// IBaseDragDropOperationInterfaceÏùÑ(Î•º) ÌÜµÌï¥ ÏÉÅÏÜçÎê®
+	bool DropInventory(int32 DropSlotIndex, EInventoryType DropSlotType) override;
 
-	bool DropEquipment(int32 DropSlotIndex, const FString& DropSlotType) override;
+	bool DropEquipment(int32 DropSlotIndex, EInventoryType DropSlotType) override;
 
 };

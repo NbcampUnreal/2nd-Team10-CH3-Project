@@ -6,14 +6,6 @@
 #include "UObject/Interface.h"
 #include "RarityInterface.generated.h"
 
-UENUM(BlueprintType)
-enum class ERarity : uint8
-{
-    Common     UMETA(DisplayName = "Common"),
-    Rare       UMETA(DisplayName = "Rare"),
-    Epic       UMETA(DisplayName = "Epic"),
-    Legendary  UMETA(DisplayName = "Legendary")
-};
 
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)

@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
+#include "InventoryUserWidget.h"
 #include "WraithPlayerController.generated.h"
 
 
@@ -30,7 +31,18 @@ public:
 	UInputAction* CameraMode;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Input")
 	UInputAction* Zoom;
+	//Inventory
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
+	UInputAction* InventoryOpenAction;
 
+	//Inventory UI
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<UInventoryUserWidget> HUDWidgetClass;
+	UInventoryUserWidget* HUDWidgetInstance;
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	void ShowInventory();
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	void CloseInventory();
 protected:
 	virtual void BeginPlay() override;
 };

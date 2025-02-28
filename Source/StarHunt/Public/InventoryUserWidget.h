@@ -30,15 +30,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SwapInventory(const int32 Index1, const int32 Index2);
 	UFUNCTION(BlueprintCallable)
-	UTexture* GetInventoryIcon(const FString& ItemType, const int32 Index);
+	UTexture* GetInventoryIcon(EInventoryType ItemType, const int32 Index);
 	UFUNCTION(BlueprintCallable)
 	void InitInventory(UGridPanel* GridPanel);
-	
-	//UFUNCTION(BlueprintCallable)
-	//void SetInventoryIcon(const int32 InventoryIndex);
 
 	UFUNCTION(BlueprintCallable)
-	void SetInventoryType(const int32 InventoryIndex);
+	void SetInventoryType(EInventoryType Type);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<UItemSlot*> InventoryImages;
@@ -53,9 +50,7 @@ public:
 	UBaseSlot* GunEquiepment3;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TArray<FString> InventoryTypes;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int32 InventoryCurrentIndex;
+	EInventoryType InventoryType;
 
 
 	virtual void NativeConstruct() override;

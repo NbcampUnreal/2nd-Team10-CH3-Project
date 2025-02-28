@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "GunInterface.h"
 #include "RarityInterface.h"
+#include "ItemStateRow.h"
+
 #include "BaseGun.generated.h"
 
 UCLASS(Abstract)
@@ -30,6 +32,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual void Reload() override final;
 
+	virtual void SetAbility(FGunItemStateRow* GunItemStateRow);
 protected:
 	// 공격 가능 여부 체크
 	virtual bool CanAttack();
