@@ -6,6 +6,7 @@
 #include "PlayerCharacter.generated.h"
 
 class USpringArmComponent;
+class UItemInventoryComponent;
 struct FInputActionValue;
 
 
@@ -40,6 +41,9 @@ public:
 	UChildActorComponent* TPSZoomCamera;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Camera", meta=(AllowPrivateAccess="true"))
 	UChildActorComponent* FPSCamera;
+	//Inventory
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Camera", meta=(AllowPrivateAccess="true"))
+	UItemInventoryComponent* ItemInventoryComponent;
 
 	UPROPERTY(BlueprintReadWrite, Category = "Property")
 	FRotator AimDirection;
@@ -84,6 +88,10 @@ protected:
 	UFUNCTION()
 	void ResetZoom();
 
+	//Inventory
+	UFUNCTION()
+	void ShowInventory();
+
 private:
 	float NormalSpeed;
 	float SprintSpeedMultiplier;
@@ -92,5 +100,8 @@ private:
 
 	bool IsTPSMode;
 	bool IsZoomed;
+
+	//Inventory
+	bool bIsInventoryOpen;
 	FTimerHandle CameraTransitionDelayHandle;
 };

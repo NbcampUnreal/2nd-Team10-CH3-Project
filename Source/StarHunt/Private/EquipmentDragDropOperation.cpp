@@ -5,7 +5,7 @@
 #include "ItemSubsystem.h"
 #include "ItemBlueprintFunctionLibrary.h"
 
-bool UEquipmentDragDropOperation::DropInventory(int32 DropSlotIndex, const FString& DropSlotType)
+bool UEquipmentDragDropOperation::DropInventory(int32 DropSlotIndex, EInventoryType DropSlotType)
 {
 	if (SlotType == DropSlotType)
 	{
@@ -20,7 +20,7 @@ bool UEquipmentDragDropOperation::DropInventory(int32 DropSlotIndex, const FStri
 	return false;
 }
 
-bool UEquipmentDragDropOperation::DropEquipment(int32 DropSlotIndex, const FString& DropSlotType)
+bool UEquipmentDragDropOperation::DropEquipment(int32 DropSlotIndex, EInventoryType DropSlotType)
 {
 	if (SlotType == DropSlotType)
 	{
@@ -32,5 +32,6 @@ bool UEquipmentDragDropOperation::DropEquipment(int32 DropSlotIndex, const FStri
 			}
 		}
 	}
+
 	return false;
 }

@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "GunInterface.h"
 #include "RarityInterface.h"
+#include "ItemStateRow.h"
+
 #include "BaseGun.generated.h"
 
 UCLASS(Abstract)
@@ -30,6 +32,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual void Reload() override final;
 
+	virtual void SetAbility(FGunItemStateRow* GunItemStateRow);
 protected:
 	// 공격 가능 여부 체크
 	virtual bool CanAttack();
@@ -79,6 +82,10 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GunIStatus")
 	ERarity Rarity;
 
+	//총 종류
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GunIStatus")
+	EGunType GunType;
+
 	// 발사 속도 타이머
 	FTimerHandle FireRateTimerHandle;
 
@@ -86,13 +93,4 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GunIStatus")
 	bool bIsFiring;
 
-	/*
-	// 허용할 부착물 목록
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GunIAttachments")
-	TMap<enum class EAttachmentType, bool> AvailableSlots;
-
-	// 장착된 부착물 목록
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GunIAttachments")
-	TMap<EAttachmentType, class AAttachment*> AttachedAttachments;
-	*/
 };

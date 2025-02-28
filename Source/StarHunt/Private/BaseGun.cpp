@@ -47,6 +47,17 @@ void ABaseGun::Reload()
 	CurrentAmmo = MaxAmmo;
 }
 
+void ABaseGun::SetAbility(FGunItemStateRow* GunItemStateRow)
+{
+	if (GunItemStateRow)
+	{
+		Damage = GunItemStateRow->DamageAmount;
+		FireRate = GunItemStateRow->FireRate;
+		MaxAmmo =GunItemStateRow->MaxAmmo;
+		GunType =GunItemStateRow->GunType;
+	}
+}
+
 bool ABaseGun::CanAttack()
 {
 	if (!BulletClass || !BulletClass->IsChildOf<ABaseBullet>())

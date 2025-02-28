@@ -24,10 +24,10 @@ protected:
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-	void SetFixtureType(TSet<FString>& Type);
+	void SetFixtureType(TSet<EGunFixtureType>& Type);
 
 	float GetFixtursStatus() const;
 	bool AddFixture(const int32 InventoryIndex);
-	bool RemoveFixture(const FString& FixtureType);
-	TMap<FString, FGunFixtureItemStateRow*> GunFixtures;
+	bool RemoveFixture(EGunFixtureType FixtureType);
+	TMap<EGunFixtureType, FGunFixtureItemStateRow*> GunFixtures;
 };

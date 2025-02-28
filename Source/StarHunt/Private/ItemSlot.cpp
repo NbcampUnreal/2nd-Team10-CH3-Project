@@ -10,6 +10,8 @@ void UItemSlot::NativeConstruct()
 {
 	Super::NativeConstruct();
 
+	SlotIndex = 0;
+	SlotType = EInventoryType::Gun;
 	if (UItemSubsystem* ItemSubsystem = UItemBlueprintFunctionLibrary::GetItemSubsystem())
 	{
 		InventoryChangeHandler = ItemSubsystem->OnInventoryChange.AddUObject(this, &UItemSlot::UpdateSlotAt);
@@ -96,7 +98,7 @@ void UItemSlot::NativeOnDragDetected(const FGeometry& InGeometry, const FPointer
 bool UItemSlot::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
 {
 	Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation);
-	if (IBaseDragDropOperationInterface* Operation = Cast<IBaseDragDropOperationInterface>(InOperation))
+	if (IItemDragDropOperationInterface* Operation = Cast<IItemDragDropOperationInterface>(InOperation))
 	{
 		if (Operation->DropInventory(SlotIndex, SlotType))
 		{

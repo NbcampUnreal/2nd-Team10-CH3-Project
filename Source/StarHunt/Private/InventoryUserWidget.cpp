@@ -13,8 +13,7 @@ void UInventoryUserWidget::NativeConstruct()
 	{
 		InventoryImages.SetNum(ItemSubsystem->GetInventoryMaxStock());
 	}
-	InventoryTypes = {TEXT("Gun"), TEXT("GunFixture"), TEXT("Consumable")};
-	InventoryCurrentIndex = 0;
+	InventoryType = EInventoryType::Gun;
 
 	InitInventory(ItemGridPanel);
 }
@@ -22,10 +21,10 @@ void UInventoryUserWidget::NativeConstruct()
 void UInventoryUserWidget::SwapInventory(const int32 Index1, const int32 Index2)
 {
 	UItemSubsystem* ItemSubsystem = UItemBlueprintFunctionLibrary::GetItemSubsystem();
-	ItemSubsystem->SwapItem(InventoryTypes[InventoryCurrentIndex], Index1, Index2);
+	ItemSubsystem->SwapItem(InventoryType, Index1, Index2);
 }
 
-UTexture* UInventoryUserWidget::GetInventoryIcon(const FString& ItemType, const int32 Index)
+UTexture* UInventoryUserWidget::GetInventoryIcon(EInventoryType ItemType, const int32 Index)
 {
 	UItemSubsystem* ItemSubsystem = UItemBlueprintFunctionLibrary::GetItemSubsystem();
 	if (FString* ItemID = ItemSubsystem->GetInventoryItemID(ItemType, Index).Get())
@@ -53,26 +52,22 @@ void UInventoryUserWidget::InitInventory(UGridPanel* GridPanel)
 				return;
 			}
 			InventoryImages[Index] = Image;
-			Image->SetSlotIndex(InventoryTypes[InventoryCurrentIndex], Index);
+			Image->SetSlotIndex(InventoryType, Index);
 			Index++;
 		}
 	}
 }
 
-void UInventoryUserWidget::SetInventoryType(const int32 InventoryIndex)
+void UInventoryUserWidget::SetInventoryType(EInventoryType Type)
 {
-	if (InventoryTypes.IsValidIndex(InventoryIndex))
+
+	if (UItemSubsystem* ItemSubsystem = UItemBlueprintFunctionLibrary::GetItemSubsystem())
 	{
-
-		if (UItemSubsystem* ItemSubsystem = UItemBlueprintFunctionLibrary::GetItemSubsystem())
+		for (int32 Index = 0; Index < InventoryImages.Num(); Index++)
 		{
-
-			InventoryCurrentIndex = InventoryIndex;
-			for (int32 Index = 0; Index < InventoryImages.Num(); Index++)
-			{
-				InventoryImages[Index]->SetSlotIndex(InventoryTypes[InventoryCurrentIndex], Index);
-				ItemSubsystem->OnInventoryChange.Broadcast(Index);
-			}
+			InventoryType = Type;
+			InventoryImages[Index]->SetSlotIndex(InventoryType, Index);
+			ItemSubsystem->OnInventoryChange.Broadcast(Index);
 		}
 	}
 }

@@ -19,7 +19,7 @@ class STARHUNT_API UBaseSlot : public UUserWidget
 public:
 	virtual void NativeConstruct() override;
 
-	void SetSlotIndex(const FString& ItemType, const int32 Index);
+	void SetSlotIndex(EInventoryType ItemType, const int32 Index);
 	virtual void UpdateSlot();
 	void UpdateSlotAt(int32 Index);
 
@@ -38,7 +38,7 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Slot")
 	int32 SlotIndex;
 	UPROPERTY(EditAnywhere, Category = "Slot")
-	FString SlotType;
+	EInventoryType SlotType;
 
 	UPROPERTY(EditAnywhere, Category = "Slot")
 	TSubclassOf<UBaseSlot> DragWidgetClass;

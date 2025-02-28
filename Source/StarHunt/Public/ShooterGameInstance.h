@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
+#include "ItemDB.h"
 #include "ShooterGameInstance.generated.h"
 
 /**
@@ -17,6 +18,8 @@ class STARHUNT_API UShooterGameInstance : public UGameInstance
 public:
 	UShooterGameInstance();
 
+	virtual void Init() override;
+
 	// 총 점수
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "GameData")
 	int32 TotalScore;
@@ -26,8 +29,10 @@ public:
 
 	// 플레이어 데이터(HP, 인벤토리 등등)
 
-
-
 	UFUNCTION(BlueprintCallable, Category = "GameData")
 	void AddToScore(int32 Amount);
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<UItemDB> ItemDBClass;
 };

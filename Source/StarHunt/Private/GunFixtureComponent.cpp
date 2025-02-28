@@ -33,11 +33,11 @@ void UGunFixtureComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 	// ...
 }
 
-void UGunFixtureComponent::SetFixtureType(TSet<FString>& FixtureTypes)
+void UGunFixtureComponent::SetFixtureType(TSet<EGunFixtureType>& FixtureTypes)
 {
 	if (UItemSubsystem* ItemSubsystem = Cast<UItemSubsystem>(UItemBlueprintFunctionLibrary::GetGameInstanceSubsystem()))
 	{
-		for (FString& FixtureType : FixtureTypes)
+		for (EGunFixtureType& FixtureType : FixtureTypes)
 		{
 			GunFixtures.Add(FixtureType, nullptr);
 		}
@@ -61,10 +61,10 @@ bool UGunFixtureComponent::AddFixture(const int32 InventoryIndex)
 {
 	if (UItemSubsystem* ItemSubsystem = Cast<UItemSubsystem>(UItemBlueprintFunctionLibrary::GetGameInstanceSubsystem()))
 	{
-		TSharedPtr<FString> ItemID = ItemSubsystem->GetInventoryItemID(FString("GunFixture"), InventoryIndex);
+		TSharedPtr<FString> ItemID = ItemSubsystem->GetInventoryItemID(EInventoryType::GunFixture, InventoryIndex);
 		if (FGunFixtureItemStateRow* GunFixtureItemStateRow = ItemSubsystem->ItemDB->GetGunFixtureItemStateRow(*ItemID))
 		{
-			FString GunFixtureType = GunFixtureItemStateRow->FixtureType;
+			EGunFixtureType GunFixtureType = GunFixtureItemStateRow->FixtureType;
 			if (GunFixtures.Contains(GunFixtureType))
 			{
 				if (RemoveFixture(GunFixtureType))
@@ -81,7 +81,7 @@ bool UGunFixtureComponent::AddFixture(const int32 InventoryIndex)
 	return false;
 }
 
-bool UGunFixtureComponent::RemoveFixture(const FString& FixtureType)
+bool UGunFixtureComponent::RemoveFixture(EGunFixtureType FixtureType)
 {
 	if (UItemSubsystem* ItemSubsystem = Cast<UItemSubsystem>(UItemBlueprintFunctionLibrary::GetGameInstanceSubsystem()))
 	{
