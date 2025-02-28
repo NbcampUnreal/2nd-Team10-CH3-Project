@@ -5,25 +5,25 @@
 #include "CoreMinimal.h"
 #include "Blueprint/DragDropOperation.h"
 #include "ItemDragDropOperationInterface.h"
-#include "EquipmentDragDropOperation.generated.h"
+#include "GunFixtureDragDropOperation.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class STARHUNT_API UEquipmentDragDropOperation : public UDragDropOperation, public IItemDragDropOperationInterface
+class STARHUNT_API UGunFixtureDragDropOperation : public UDragDropOperation, public IItemDragDropOperationInterface
 {
 	GENERATED_BODY()
-	
+
 public:
 	UPROPERTY(VisibleAnywhere)
 	int32 SlotIndex;
 	UPROPERTY(VisibleAnywhere)
 	EInventoryType SlotType;
+	UPROPERTY(VisibleAnywhere)
+	EGunFixtureType GunFixtureType;
 
-	
-
-	// IBaseDragDropOperationInterface을(를) 통해 상속됨
+	// IItemDragDropOperationInterface을(를) 통해 상속됨
 	bool DropInventory(int32 DropSlotIndex, EInventoryType DropSlotType) override;
 
 	bool DropEquipment(int32 DropSlotIndex, EInventoryType DropSlotType) override;

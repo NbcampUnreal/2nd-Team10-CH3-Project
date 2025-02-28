@@ -24,8 +24,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item|Components")
 	USphereComponent* CollisionComponent;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item|Components")
-	UStaticMeshComponent* StaticMeshComponent;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item|Components")
 	UWidgetComponent* OverheadWidgetComponent;
 
 	// test

@@ -15,7 +15,7 @@ void UBaseSlot::NativeConstruct()
 	}
 }
 
-void UBaseSlot::SetSlotIndex(const FString& ItemType, const int32 Index)
+void UBaseSlot::SetSlotIndex(EInventoryType ItemType, const int32 Index)
 {
 	SlotType = ItemType;
 	SlotIndex = Index;

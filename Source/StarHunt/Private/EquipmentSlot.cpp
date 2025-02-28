@@ -3,12 +3,25 @@
 
 #include "EquipmentSlot.h"
 #include "EquipmentDragDropOperation.h"
+#include "GunFixtureSlot.h"
 #include "ItemBlueprintFunctionLibrary.h"
 
 void UEquipmentSlot::NativeConstruct()
 {
 	Super::NativeConstruct();
 
+	if (Muffle)
+	{
+		Muffle->SlotIndex = SlotIndex;
+		Muffle->GunFixtureType = EGunFixtureType::Muffle;
+	}
+	if (Magazine)
+	{
+		Magazine->SlotIndex = SlotIndex;
+		Magazine->GunFixtureType = EGunFixtureType::Magazine;
+	}
+	SlotType = EInventoryType::Gun;
+	
 	if (UItemSubsystem* ItemSubsystem = UItemBlueprintFunctionLibrary::GetItemSubsystem())
 	{
 		EquipmentChangeHandler = ItemSubsystem->OnEquipmentChange.AddUObject(this, &UEquipmentSlot::UpdateSlotAt);
@@ -97,7 +110,7 @@ void UEquipmentSlot::NativeOnDragDetected(const FGeometry& InGeometry, const FPo
 bool UEquipmentSlot::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
 {
 	Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation);
-	if (IBaseDragDropOperationInterface* Operation = Cast<IBaseDragDropOperationInterface>(InOperation))
+	if (IItemDragDropOperationInterface* Operation = Cast<IItemDragDropOperationInterface>(InOperation))
 	{
 		if (Operation->DropEquipment(SlotIndex, SlotType))
 		{

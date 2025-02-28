@@ -3,10 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ItemEnumClass.h"
 #include "ItemStateRow.generated.h"
 /**
  * 
  */
+
+
 
 USTRUCT(BlueprintType)
 struct FBaseItemStateRow : public FTableRowBase
@@ -19,13 +22,16 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSoftClassPtr<AActor> SpawnActor;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FString ItemType;
+	EInventoryType ItemType;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FText Name;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UTexture* InventoryIcon;
+	UTexture2D* InventoryIcon;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 StockMax;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	ERarity Rarity;
 };
 
 USTRUCT(BlueprintType)
@@ -61,7 +67,14 @@ public:
 	float MaxAmmo;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSet<FString> FixtureTypes;
+	EGunType GunType;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSet<EGunFixtureType> FixtureTypes;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSoftClassPtr<AActor> GunSoftClass;
+	
 
 };
 
@@ -75,7 +88,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString ItemID;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FString FixtureType;
+	EGunFixtureType FixtureType;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float DamageAmount;
 
