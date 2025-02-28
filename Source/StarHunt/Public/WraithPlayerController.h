@@ -30,6 +30,8 @@ public:
 	UInputAction* CameraMode;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Input")
 	UInputAction* Zoom;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Input")
+	UInputAction* Crouch;
 
 protected:
 	virtual void BeginPlay() override;

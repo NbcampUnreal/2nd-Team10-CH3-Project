@@ -148,6 +148,23 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 					&APlayerCharacter::ResetZoom
 				);
 			}
+
+			if (PlayerController->Crouch)
+			{
+				EnhancedInput->BindAction(
+					PlayerController->Crouch,
+					ETriggerEvent::Started,
+					this,
+					&APlayerCharacter::StartCrouch
+				);
+
+				EnhancedInput->BindAction(
+					PlayerController->Crouch,
+					ETriggerEvent::Completed,
+					this,
+					&APlayerCharacter::StopCrouch
+				);
+			}
 		}
 	}
 }
@@ -201,6 +218,26 @@ void APlayerCharacter::StopSprint(const FInputActionValue& value)
 	}
 }
 
+void APlayerCharacter::StartCrouch(const FInputActionValue& value)
+{
+	Crouch();
+	UE_LOG(LogTemp, Warning, TEXT("Crouch!!!!!!!!!!!!!!"));
+}
+
+void APlayerCharacter::StopCrouch(const FInputActionValue& value)
+{
+	UnCrouch();
+	UE_LOG(LogTemp, Warning, TEXT("StopCrouch!!!!!!!!!!!!!!"));
+}
+
+// void APlayerCharacter::StartCrouch(const FInputActionValue& value)
+// {
+// }
+//
+// void APlayerCharacter::StopCrouch(const FInputActionValue& value)
+// {
+// }
+
 void APlayerCharacter::Look(const FInputActionValue& value)
 {
 	FVector2D LookInput = value.Get<FVector2D>();
@@ -210,7 +247,7 @@ void APlayerCharacter::Look(const FInputActionValue& value)
 
 	auto Delta = GetControlRotation() - GetActorRotation();
 	Delta.Normalize();
-	
+
 	AimDirection = FMath::RInterpTo(AimDirection, Delta, GetWorld()->GetDeltaSeconds(), 45.0f);
 	AimDirection = FRotator(
 		FMath::ClampAngle(AimDirection.Pitch, -90, 90),

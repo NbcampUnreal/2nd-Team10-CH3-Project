@@ -9,23 +9,24 @@ AWraithPlayerController::AWraithPlayerController()
 	  SprintAction(nullptr),
 	  LookAction(nullptr),
 	  CameraMode(nullptr),
-	  Zoom(nullptr)
+	  Zoom(nullptr),
+	  Crouch(nullptr)
 {
 }
 
 void AWraithPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	if (ULocalPlayer* LocalPlayer = GetLocalPlayer())
-    	{
-    		if (UEnhancedInputLocalPlayerSubsystem* SubSystem = LocalPlayer->GetSubsystem<
-    			UEnhancedInputLocalPlayerSubsystem>())
-    		{
-    			if (InputMappingContext)
-    			{
-    				SubSystem->AddMappingContext(InputMappingContext, 0);
-    			}
-    		}
-    	}
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* SubSystem = LocalPlayer->GetSubsystem<
+			UEnhancedInputLocalPlayerSubsystem>())
+		{
+			if (InputMappingContext)
+			{
+				SubSystem->AddMappingContext(InputMappingContext, 0);
+			}
+		}
+	}
 }
