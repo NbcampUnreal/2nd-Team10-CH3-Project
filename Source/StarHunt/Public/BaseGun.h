@@ -7,6 +7,7 @@
 #include "GunInterface.h"
 #include "RarityInterface.h"
 #include "ItemStateRow.h"
+#include "GunFixtureComponent.h"
 
 #include "BaseGun.generated.h"
 
@@ -32,7 +33,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual void Reload() override final;
 
-	virtual void SetAbility(FGunItemStateRow* GunItemStateRow);
 protected:
 	// 공격 가능 여부 체크
 	virtual bool CanAttack();
@@ -53,6 +53,11 @@ protected:
 	// 총알 스포너
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GunIComponent")
 	USceneComponent* BulletSpawnLocation;
+
+	// 부착물
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Gun|Component")
+	UGunFixtureComponent* GunFixtureComponent;
+
 	// 총알 클래스
 	// 에디터에서 총알 종류 선택 가능
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Gun|Bullet")
@@ -92,5 +97,11 @@ protected:
 	// 타이머 관련 변수
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GunIStatus")
 	bool bIsFiring;
+
+	//총 부속품 SubSystem연결
+public:
+	virtual void StartItemSubsystem(int32 EquipmentIndex, FGunItemStateRow* GunItemStateRow);
+	virtual void EndItemSubsystem();
+
 
 };

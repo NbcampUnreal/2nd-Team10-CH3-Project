@@ -19,6 +19,8 @@ ABaseGun::ABaseGun()
 	BulletSpawnLocation = CreateDefaultSubobject<USceneComponent>(TEXT("BulletSpawnLocation"));
 	BulletSpawnLocation->SetupAttachment(Scene);
 
+	GunFixtureComponent = CreateDefaultSubobject<UGunFixtureComponent>(TEXT("GunFixtureComponent"));
+
 	Damage = 1.0f;
 	FireRate = 1.0f;
 	ReloadTime = 1.0f;
@@ -44,19 +46,37 @@ void ABaseGun::StopFire()
 
 void ABaseGun::Reload()
 {
+	int32 SumMaxAmmo = MaxAmmo;
+	if (GunFixtureComponent)
+	{
+		if (FGunFixtureItemStateRow* SumGunFixtureItemStateRow = GunFixtureComponent->GetFixtursStatus())
+		{
+			MaxAmmo += SumGunFixtureItemStateRow->MaxAmmoAmount;
+		}
+	}
+
 	CurrentAmmo = MaxAmmo;
 }
 
-void ABaseGun::SetAbility(FGunItemStateRow* GunItemStateRow)
+
+void ABaseGun::StartItemSubsystem(int32 EquipmentIndex, FGunItemStateRow* GunItemStateRow)
 {
+	GunFixtureComponent->StartItemSubsystem(EquipmentIndex);
 	if (GunItemStateRow)
 	{
 		Damage = GunItemStateRow->DamageAmount;
 		FireRate = GunItemStateRow->FireRate;
-		MaxAmmo =GunItemStateRow->MaxAmmo;
-		GunType =GunItemStateRow->GunType;
+		MaxAmmo = GunItemStateRow->MaxAmmo;
+		GunType = GunItemStateRow->GunType;
 	}
 }
+
+void ABaseGun::EndItemSubsystem()
+{
+	GunFixtureComponent->EndItemSubsystem();
+
+}
+
 
 bool ABaseGun::CanAttack()
 {
@@ -98,7 +118,16 @@ void ABaseGun::FireProgress()
 	// 총알의 소유자를 총으로 설정
 	SpawnedBullet->SetOwner(this);
 	// 총알에 데미지 전달
-	SpawnedBullet->SetBulletDamage(Damage);
+	float SumDamage = Damage;
+	if (GunFixtureComponent)
+	{
+		if (FGunFixtureItemStateRow* SumGunFixtureItemStateRow = GunFixtureComponent->GetFixtursStatus())
+		{
+			SumDamage += SumGunFixtureItemStateRow->DamageAmount;
+		}
+	}
+	SpawnedBullet->SetBulletDamage(SumDamage);
+
 	// 총알 감소
 	CurrentAmmo--;
 	//UE_LOG(LogTemp, Warning, TEXT("Bullet : %d / %d"), CurrentAmmo, MaxAmmo);

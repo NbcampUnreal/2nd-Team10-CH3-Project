@@ -14,6 +14,8 @@ void UGunFixtureSlot::NativeConstruct()
 	{
 		GunFixtureChangeHandler = ItemSubsystem->OnGunFixtureChange.AddUObject(this, &UGunFixtureSlot::UpdateSlotAt);
 	}
+
+	UpdateSlot();
 }
 
 void UGunFixtureSlot::NativeDestruct()
@@ -92,7 +94,6 @@ void UGunFixtureSlot::NativeOnDragDetected(const FGeometry& InGeometry, const FP
 
 	if (OutOperation == nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("adfba12"));
 		UGunFixtureDragDropOperation* GunFixtureDragDropOperation = NewObject<UGunFixtureDragDropOperation>();
 		OutOperation = GunFixtureDragDropOperation;
 		GunFixtureDragDropOperation->SlotIndex = SlotIndex;

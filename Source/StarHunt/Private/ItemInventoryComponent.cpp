@@ -12,11 +12,32 @@ UItemInventoryComponent::UItemInventoryComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
 	// ...
+	CurrentEquipmentIndex = 0;
+}
+
+
+void UItemInventoryComponent::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (UItemSubsystem* ItemSubsystem = UItemBlueprintFunctionLibrary::GetItemSubsystem())
+	{
+		GunChangeHandler = ItemSubsystem->OnEquipmentChange.AddUObject(this, &UItemInventoryComponent::WeaponChange);
+	}
+}
+
+void UItemInventoryComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+	if (UItemSubsystem* ItemSubsystem = UItemBlueprintFunctionLibrary::GetItemSubsystem())
+	{
+		ItemSubsystem->OnEquipmentChange.Remove(GunChangeHandler);
+	}
 }
 
 
 
-AActor* UItemInventoryComponent::GetWeapon(int32 EquipmentIndex)
+ABaseGun* UItemInventoryComponent::GetWeapon(int32 EquipmentIndex)
 {
 	if (UWorld* World = GetWorld())
 	{
@@ -28,15 +49,37 @@ AActor* UItemInventoryComponent::GetWeapon(int32 EquipmentIndex)
 				{
 					if (UClass* LoadedActorClass = GunItemStateRow->GunSoftClass.LoadSynchronous())
 					{
-						ABaseGun* Gun = World->SpawnActor<ABaseGun>(LoadedActorClass);
-						Gun->SetAbility(GunItemStateRow);
-						return Gun;
+						CurrentEquipmentIndex = EquipmentIndex;
+						Gun = World->SpawnActor<ABaseGun>(LoadedActorClass);
+						if (Gun)
+						{
+							Gun->StartItemSubsystem(EquipmentIndex, GunItemStateRow);
+						}
 					}
 				}
 			}
 		}
+		
 	}
 
-	return nullptr;
+	return Gun;
 }
+
+void UItemInventoryComponent::WeaponChange(int32 EquipmentIndex)
+{
+	if (CurrentEquipmentIndex == EquipmentIndex)
+	{
+		GetWeapon(EquipmentIndex);
+	}
+}
+
+void UItemInventoryComponent::DistoryWeapon()
+{
+	if (Gun)
+	{
+		Gun->Destroyed();
+	}
+}
+
+
 

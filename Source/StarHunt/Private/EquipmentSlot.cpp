@@ -26,6 +26,8 @@ void UEquipmentSlot::NativeConstruct()
 	{
 		EquipmentChangeHandler = ItemSubsystem->OnEquipmentChange.AddUObject(this, &UEquipmentSlot::UpdateSlotAt);
 	}
+
+	UpdateSlot();
 }
 
 void UEquipmentSlot::NativeDestruct()
@@ -58,9 +60,12 @@ void UEquipmentSlot::UpdateUI()
 {
 	if (UItemSubsystem* ItemSubsystem = UItemBlueprintFunctionLibrary::GetItemSubsystem())
 	{
+
 		if (TSharedPtr<FString> ItemID = ItemSubsystem->GetEquipmentGunItemID(SlotIndex))
 		{
+
 			BaseItemStateRow = ItemSubsystem->GetBaseItemStateRow(*ItemID);
+
 			if (UTexture2D* Texture2D = Cast<UTexture2D>(BaseItemStateRow->InventoryIcon))
 			{
 				if (ItemImage)

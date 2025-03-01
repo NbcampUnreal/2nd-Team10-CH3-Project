@@ -16,6 +16,7 @@ void UItemSlot::NativeConstruct()
 	{
 		InventoryChangeHandler = ItemSubsystem->OnInventoryChange.AddUObject(this, &UItemSlot::UpdateSlotAt);
 	}
+	UpdateSlot();
 }
 
 void UItemSlot::NativeDestruct()

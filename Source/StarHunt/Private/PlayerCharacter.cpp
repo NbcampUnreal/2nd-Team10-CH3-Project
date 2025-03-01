@@ -4,6 +4,7 @@
 #include "WraithPlayerController.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "ItemInventoryComponent.h"
+#include "BaseGun.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 APlayerCharacter::APlayerCharacter()
@@ -205,10 +206,6 @@ void APlayerCharacter::StartJump(const FInputActionValue& value)
 	if (value.Get<bool>())
 	{
 		Jump();
-	}
-	if (ItemInventoryComponent)
-	{
-		 ItemInventoryComponent->GetWeapon(0);
 	}
 }
 

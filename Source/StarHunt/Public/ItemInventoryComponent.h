@@ -7,6 +7,8 @@
 #include "Components/WidgetComponent.h"
 #include "ItemInventoryComponent.generated.h"
 
+class ABaseGun;
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class STARHUNT_API UItemInventoryComponent : public UActorComponent
 {
@@ -18,8 +20,22 @@ public:
 
 public:
 	UFUNCTION(BlueprintCallable)
-	AActor* GetWeapon(int32 EquipmentIndex);
-	
+	ABaseGun* GetWeapon(int32 EquipmentIndex);
+	UFUNCTION(BlueprintCallable)
+	void WeaponChange(int32 EquipmentIndex);
+	UFUNCTION(BlueprintCallable)
+	void DistoryWeapon();
+
+	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon")
+	ABaseGun* Gun;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon")
+	int32 CurrentEquipmentIndex;
+
+	FDelegateHandle GunChangeHandler;
 };
 
 

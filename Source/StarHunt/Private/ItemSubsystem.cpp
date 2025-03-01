@@ -125,6 +125,13 @@ bool UItemSubsystem::SwapGunEquipment(const int32 IndexFrom, const int32 IndexTo
 		Equipments.Swap(IndexFrom, IndexTo);
 		OnEquipmentChange.Broadcast(IndexFrom);
 		OnEquipmentChange.Broadcast(IndexTo);
+		
+		// 모든 enum class의 값을 순회하는 코드가 없나? ㅠ
+		OnGunFixtureChange.Broadcast(IndexFrom, EGunFixtureType::Magazine);
+		OnGunFixtureChange.Broadcast(IndexFrom, EGunFixtureType::Muffle);
+
+		OnGunFixtureChange.Broadcast(IndexTo, EGunFixtureType::Magazine);
+		OnGunFixtureChange.Broadcast(IndexTo, EGunFixtureType::Muffle);
 		return true;
 	}
 	return false;
@@ -447,7 +454,10 @@ const TMap<EGunFixtureType, TSharedPtr<FString>> UItemSubsystem::GetEquipmentGun
 {
 	if (Equipments.IsValidIndex(EquipmentIndex))
 	{
-		return Equipments[EquipmentIndex]->FixtureItemIDs;
+		if (Equipments[EquipmentIndex].IsValid())
+		{
+			return Equipments[EquipmentIndex]->FixtureItemIDs;
+		}
 	}
 	return TMap<EGunFixtureType, TSharedPtr<FString>>();
 }

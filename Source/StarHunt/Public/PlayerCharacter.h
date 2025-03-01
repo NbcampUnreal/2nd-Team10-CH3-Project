@@ -7,6 +7,7 @@
 
 class USpringArmComponent;
 class UItemInventoryComponent;
+class ABaseGun;
 struct FInputActionValue;
 
 
@@ -104,4 +105,6 @@ private:
 	//Inventory
 	bool bIsInventoryOpen;
 	FTimerHandle CameraTransitionDelayHandle;
+
+	ABaseGun* Weapon;
 };
