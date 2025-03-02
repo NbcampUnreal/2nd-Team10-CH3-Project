@@ -35,12 +35,33 @@ void UItemSlot::UpdateSlot()
 		if (TSharedPtr<FString> ItemID = ItemSubsystem->GetInventoryItemID(SlotType, SlotIndex))
 		{
 			BaseItemStateRow = ItemSubsystem->GetBaseItemStateRow(*ItemID);
+			GunItemStateRow = ItemSubsystem->GetGunItemStateRow(*ItemID);
+			if (GunItemStateRow)
+			{
+				GunFixtureItemStateRow = nullptr;
+				HealingItemStateRow = nullptr;
+			}
+			GunFixtureItemStateRow = ItemSubsystem->GetGunFixtureItemStateRow(*ItemID);
+			if (GunFixtureItemStateRow)
+			{
+				GunItemStateRow = nullptr;
+				HealingItemStateRow = nullptr;
+			}
+			HealingItemStateRow = ItemSubsystem->GetHealingItemStateRow(*ItemID);
+			if (HealingItemStateRow)
+			{
+				GunItemStateRow = nullptr;
+				GunFixtureItemStateRow = nullptr;
+			}
 
 			UpdateUI();
 			return;
 		}
 	}
 
+	GunItemStateRow = nullptr;
+	GunFixtureItemStateRow = nullptr;
+	HealingItemStateRow = nullptr;
 	BaseItemStateRow = nullptr;
 	UpdateUI();
 }
@@ -83,11 +104,14 @@ void UItemSlot::NativeOnDragDetected(const FGeometry& InGeometry, const FPointer
 		{
 			if (DragWidgetClass)
 			{
-				UBaseSlot* DragWidget = CreateWidget<UBaseSlot>(GetWorld(), DragWidgetClass);
-				if (DragWidget)
+				if (UClass* DragWidgetInstance = DragWidgetClass.LoadSynchronous())
 				{
-					DragWidget->ItemImage->SetBrush(ItemImage->GetBrush());
-					InventoryDragDropOperation->DefaultDragVisual = DragWidget;
+					UBaseSlot* DragWidget = CreateWidget<UBaseSlot>(GetWorld(), DragWidgetInstance);
+					if (DragWidget)
+					{
+						DragWidget->ItemImage->SetBrush(ItemImage->GetBrush());
+						InventoryDragDropOperation->DefaultDragVisual = DragWidget;
+					}
 				}
 			}
 		}
@@ -108,4 +132,26 @@ bool UItemSlot::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& 
 	}
 
 	return false;
+}
+
+void UItemSlot::NativeOnMouseEnter(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
+{
+	Super::NativeOnMouseEnter(MyGeometry, MouseEvent);
+
+	if (ItemDetailsWidgetInstance)
+	{
+
+		if (GunItemStateRow)
+		{
+			ItemDetailsWidgetInstance->SetItem(BaseItemStateRow, GunItemStateRow);
+		}
+		else if (GunFixtureItemStateRow)
+		{
+			ItemDetailsWidgetInstance->SetItem(BaseItemStateRow, GunFixtureItemStateRow);
+		}
+		else if (HealingItemStateRow)
+		{
+			ItemDetailsWidgetInstance->SetItem(BaseItemStateRow, HealingItemStateRow);
+		}
+	}
 }

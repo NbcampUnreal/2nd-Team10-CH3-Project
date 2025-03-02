@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "ItemSubSystem.h"
 #include "Components/Image.h"
+#include "ItemDetailsWidget.h"
 #include "BaseSlot.generated.h"
 
 /**
@@ -18,6 +19,7 @@ class STARHUNT_API UBaseSlot : public UUserWidget
 
 public:
 	virtual void NativeConstruct() override;
+	virtual void NativeDestruct() override;
 
 	void SetSlotIndex(EInventoryType ItemType, const int32 Index);
 	virtual void UpdateSlot();
@@ -33,15 +35,20 @@ public:
 
 
 	virtual FReply NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
-
+	virtual void NativeOnMouseEnter(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent) override;
+	virtual void NativeOnMouseLeave(const FPointerEvent& InMouseEvent) override;
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
 	UPROPERTY(EditAnywhere, Category = "Slot")
 	int32 SlotIndex;
 	UPROPERTY(EditAnywhere, Category = "Slot")
 	EInventoryType SlotType;
-
 	UPROPERTY(EditAnywhere, Category = "Slot")
-	TSubclassOf<UBaseSlot> DragWidgetClass;
+	TSoftClassPtr<UBaseSlot> DragWidgetClass;
+	UPROPERTY(EditAnywhere, Category = "Slot")
+	TSubclassOf<UItemDetailsWidget> ItemDetailsWidgetClass;
+	UPROPERTY(VisibleAnywhere, Category = "Slot")
+	UItemDetailsWidget* ItemDetailsWidgetInstance;
 
 	FBaseItemStateRow* BaseItemStateRow;
 

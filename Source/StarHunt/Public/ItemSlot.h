@@ -26,7 +26,10 @@ public:
 
 	virtual void NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation)override;
 	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)override;
+	virtual void NativeOnMouseEnter(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent) override;
 
-
+	FGunItemStateRow* GunItemStateRow;
+	FGunFixtureItemStateRow* GunFixtureItemStateRow;
+	FHealingItemStateRow* HealingItemStateRow;
 	FDelegateHandle InventoryChangeHandler;
 };

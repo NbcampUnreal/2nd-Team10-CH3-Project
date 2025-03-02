@@ -46,13 +46,14 @@ void UEquipmentSlot::UpdateSlot()
 		if (TSharedPtr<FString> ItemID = ItemSubsystem->GetEquipmentGunItemID(SlotIndex))
 		{
 			BaseItemStateRow = ItemSubsystem->GetBaseItemStateRow(*ItemID);
-
+			GunItemStateRow = ItemSubsystem->GetGunItemStateRow(*ItemID);
 			UpdateUI();
 			return;
 		}
 	}
 
 	BaseItemStateRow = nullptr;
+	GunItemStateRow = nullptr;
 	UpdateUI();
 }
 
@@ -96,14 +97,18 @@ void UEquipmentSlot::NativeOnDragDetected(const FGeometry& InGeometry, const FPo
 		{
 			if (DragWidgetClass)
 			{
-				UBaseSlot* DragWidget = CreateWidget<UBaseSlot>(GetWorld(), DragWidgetClass);
-				if (DragWidget)
+				if (UClass* DragWidgetInstance = DragWidgetClass.LoadSynchronous())
 				{
-					if (UTexture2D* Texture2D = Cast<UTexture2D>(BaseItemStateRow->InventoryIcon))
+					UBaseSlot* DragWidget = CreateWidget<UBaseSlot>(GetWorld(), DragWidgetInstance);
+					if (DragWidget)
 					{
-						DragWidget->ItemImage->SetBrushFromTexture(Texture2D);
+						if (UTexture2D* Texture2D = Cast<UTexture2D>(BaseItemStateRow->InventoryIcon))
+						{
+							DragWidget->ItemImage->SetBrushFromTexture(Texture2D);
+						}
+						EquipmentDragDropOperation->DefaultDragVisual = DragWidget;
 					}
-					EquipmentDragDropOperation->DefaultDragVisual = DragWidget;
+
 				}
 			}
 		}
@@ -124,4 +129,15 @@ bool UEquipmentSlot::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEv
 	}
 
 	return false;
+}
+
+void UEquipmentSlot::NativeOnMouseEnter(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
+{
+	Super::NativeOnMouseEnter(MyGeometry, MouseEvent);
+
+	if (ItemDetailsWidgetInstance && GunItemStateRow)
+	{
+
+		ItemDetailsWidgetInstance->SetItem(BaseItemStateRow, GunItemStateRow);
+	}
 }
