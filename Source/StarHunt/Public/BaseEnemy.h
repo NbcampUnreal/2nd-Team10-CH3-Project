@@ -50,6 +50,12 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
 	float Health;
 
+	//사거리 관련 변수
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
+	float AttackRadius;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
+	float DefendRadius;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
 	UBehaviorTree* BehaviorTree;
 
@@ -94,5 +100,9 @@ public:
 
 	UFUNCTION()
 	void OnMontageEnded(UAnimMontage* Montage, bool bInterrupted);
+	UFUNCTION()
+	float GetAttackRadius() const;
+	UFUNCTION()
+	float GetDefendRadius() const;
 };
 

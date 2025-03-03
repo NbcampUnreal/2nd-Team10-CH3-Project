@@ -73,6 +73,12 @@ void AEnemyAIController::OnPossess(APawn* InPawn)
 		{
 			RunBehaviorTree(BT);
 			SetAIState(EAIState::Passive);
+			//이상적인 공격, 수비 범위 캐릭터에서 받아와 블랙보드에 할당
+			if (UBlackboardComponent* BB=GetBlackboardComponent())
+			{
+				BB->SetValueAsFloat(AttackRadiusKeyName,Enemy->GetAttackRadius());
+				BB->SetValueAsFloat(DefendRadiusKeyName,Enemy->GetDefendRadius());
+			}
 		}
 	}
 }
@@ -106,7 +112,13 @@ void AEnemyAIController::SetAttackTarget(AActor* AttackTarget)
 	if (UBlackboardComponent* BB=GetBlackboardComponent())
 	{
 		BB->SetValueAsObject(AttackTargetKeyName,AttackTarget);
+		Target=AttackTarget;
 	}
+}
+
+AActor* AEnemyAIController::GetAttackTarget() const
+{
+	return Target;
 }
 
 void AEnemyAIController::SetPointOfInterest(const FVector PointOfInterest)

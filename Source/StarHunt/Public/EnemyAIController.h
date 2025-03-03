@@ -30,6 +30,8 @@ protected:
 	const FName StateKeyName="State";
 	const FName AttackTargetKeyName="AttackTarget";
 	const FName PointOfInterestKeyName="PointOfInterest";
+	const FName AttackRadiusKeyName="AttackRadius";
+	const FName DefendRadiusKeyName="DefendRadius";
 
 	//AI perception 컴포넌트
 	UPROPERTY(EditAnywhere,BlueprintReadWrite,Category="AI|Perception", meta=(AllowPrivateAccess="true"))
@@ -47,6 +49,9 @@ protected:
 	
 	UPROPERTY(VisibleAnywhere,Category="AI")
 	EAIState CurrentState;
+
+	UPROPERTY(VisibleAnywhere, Category="AI")
+	AActor* Target;
 	
 public:
 	virtual void OnPossess(APawn* InPawn) override;
@@ -62,6 +67,9 @@ public:
 	//BlackBoard에 AttackTarget 등록
 	UFUNCTION(BlueprintCallable,Category="AI")
 	void SetAttackTarget(AActor* AttackTarget);
+	//AttackTarget Get 함수
+	UFUNCTION(BlueprintPure,Category="AI")
+	AActor* GetAttackTarget() const;
 	//소리가 난 곳을 흥미가 가는 지점으로 등록
 	UFUNCTION(BlueprintCallable,Category="AI")
 	void SetPointOfInterest(const FVector PointOfInterest);

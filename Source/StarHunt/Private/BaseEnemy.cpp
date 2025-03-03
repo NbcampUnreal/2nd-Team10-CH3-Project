@@ -22,6 +22,8 @@ ABaseEnemy::ABaseEnemy()
 	Power=0;
 	Health=MaxHealth=0.0f;
 	Score=0;
+	AttackRadius=150.0f;
+	DefendRadius=350.0f;
 }
 
 // Called when the game starts or when spawned
@@ -119,6 +121,16 @@ void ABaseEnemy::OnMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 	{
 		OnAttackEnd.Broadcast();
 	}
+}
+
+float ABaseEnemy::GetAttackRadius() const
+{
+	return AttackRadius;
+}
+
+float ABaseEnemy::GetDefendRadius() const
+{
+	return DefendRadius;
 }
 
 // Called every frame
