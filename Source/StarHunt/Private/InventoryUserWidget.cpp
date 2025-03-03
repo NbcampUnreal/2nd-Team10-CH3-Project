@@ -18,28 +18,6 @@ void UInventoryUserWidget::NativeConstruct()
 	InitInventory(ItemGridPanel);
 }
 
-void UInventoryUserWidget::SwapInventory(const int32 Index1, const int32 Index2)
-{
-	UItemSubsystem* ItemSubsystem = UItemBlueprintFunctionLibrary::GetItemSubsystem();
-	ItemSubsystem->SwapItem(InventoryType, Index1, Index2);
-}
-
-UTexture* UInventoryUserWidget::GetInventoryIcon(EInventoryType ItemType, const int32 Index)
-{
-	UItemSubsystem* ItemSubsystem = UItemBlueprintFunctionLibrary::GetItemSubsystem();
-	if (FString* ItemID = ItemSubsystem->GetInventoryItemID(ItemType, Index).Get())
-	{
-		if (UItemDB* ItemDB = ItemSubsystem->ItemDB)
-		{
-			if (FBaseItemStateRow* BaseItemStateRow = ItemDB->GetBaseItemStateRow(*ItemID))
-			{
-				return BaseItemStateRow->InventoryIcon;
-			}
-		}
-	}
-	return nullptr;
-}
-
 void UInventoryUserWidget::InitInventory(UGridPanel* GridPanel)
 {
 	int32 Index = 0;

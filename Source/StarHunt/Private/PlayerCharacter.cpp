@@ -42,6 +42,7 @@ APlayerCharacter::APlayerCharacter()
 
 	IsTPSMode = true;
 	bIsInventoryOpen = false;
+	bIsEquipmentOpen = false;
 }
 
 void APlayerCharacter::SetCurrentState(ECurrentCharacterState CharacterState)
@@ -178,6 +179,15 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 					ETriggerEvent::Started,
 					this,
 					&APlayerCharacter::ShowInventory
+				);
+			}
+			if (PlayerController->EquipmentOpenAction)
+			{
+				EnhancedInput->BindAction(
+					PlayerController->EquipmentOpenAction,
+					ETriggerEvent::Started,
+					this,
+					&APlayerCharacter::ShowEquipment
 				);
 			}
 		}
@@ -338,6 +348,25 @@ void APlayerCharacter::ShowInventory()
 			PlayerController->ShowInventory();
 			PlayerController->bShowMouseCursor = true;
 			bIsInventoryOpen = true;
+		}
+	}
+}
+
+void APlayerCharacter::ShowEquipment()
+{
+	if (AWraithPlayerController* PlayerController = Cast<AWraithPlayerController>(GetController()))
+	{
+		if (bIsEquipmentOpen)
+		{
+			PlayerController->CloseEquipment();
+			PlayerController->bShowMouseCursor = false;
+			bIsEquipmentOpen = false;
+		}
+		else
+		{
+			PlayerController->ShowEquipment();
+			PlayerController->bShowMouseCursor = true;
+			bIsEquipmentOpen = true;
 		}
 	}
 }

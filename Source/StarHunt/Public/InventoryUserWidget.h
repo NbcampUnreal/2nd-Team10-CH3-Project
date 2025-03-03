@@ -28,10 +28,6 @@ class STARHUNT_API UInventoryUserWidget : public UUserWidget
 public:
 
 	UFUNCTION(BlueprintCallable)
-	void SwapInventory(const int32 Index1, const int32 Index2);
-	UFUNCTION(BlueprintCallable)
-	UTexture* GetInventoryIcon(EInventoryType ItemType, const int32 Index);
-	UFUNCTION(BlueprintCallable)
 	void InitInventory(UGridPanel* GridPanel);
 
 	UFUNCTION(BlueprintCallable)
@@ -42,13 +38,6 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	UGridPanel* ItemGridPanel;
 
-	UPROPERTY(meta = (BindWidget))
-	UBaseSlot* GunEquiepment1;
-	UPROPERTY(meta = (BindWidget))
-	UBaseSlot* GunEquiepment2;
-	UPROPERTY(meta = (BindWidget))
-	UBaseSlot* GunEquiepment3;
-	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	EInventoryType InventoryType;
 

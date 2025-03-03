@@ -92,6 +92,9 @@ protected:
 	//Inventory
 	UFUNCTION()
 	void ShowInventory();
+	//Inventory
+	UFUNCTION()
+	void ShowEquipment();
 
 private:
 	float NormalSpeed;
@@ -104,6 +107,7 @@ private:
 
 	//Inventory
 	bool bIsInventoryOpen;
+	bool bIsEquipmentOpen;
 	FTimerHandle CameraTransitionDelayHandle;
 
 	ABaseGun* Weapon;

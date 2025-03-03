@@ -35,16 +35,25 @@ public:
 	UInputAction* Crouch;
 	//Inventory
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
-	UInputAction* InventoryOpenAction;
-
+	UInputAction* InventoryOpenAction;	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
+	UInputAction* EquipmentOpenAction;
+	
 	//Inventory UI
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
-	TSubclassOf<UInventoryUserWidget> HUDWidgetClass;
-	UInventoryUserWidget* HUDWidgetInstance;
+	TSubclassOf<UInventoryUserWidget> InventoryHUDWidgetClass;
+	UInventoryUserWidget* InventoryHUDWidgetInstance;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<UUserWidget> EquipmentHUDWidgetClass;
+	UUserWidget* EquipmentHUDWidgetInstance;
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	void ShowInventory();
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	void CloseInventory();
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	void ShowEquipment();
+	UFUNCTION(BlueprintCallable, Category = "Inventory")
+	void CloseEquipment();
 protected:
 	virtual void BeginPlay() override;
 };
