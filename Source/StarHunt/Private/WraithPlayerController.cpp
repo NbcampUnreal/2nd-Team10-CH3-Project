@@ -10,7 +10,9 @@ AWraithPlayerController::AWraithPlayerController()
 	  LookAction(nullptr),
 	  CameraMode(nullptr),
 	  Zoom(nullptr),
-	  Crouch(nullptr)
+	  Crouch(nullptr),
+    InventoryOpenAction(nullptr),
+    EquipmentOpenAction(nullptr)
 {
 }
 
@@ -18,7 +20,7 @@ void AWraithPlayerController::ShowInventory()
 {
     if (InventoryHUDWidgetClass)
     {
-        InventoryHUDWidgetInstance = CreateWidget<UInventoryUserWidget>(this, InventoryHUDWidgetClass);
+        InventoryHUDWidgetInstance = CreateWidget<UUserWidget>(this, InventoryHUDWidgetClass);
         if (InventoryHUDWidgetInstance)
         {
             InventoryHUDWidgetInstance->AddToViewport();

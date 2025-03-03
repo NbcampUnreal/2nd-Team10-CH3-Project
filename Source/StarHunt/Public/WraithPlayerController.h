@@ -41,8 +41,8 @@ public:
 	
 	//Inventory UI
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
-	TSubclassOf<UInventoryUserWidget> InventoryHUDWidgetClass;
-	UInventoryUserWidget* InventoryHUDWidgetInstance;
+	TSubclassOf<UUserWidget> InventoryHUDWidgetClass;
+	UUserWidget* InventoryHUDWidgetInstance;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<UUserWidget> EquipmentHUDWidgetClass;
 	UUserWidget* EquipmentHUDWidgetInstance;
