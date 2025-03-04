@@ -23,9 +23,5 @@ protected:
 
     // 한 발당 발사할 펠렛 수
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ShotGun")
-    int32 NumberOfBullets;
-
-    // 펠렛이 퍼지는 각도 (도 단위)
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "ShotGun")
-    float SpreadAngle;
+    int32 NumberOfPellets;
 };

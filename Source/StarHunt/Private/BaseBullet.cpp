@@ -30,6 +30,7 @@ ABaseBullet::ABaseBullet()
     ProjectileMovement->bShouldBounce = false;
     ProjectileMovement->InitialSpeed = 5000.f;
     ProjectileMovement->MaxSpeed = 5000.f;
+    ProjectileMovement->ProjectileGravityScale = 0.0f;
 
     BulletDamage = 0.0f;
 
@@ -55,22 +56,13 @@ void ABaseBullet::OnOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherAc
     if (!OtherActor || OtherActor->IsA(ABaseBullet::StaticClass())) return;
     if (!OtherActor->CanBeDamaged()) return;
 
-    // 총(총알 소유자) -> 플레이어(총 소유자)
-    AActor* BulletOwner = GetOwner();
-    if (!BulletOwner) return;
-
-    AActor* GunOwner = BulletOwner->GetOwner();
-    if (!GunOwner) return;
-
-    APawn* Player = Cast<APawn>(GunOwner);
-    if (!Player) return;
-    
     // ApplyDamage 인수로 들어갈 컨트롤러 변수
-    AController* PlayerController = nullptr;
-    PlayerController = Player->GetController();
+    AController* PlayerController = GetWorld()->GetFirstPlayerController();
     
+    if (PlayerController)
+    {
     UGameplayStatics::ApplyDamage(OtherActor, BulletDamage, PlayerController, this, UDamageType::StaticClass());
+    }
     
     Destroy();
-    
 }

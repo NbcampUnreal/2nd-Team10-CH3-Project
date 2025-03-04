@@ -23,8 +23,7 @@ ARifle::ARifle()
 void ARifle::Fire()
 {
 	// 이미 발사 중이라면 추가 호출 무시
-	if (bIsFiring)
-		return;
+	if (bIsFiring) return;
 
 	bIsFiring = true;
 
