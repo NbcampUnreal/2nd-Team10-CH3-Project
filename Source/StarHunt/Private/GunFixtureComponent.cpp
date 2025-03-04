@@ -10,90 +10,117 @@ UGunFixtureComponent::UGunFixtureComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
-
+	CurrentEquipmentIndex = 0;
 	// ...
 }
 
+//총이 변화할때마다 Actor및 GunFixtureComponent가 새로 생성하기 때문에 총에 변화는 곧 GunFixtureComponent가 소멸하고 생성한다
 
-// Called when the game starts
-void UGunFixtureComponent::BeginPlay()
+void UGunFixtureComponent::StartItemSubsystem(int32 EquipmentIndex)
 {
-	Super::BeginPlay();
-
-	// ...
-	
-}
-
-
-// Called every frame
-void UGunFixtureComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
-}
-
-void UGunFixtureComponent::SetFixtureType(TSet<EGunFixtureType>& FixtureTypes)
-{
-	if (UItemSubsystem* ItemSubsystem = Cast<UItemSubsystem>(UItemBlueprintFunctionLibrary::GetGameInstanceSubsystem()))
+	if (UItemSubsystem* ItemSubsystem = UItemBlueprintFunctionLibrary::GetItemSubsystem())
 	{
-		for (EGunFixtureType& FixtureType : FixtureTypes)
+		GunFixtureChangeHandler = ItemSubsystem->OnGunFixtureChange.AddUObject(this, &UGunFixtureComponent::UpdateFixtureType);
+		GunFixtureChangeHandler = ItemSubsystem->OnEquipmentChange.AddUObject(this, &UGunFixtureComponent::UpdateFixtureType);
+
+	}
+	CurrentEquipmentIndex = EquipmentIndex;
+	UpdateFixtureType(CurrentEquipmentIndex);
+}
+
+void UGunFixtureComponent::EndItemSubsystem()
+{
+	if (UItemSubsystem* ItemSubsystem = UItemBlueprintFunctionLibrary::GetItemSubsystem())
+	{
+		ItemSubsystem->OnEquipmentChange.Remove(GunFixtureChangeHandler);
+	}
+}
+
+void UGunFixtureComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+	EndItemSubsystem();
+}
+
+void UGunFixtureComponent::UpdateFixtureType(int32 EquipmentIndex)
+{
+	if (CurrentEquipmentIndex == EquipmentIndex)
+	{
+		GunFixtures.Empty();
+		if (UItemSubsystem* ItemSubsystem = Cast<UItemSubsystem>(UItemBlueprintFunctionLibrary::GetGameInstanceSubsystem()))
 		{
-			GunFixtures.Add(FixtureType, nullptr);
+			for (auto& GunFixturesPair : ItemSubsystem->GetEquipmentGunFixtureItemIDs(EquipmentIndex))
+			{
+				if (GunFixturesPair.Value.IsValid())
+				{
+					if (FGunFixtureItemStateRow* GunFixtureItemStateRow = ItemSubsystem->GetGunFixtureItemStateRow(*GunFixturesPair.Value))
+					{
+						GunFixtures.Add(GunFixturesPair.Key, GunFixtureItemStateRow);
+					}
+				}
+				else
+				{
+					GunFixtures.Add(GunFixturesPair.Key, nullptr);
+				}
+			}
+			UpdateFixturesStatus();
 		}
 	}
 }
 
-
-float UGunFixtureComponent::GetFixtursStatus() const
+void UGunFixtureComponent::UpdateFixtureType(int32 EquipmentIndex, EGunFixtureType GunFixtureType)
 {
-	float Damage = 0.0f;
+	if (CurrentEquipmentIndex == EquipmentIndex)
+	{
+		if (UItemSubsystem* ItemSubsystem = Cast<UItemSubsystem>(UItemBlueprintFunctionLibrary::GetGameInstanceSubsystem()))
+		{
+			for (auto& ItemStateRow : GunFixtures)
+			{
+				if (GunFixtureType == ItemStateRow.Key)
+				{
+					if (ItemSubsystem->ValidGunFixtureEquipment(EquipmentIndex, GunFixtureType))
+					{
 
+						if (TSharedPtr<FString> ItemID = *ItemSubsystem->GetEquipmentGunFixtureItemIDs(EquipmentIndex).Find(GunFixtureType))
+						{
+
+							if (ItemID.IsValid())
+							{
+
+								GunFixtures[GunFixtureType] = ItemSubsystem->GetGunFixtureItemStateRow(*ItemID);
+							}
+						}
+						else
+						{
+							GunFixtures[GunFixtureType] = nullptr;
+						}
+					}
+				}
+			}
+
+			UpdateFixturesStatus();
+		}
+	}
+}
+
+void UGunFixtureComponent::UpdateFixturesStatus()
+{
+	GunFixturesStatus = MakeShared<FGunFixtureItemStateRow>();
 	for (auto& ItemStateRow : GunFixtures)
 	{
-		Damage += ItemStateRow.Value->DamageAmount;
-	}
-
-	return Damage;
-}
-
-bool UGunFixtureComponent::AddFixture(const int32 InventoryIndex)
-{
-	if (UItemSubsystem* ItemSubsystem = Cast<UItemSubsystem>(UItemBlueprintFunctionLibrary::GetGameInstanceSubsystem()))
-	{
-		TSharedPtr<FString> ItemID = ItemSubsystem->GetInventoryItemID(EInventoryType::GunFixture, InventoryIndex);
-		if (FGunFixtureItemStateRow* GunFixtureItemStateRow = ItemSubsystem->ItemDB->GetGunFixtureItemStateRow(*ItemID))
+		if (ItemStateRow.Value)
 		{
-			EGunFixtureType GunFixtureType = GunFixtureItemStateRow->FixtureType;
-			if (GunFixtures.Contains(GunFixtureType))
-			{
-				if (RemoveFixture(GunFixtureType))
-				{
-					GunFixtures[GunFixtureType] = GunFixtureItemStateRow;
-					return true;
-				}
-
-			}
-
-		}
-		
-	}
-	return false;
-}
-
-bool UGunFixtureComponent::RemoveFixture(EGunFixtureType FixtureType)
-{
-	if (UItemSubsystem* ItemSubsystem = Cast<UItemSubsystem>(UItemBlueprintFunctionLibrary::GetGameInstanceSubsystem()))
-	{
-		if (FGunFixtureItemStateRow* GunFixtureItemStateRow = *GunFixtures.Find(FixtureType))
-		{
-			if (ItemSubsystem->AddItem(GunFixtureItemStateRow->ItemID))
-			{
-				GunFixtures[FixtureType] = nullptr;
-				return true;
-			}
+			*GunFixturesStatus += *ItemStateRow.Value;
 		}
 	}
-	return false;
 }
 
+
+FGunFixtureItemStateRow* UGunFixtureComponent::GetFixtursStatus() const
+{
+	if (GunFixturesStatus.IsValid())
+	{
+		return GunFixturesStatus.Get();
+	}
+	return nullptr;
+}

@@ -5,6 +5,7 @@
 #include "ItemBlueprintFunctionLibrary.h"
 #include "InventoryDragDropOperation.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
+#include "Blueprint/WidgetLayoutLibrary.h"
 
 void UBaseSlot::NativeConstruct()
 {
@@ -12,6 +13,16 @@ void UBaseSlot::NativeConstruct()
 	if (ItemImage)
 	{
 		ItemImage->SetBrushFromTexture(DefaultImageTexture);
+	}
+}
+
+void UBaseSlot::NativeDestruct()
+{
+	Super::NativeDestruct();
+	if (ItemDetailsWidgetInstance)
+	{
+		ItemDetailsWidgetInstance->RemoveFromParent();
+		ItemDetailsWidgetInstance = nullptr;
 	}
 }
 
@@ -53,4 +64,56 @@ FReply UBaseSlot::NativeOnMouseButtonDown(const FGeometry& InGeometry, const FPo
 		}
 	}
 	return Reply.NativeReply;
+}
+
+void UBaseSlot::NativeOnMouseEnter(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
+{
+	Super::NativeOnMouseEnter(MyGeometry, MouseEvent);
+
+	if (!ItemDetailsWidgetInstance)
+	{
+		if (ItemDetailsWidgetClass)
+		{
+			// SoftPtr로 시도했으나 이상하게도 ItemDetailsWidgetClass를 받아오지못함..?
+			//if (UClass* Class = ItemDetailsWidgetClass.LoadSynchronous())
+			//{
+			//	ItemDetailsWidgetInstance = CreateWidget<UItemDetailsWidget>(this, Class);
+			//}
+			ItemDetailsWidgetInstance = CreateWidget<UItemDetailsWidget>(this, ItemDetailsWidgetClass);
+
+			if (ItemDetailsWidgetInstance)
+			{
+				ItemDetailsWidgetInstance->AddToViewport();
+			}
+
+		}
+		
+	}
+}
+
+void UBaseSlot::NativeOnMouseLeave(const FPointerEvent& InMouseEvent)
+{
+	Super::NativeOnMouseLeave(InMouseEvent);
+
+	if (ItemDetailsWidgetInstance)
+	{
+		ItemDetailsWidgetInstance->RemoveFromParent();
+		ItemDetailsWidgetInstance = nullptr;
+	}
+}
+
+void UBaseSlot::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+{
+	Super::NativeTick(MyGeometry, InDeltaTime);
+	if (ItemDetailsWidgetInstance && GetWorld())
+	{
+		if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
+		{
+			FVector2D MousePosition;
+			PlayerController->GetMousePosition(MousePosition.X, MousePosition.Y);
+
+			ItemDetailsWidgetInstance->SetPositionInViewport(MousePosition, false);
+		}
+	}
+
 }

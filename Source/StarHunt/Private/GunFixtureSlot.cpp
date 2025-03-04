@@ -14,6 +14,8 @@ void UGunFixtureSlot::NativeConstruct()
 	{
 		GunFixtureChangeHandler = ItemSubsystem->OnGunFixtureChange.AddUObject(this, &UGunFixtureSlot::UpdateSlotAt);
 	}
+
+	UpdateSlot();
 }
 
 void UGunFixtureSlot::NativeDestruct()
@@ -92,7 +94,6 @@ void UGunFixtureSlot::NativeOnDragDetected(const FGeometry& InGeometry, const FP
 
 	if (OutOperation == nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("adfba12"));
 		UGunFixtureDragDropOperation* GunFixtureDragDropOperation = NewObject<UGunFixtureDragDropOperation>();
 		OutOperation = GunFixtureDragDropOperation;
 		GunFixtureDragDropOperation->SlotIndex = SlotIndex;
@@ -102,14 +103,17 @@ void UGunFixtureSlot::NativeOnDragDetected(const FGeometry& InGeometry, const FP
 		{
 			if (DragWidgetClass)
 			{
-				UBaseSlot* DragWidget = CreateWidget<UBaseSlot>(GetWorld(), DragWidgetClass);
-				if (DragWidget)
+				if (UClass* DragWidgetInstance = DragWidgetClass.LoadSynchronous())
 				{
-					if (UTexture2D* Texture2D = Cast<UTexture2D>(BaseItemStateRow->InventoryIcon))
+					UBaseSlot* DragWidget = CreateWidget<UBaseSlot>(GetWorld(), DragWidgetInstance);
+					if (DragWidget)
 					{
-						DragWidget->ItemImage->SetBrushFromTexture(Texture2D);
+						if (UTexture2D* Texture2D = Cast<UTexture2D>(BaseItemStateRow->InventoryIcon))
+						{
+							DragWidget->ItemImage->SetBrushFromTexture(Texture2D);
+						}
+						GunFixtureDragDropOperation->DefaultDragVisual = DragWidget;
 					}
-					GunFixtureDragDropOperation->DefaultDragVisual = DragWidget;
 				}
 			}
 		}
@@ -121,6 +125,16 @@ void UGunFixtureSlot::NativeOnDragDetected(const FGeometry& InGeometry, const FP
 bool UGunFixtureSlot::NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)
 {
 	return false;
+}
+
+void UGunFixtureSlot::NativeOnMouseEnter(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent)
+{
+	Super::NativeOnMouseEnter(MyGeometry, MouseEvent);
+
+	if (ItemDetailsWidgetInstance && GunFixtureItemStateRow)
+	{
+		ItemDetailsWidgetInstance->SetItem(BaseItemStateRow, GunFixtureItemStateRow);
+	}
 }
 
 void UGunFixtureSlot::UpdateSlotAt(int32 EquipmentIndex, EGunFixtureType Type)

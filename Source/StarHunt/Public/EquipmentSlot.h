@@ -25,11 +25,14 @@ public:
 	virtual void NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation)override;
 
 	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)override;
+	virtual void NativeOnMouseEnter(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent) override;
 
 	UPROPERTY(EditAnywhere, Category = "Slot", meta = (BindWidget = "true"))
 	UGunFixtureSlot* Muffle;
 	UPROPERTY(EditAnywhere, Category = "Slot", meta = (BindWidget = "true"))
 	UGunFixtureSlot* Magazine;
+
+	FGunItemStateRow* GunItemStateRow;
 
 	FDelegateHandle EquipmentChangeHandler;
 };

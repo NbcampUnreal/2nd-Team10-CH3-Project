@@ -17,17 +17,28 @@ public:
 	// Sets default values for this component's properties
 	UGunFixtureComponent();
 
-protected:
-	// Called when the game starts
-	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
-public:	
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-	void SetFixtureType(TSet<EGunFixtureType>& Type);
+	UFUNCTION(BlueprintCallable)
+	void UpdateFixturesStatus();
 
-	float GetFixtursStatus() const;
-	bool AddFixture(const int32 InventoryIndex);
-	bool RemoveFixture(EGunFixtureType FixtureType);
+	FGunFixtureItemStateRow* GetFixtursStatus() const;
+
+
+
+	UFUNCTION(BlueprintCallable)
+	virtual void StartItemSubsystem(int32 EquipmentIndex);
+	UFUNCTION(BlueprintCallable)
+	virtual void EndItemSubsystem();
+
+	int32 CurrentEquipmentIndex;
+
 	TMap<EGunFixtureType, FGunFixtureItemStateRow*> GunFixtures;
+	TSharedPtr<FGunFixtureItemStateRow> GunFixturesStatus;
+
+	UFUNCTION(BlueprintCallable)
+	void UpdateFixtureType(int32 EquipmentIndex);
+	void UpdateFixtureType(int32 EquipmentIndex, EGunFixtureType GunFixtureType);
+private:
+	FDelegateHandle GunFixtureChangeHandler;
 };

@@ -36,10 +36,29 @@ void ADropItemActor::ItemDestroy()
 	Destroy();
 }
 
+void ADropItemActor::ItemsUpdate()
+{
+	ItemIDs.RemoveAll([](const TSharedPtr<FString>& Ptr) {
+		return !Ptr.IsValid() || Ptr->IsEmpty();
+		});
+
+	if (ItemIDs.Num() == 0)
+	{
+		ItemDestroy();
+	}
+}
+
+void ADropItemActor::SetItemIDs(TArray<FString> SpawnItemIDs)
+{
+	for (FString& ID : SpawnItemIDs)
+	{
+		ItemIDs.Add(MakeShared<FString>(ID));
+	}
+}
+
 void ADropItemActor::BeginPlay()
 {
 	Super::BeginPlay();
-
 }
 
 void ADropItemActor::OnItemBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -48,10 +67,6 @@ void ADropItemActor::OnItemBeginOverlap(UPrimitiveComponent* OverlappedComponent
 	{
 		if (UItemSubsystem* ItemSubSystem = Cast<UItemSubsystem>(UItemBlueprintFunctionLibrary::GetGameInstanceSubsystem()))
 		{
-			if (ItemSubSystem->AddItem(ItemId))
-			{
-				ItemDestroy();
-			}
 		}
 
 	}

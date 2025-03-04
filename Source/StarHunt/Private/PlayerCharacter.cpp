@@ -4,6 +4,7 @@
 #include "EnhancedInputComponent.h"
 #include "WraithPlayerController.h"
 #include "ItemInventoryComponent.h"
+#include "BaseGun.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 APlayerCharacter::APlayerCharacter()
@@ -19,6 +20,8 @@ APlayerCharacter::APlayerCharacter()
 	GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
 
 	bIsInventoryOpen = false;
+	bIsEquipmentOpen = false;
+	bIsDropItemsOpen = false;
 }
 
 void APlayerCharacter::SetCurrentState(ECurrentCharacterState CharacterState)
@@ -182,6 +185,24 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 					&APlayerCharacter::ShowInventory
 				);
 			}
+			if (PlayerController->EquipmentOpenAction)
+			{
+				EnhancedInput->BindAction(
+					PlayerController->EquipmentOpenAction,
+					ETriggerEvent::Started,
+					this,
+					&APlayerCharacter::ShowEquipment
+				);
+			}
+			if (PlayerController->DropItemsOpenAction)
+			{
+				EnhancedInput->BindAction(
+					PlayerController->DropItemsOpenAction,
+					ETriggerEvent::Started,
+					this,
+					&APlayerCharacter::ShowDropItems
+				);
+			}
 		}
 	}
 }
@@ -208,10 +229,6 @@ void APlayerCharacter::StartJump(const FInputActionValue& value)
 	if (value.Get<bool>())
 	{
 		Jump();
-	}
-	if (ItemInventoryComponent)
-	{
-		ItemInventoryComponent->GetWeapon(0);
 	}
 }
 
@@ -338,8 +355,11 @@ void APlayerCharacter::ShowInventory()
 		if (bIsInventoryOpen)
 		{
 			PlayerController->CloseInventory();
-			PlayerController->bShowMouseCursor = false;
 			bIsInventoryOpen = false;
+			if (!bIsOpenWindows())
+			{
+				PlayerController->bShowMouseCursor = false;
+			}
 		}
 		else
 		{
@@ -348,4 +368,61 @@ void APlayerCharacter::ShowInventory()
 			bIsInventoryOpen = true;
 		}
 	}
+}
+
+void APlayerCharacter::ShowEquipment()
+{
+	if (AWraithPlayerController* PlayerController = Cast<AWraithPlayerController>(GetController()))
+	{
+		if (bIsEquipmentOpen)
+		{
+			PlayerController->CloseEquipment();
+			bIsEquipmentOpen = false;
+			if (!bIsOpenWindows())
+			{
+				PlayerController->bShowMouseCursor = false;
+			}
+		}
+		else
+		{
+			PlayerController->ShowEquipment();
+			PlayerController->bShowMouseCursor = true;
+			bIsEquipmentOpen = true;
+		}
+	}
+}
+
+void APlayerCharacter::ShowDropItems()
+{
+	if (AWraithPlayerController* PlayerController = Cast<AWraithPlayerController>(GetController()))
+	{
+		if (bIsDropItemsOpen)
+		{
+			PlayerController->CloseDropItems();
+			bIsDropItemsOpen = false;
+			if (!bIsOpenWindows())
+			{
+				PlayerController->bShowMouseCursor = false;
+			}
+		}
+		else
+		{
+			if (ItemInventoryComponent)
+			{
+				ItemInventoryComponent->GetNearbyItemActors();
+				PlayerController->ShowDropItems(&ItemInventoryComponent->OverlappingItemActors);
+				PlayerController->bShowMouseCursor = true;
+			}
+			bIsDropItemsOpen = true;
+		}
+	}
+}
+
+bool APlayerCharacter::bIsOpenWindows()
+{
+	if (bIsInventoryOpen || bIsEquipmentOpen || bIsDropItemsOpen)
+	{
+		return true;
+	}
+	return false;
 }

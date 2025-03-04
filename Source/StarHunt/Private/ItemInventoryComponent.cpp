@@ -3,8 +3,11 @@
 
 #include "ItemInventoryComponent.h"
 #include "ItemBlueprintFunctionLibrary.h"
+#include "Components/SphereComponent.h"
 #include "BaseGun.h"
+#include "GameFramework/Character.h"
 #include "DropItemActor.h"
+#include "WraithPlayerController.h"
 // Sets default values for this component's properties
 UItemInventoryComponent::UItemInventoryComponent()
 {
@@ -12,11 +15,36 @@ UItemInventoryComponent::UItemInventoryComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
 	// ...
+	CurrentEquipmentIndex = 0;
+	CollisionComponent = CreateDefaultSubobject<USphereComponent>(TEXT("CollisionComponent"));
+}
+
+
+void UItemInventoryComponent::BeginPlay()
+{
+	Super::BeginPlay();
+	if (GetOwner())
+	{
+		CollisionComponent->AttachToComponent(GetOwner()->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
+	}
+	if (UItemSubsystem* ItemSubsystem = UItemBlueprintFunctionLibrary::GetItemSubsystem())
+	{
+		GunChangeHandler = ItemSubsystem->OnEquipmentChange.AddUObject(this, &UItemInventoryComponent::WeaponChange);
+	}
+}
+
+void UItemInventoryComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+	if (UItemSubsystem* ItemSubsystem = UItemBlueprintFunctionLibrary::GetItemSubsystem())
+	{
+		ItemSubsystem->OnEquipmentChange.Remove(GunChangeHandler);
+	}
 }
 
 
 
-AActor* UItemInventoryComponent::GetWeapon(int32 EquipmentIndex)
+ABaseGun* UItemInventoryComponent::GetWeapon(int32 EquipmentIndex)
 {
 	if (UWorld* World = GetWorld())
 	{
@@ -28,15 +56,81 @@ AActor* UItemInventoryComponent::GetWeapon(int32 EquipmentIndex)
 				{
 					if (UClass* LoadedActorClass = GunItemStateRow->GunSoftClass.LoadSynchronous())
 					{
-						ABaseGun* Gun = World->SpawnActor<ABaseGun>(LoadedActorClass);
-						Gun->SetAbility(GunItemStateRow);
-						return Gun;
+						CurrentEquipmentIndex = EquipmentIndex;
+						Gun = World->SpawnActor<ABaseGun>(LoadedActorClass);
+						if (Gun)
+						{
+							Gun->StartItemSubsystem(EquipmentIndex, GunItemStateRow);
+						}
+					}
+				}
+			}
+		}
+		
+	}
+
+	return Gun;
+}
+
+void UItemInventoryComponent::WeaponChange(int32 EquipmentIndex)
+{
+	if (CurrentEquipmentIndex == EquipmentIndex)
+	{
+		GetWeapon(EquipmentIndex);
+	}
+}
+
+void UItemInventoryComponent::DistoryWeapon()
+{
+	if (Gun)
+	{
+		Gun->Destroyed();
+	}
+}
+
+TArray<TSharedPtr<FString>*> UItemInventoryComponent::GetNearbyItems()
+{
+	TArray<AActor*> OverlappingActors;
+	OverlappingItems.Empty();
+	if (CollisionComponent)
+	{
+		CollisionComponent->GetOverlappingActors(OverlappingActors);
+
+		for (AActor* Actor : OverlappingActors)
+		{
+			if (ADropItemActor* DropItemActor = Cast<ADropItemActor>(Actor))
+			{
+				for (auto& ItemID : DropItemActor->ItemIDs)
+				{
+					if (ItemID.IsValid())
+					{
+						OverlappingItems.Add(&ItemID);
 					}
 				}
 			}
 		}
 	}
-
-	return nullptr;
+	return OverlappingItems;
 }
+
+TArray<ADropItemActor*> UItemInventoryComponent::GetNearbyItemActors()
+{
+	TArray<AActor*> OverlappingActors;
+	OverlappingItemActors.Empty();
+	if (CollisionComponent)
+	{
+		CollisionComponent->GetOverlappingActors(OverlappingActors);
+
+		for (AActor* Actor : OverlappingActors)
+		{
+			if (ADropItemActor* DropItemActor = Cast<ADropItemActor>(Actor))
+			{
+				OverlappingItemActors.Add(DropItemActor);
+			}
+		}
+	}
+	return OverlappingItemActors;
+}
+
+
 

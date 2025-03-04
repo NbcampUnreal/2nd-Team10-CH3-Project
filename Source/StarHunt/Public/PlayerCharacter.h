@@ -7,6 +7,7 @@
 
 class ABaseGun;
 class UItemInventoryComponent;
+class ABaseGun;
 struct FInputActionValue;
 
 
@@ -87,6 +88,14 @@ protected:
 	UFUNCTION()
 	void ShowInventory();
 
+	UFUNCTION()
+	void ShowEquipment();
+
+	UFUNCTION()
+	void ShowDropItems();
+
+	UFUNCTION()
+	bool bIsOpenWindows();
 private:
 	float NormalSpeed;
 	float SprintSpeedMultiplier;
@@ -97,5 +106,9 @@ private:
 
 	//Inventory
 	bool bIsInventoryOpen;
+	bool bIsEquipmentOpen;
+	bool bIsDropItemsOpen;
 	FTimerHandle CameraTransitionDelayHandle;
+
+	ABaseGun* Weapon;
 };

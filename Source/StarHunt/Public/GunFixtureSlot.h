@@ -23,10 +23,12 @@ public:
 	virtual void NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation)override;
 
 	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)override;
+	virtual void NativeOnMouseEnter(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent) override;
 
 	void UpdateSlotAt(int32 EquipmentIndex, EGunFixtureType Type);
 
 	EGunFixtureType GunFixtureType;
 	FGunFixtureItemStateRow* GunFixtureItemStateRow;
+
 	FDelegateHandle GunFixtureChangeHandler;
 };

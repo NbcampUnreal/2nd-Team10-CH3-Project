@@ -19,6 +19,8 @@ void UItemSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	Inventorys.Add(EInventoryType::GunFixture, TArray<TSharedPtr<FInventoryItem>>());
 	Inventorys.Add(EInventoryType::Consumable, TArray<TSharedPtr<FInventoryItem>>());
 
+
+
 	for (auto& InventoryPair : Inventorys)
 	{
 		InventoryPair.Value.SetNum(InventoryMaxStock);
@@ -125,6 +127,13 @@ bool UItemSubsystem::SwapGunEquipment(const int32 IndexFrom, const int32 IndexTo
 		Equipments.Swap(IndexFrom, IndexTo);
 		OnEquipmentChange.Broadcast(IndexFrom);
 		OnEquipmentChange.Broadcast(IndexTo);
+		
+		// 모든 enum class의 값을 순회하는 코드가 없나? ㅠ
+		OnGunFixtureChange.Broadcast(IndexFrom, EGunFixtureType::Magazine);
+		OnGunFixtureChange.Broadcast(IndexFrom, EGunFixtureType::Muffle);
+
+		OnGunFixtureChange.Broadcast(IndexTo, EGunFixtureType::Magazine);
+		OnGunFixtureChange.Broadcast(IndexTo, EGunFixtureType::Muffle);
 		return true;
 	}
 	return false;
@@ -271,6 +280,49 @@ bool UItemSubsystem::AddGunEquipment(int32 EquipmentIndex, int32 InventoryIndex)
 	}
 	
 
+	return false;
+}
+
+bool UItemSubsystem::AddGunEquipmentByDropGun(int32 EquipmentIndex, const FString& ItemID)
+{
+	if (FGunItemStateRow* GunItemStateRow = ItemDB->GetGunItemStateRow(ItemID))
+	{
+		if (Equipments.IsValidIndex(EquipmentIndex))
+		{
+			if (Equipments[EquipmentIndex])
+			{
+				//부착물 제거
+				for (auto& FixtureItemPair : Equipments[EquipmentIndex]->FixtureItemIDs)
+				{
+					if (FixtureItemPair.Value != nullptr)
+					{
+						AddItem(*FixtureItemPair.Value);
+					}
+				}
+
+				//제거전 잠시보관
+				if (TSharedPtr<FString> EquipedGunItemID = Equipments[EquipmentIndex]->ItemID)
+				{
+					AddItem(*EquipedGunItemID);
+				}
+
+			}
+
+			Equipments[EquipmentIndex] = MakeShared<FEquipment>(FEquipment(GunItemStateRow->ItemID, GunItemStateRow->FixtureTypes));
+
+			OnEquipmentChange.Broadcast(EquipmentIndex);
+
+
+			for (EGunFixtureType GunFixtureType : GunItemStateRow->FixtureTypes)
+			{
+				OnGunFixtureChange.Broadcast(EquipmentIndex, GunFixtureType);
+			}
+			return true;
+
+		}
+
+		
+	}
 	return false;
 }
 
@@ -447,7 +499,10 @@ const TMap<EGunFixtureType, TSharedPtr<FString>> UItemSubsystem::GetEquipmentGun
 {
 	if (Equipments.IsValidIndex(EquipmentIndex))
 	{
-		return Equipments[EquipmentIndex]->FixtureItemIDs;
+		if (Equipments[EquipmentIndex].IsValid())
+		{
+			return Equipments[EquipmentIndex]->FixtureItemIDs;
+		}
 	}
 	return TMap<EGunFixtureType, TSharedPtr<FString>>();
 }

@@ -3,34 +3,32 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Blueprint/UserWidget.h"
-#include "ItemSubsystem.h"
 #include "BaseSlot.h"
-#include "Components/Image.h"
-#include "ItemSlot.generated.h"
+#include "DropItemSlot.generated.h"
 
+class ADropItemActor;
 /**
  * 
  */
 UCLASS()
-class STARHUNT_API UItemSlot : public UBaseSlot
+class STARHUNT_API UDropItemSlot : public UBaseSlot
 {
 	GENERATED_BODY()
 	
 public:
-	virtual void NativeConstruct() override;
-	virtual void NativeDestruct() override;
+	void Init(TSharedPtr<FString> ItemId);
+	void Init(ADropItemActor* ItemActor, TSharedPtr<FString> ItemId);
 
 	virtual void UpdateSlot() override;
 	virtual void UpdateUI() override;
 
 	virtual void NativeOnDragDetected(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent, UDragDropOperation*& OutOperation)override;
-	virtual bool NativeOnDrop(const FGeometry& InGeometry, const FDragDropEvent& InDragDropEvent, UDragDropOperation* InOperation)override;
 	virtual void NativeOnMouseEnter(const FGeometry& MyGeometry, const FPointerEvent& MouseEvent) override;
+
+	TSharedPtr<FString> ItemID;
+	ADropItemActor* DropItemActor;
 
 	FGunItemStateRow* GunItemStateRow;
 	FGunFixtureItemStateRow* GunFixtureItemStateRow;
 	FHealingItemStateRow* HealingItemStateRow;
-
-	FDelegateHandle InventoryChangeHandler;
 };

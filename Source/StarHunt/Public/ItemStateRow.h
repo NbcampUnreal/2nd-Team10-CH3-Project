@@ -92,4 +92,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float DamageAmount;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 MaxAmmoAmount;
+
+	FGunFixtureItemStateRow operator+=(const FGunFixtureItemStateRow& Other)
+	{
+		DamageAmount += Other.DamageAmount;
+		MaxAmmoAmount += Other.MaxAmmoAmount;
+		return *this;
+	}
 };
