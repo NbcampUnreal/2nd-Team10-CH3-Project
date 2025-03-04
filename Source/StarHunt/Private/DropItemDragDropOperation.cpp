@@ -9,11 +9,11 @@ bool UDropItemDragDropOperation::DropInventory(int32 DropSlotIndex, EInventoryTy
 {
 	if (UItemSubsystem* ItemSubsystem = UItemBlueprintFunctionLibrary::GetItemSubsystem())
 	{
-		if (DropItem && DropItem->IsValid())
+		if (DropItem.IsValid())
 		{
-			if (ItemSubsystem->AddItem(*(*DropItem).Get()))
+			if (ItemSubsystem->AddItem(*DropItem))
 			{
-				*(*DropItem).Get() = nullptr;
+				*DropItem = nullptr;
 				if (DropItemSlot)
 				{
 					DropItemSlot->UpdateSlot();
@@ -34,16 +34,19 @@ bool UDropItemDragDropOperation::DropEquipment(int32 DropSlotIndex, EInventoryTy
 {
 	if (UItemSubsystem* ItemSubsystem = UItemBlueprintFunctionLibrary::GetItemSubsystem())
 	{
-		if (DropItem && DropItem->IsValid())
+		if (DropItem.IsValid())
 		{
-			if (ItemSubsystem->AddGunEquipmentByDropGun(DropSlotIndex, *(*DropItem).Get()))
+			if (ItemSubsystem->AddGunEquipmentByDropGun(DropSlotIndex, *DropItem))
 			{
-				*(*DropItem).Get() = nullptr;
+				*DropItem = nullptr;
 				if (DropItemSlot)
 				{
 					DropItemSlot->UpdateSlot();
 				}
-				DropItemActor->ItemsUpdate();
+				if (DropItemActor)
+				{
+					DropItemActor->ItemsUpdate();
+				}
 				return true;
 			}
 

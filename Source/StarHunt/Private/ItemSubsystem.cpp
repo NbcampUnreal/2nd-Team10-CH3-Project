@@ -19,6 +19,8 @@ void UItemSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	Inventorys.Add(EInventoryType::GunFixture, TArray<TSharedPtr<FInventoryItem>>());
 	Inventorys.Add(EInventoryType::Consumable, TArray<TSharedPtr<FInventoryItem>>());
 
+
+
 	for (auto& InventoryPair : Inventorys)
 	{
 		InventoryPair.Value.SetNum(InventoryMaxStock);

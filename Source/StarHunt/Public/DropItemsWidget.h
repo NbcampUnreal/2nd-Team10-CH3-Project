@@ -22,7 +22,7 @@ public:
 	virtual void NativeOnInitialized() override;
 	virtual void NativeDestruct() override;
 
-	void InitInventory(TArray<TSharedPtr<FString>*>* DropItems);
+	void InitInventory(TArray<TSharedPtr<FString>>* DropItems);
 	void InitInventory(TArray<ADropItemActor*>* DropItems);
 
 	UPROPERTY(meta = (BindWidget))

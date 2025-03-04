@@ -57,7 +57,7 @@ void AWraithPlayerController::CloseEquipment()
         EquipmentHUDWidgetInstance = nullptr;
     }
 }
-void AWraithPlayerController::ShowDropItems(TArray<TSharedPtr<FString>*>* DropItems)
+void AWraithPlayerController::ShowDropItems(TArray<TSharedPtr<FString>>* DropItems)
 {
     OnDropItemsChange.Clear();
     if (DropItemsHUDWidgetClass && DropItems && DropItems->Num() > 0)

@@ -18,7 +18,7 @@ class STARHUNT_API UDropItemDragDropOperation : public UDragDropOperation, publi
 	GENERATED_BODY()
 
 public:
-	TSharedPtr<FString>* DropItem;
+	TSharedPtr<FString> DropItem;
 	UDropItemSlot* DropItemSlot;
 	ADropItemActor* DropItemActor;
 

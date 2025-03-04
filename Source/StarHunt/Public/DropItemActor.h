@@ -27,16 +27,13 @@ public:
 	UWidgetComponent* OverheadWidgetComponent;
 
 	TArray<TSharedPtr<FString>> ItemIDs;
-	// test
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item|Components")
-	TArray<FString> ItemId;
 
 
 	FBaseItemStateRow* GetItemState();
 
 	void ItemDestroy();
 	void ItemsUpdate();
-
+	void SetItemIDs(TArray<FString> SpawnItemIDs);
 	virtual void BeginPlay() override;
 	UFUNCTION()
 	void OnItemBeginOverlap(

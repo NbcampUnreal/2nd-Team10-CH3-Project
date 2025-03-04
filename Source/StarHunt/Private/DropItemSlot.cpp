@@ -12,7 +12,7 @@ void UDropItemSlot::UpdateSlot()
 	{
 		if (ItemID)
 		{
-			if (ItemID->IsValid())
+			if (ItemID.IsValid())
 			{
 				BaseItemStateRow = ItemSubsystem->GetBaseItemStateRow(**ItemID);
 				if (BaseItemStateRow)
@@ -73,13 +73,13 @@ void UDropItemSlot::UpdateUI()
 	}
 }
 
-void UDropItemSlot::Init(TSharedPtr<FString>* ItemId)
+void UDropItemSlot::Init(TSharedPtr<FString> ItemId)
 {
 	ItemID = ItemId;
 	UpdateSlot();
 }
 
-void UDropItemSlot::Init(ADropItemActor* ItemActor, TSharedPtr<FString>* ItemId)
+void UDropItemSlot::Init(ADropItemActor* ItemActor, TSharedPtr<FString> ItemId)
 {
 	ItemID = ItemId;
 	DropItemActor = ItemActor;
@@ -96,12 +96,7 @@ void UDropItemSlot::NativeOnDragDetected(const FGeometry& InGeometry, const FPoi
 		OutOperation = DropItemDragDropOperation;
 		DropItemDragDropOperation->DropItem = ItemID;
 		DropItemDragDropOperation->DropItemActor = DropItemActor;
-		if (DropItemActor)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("ADFGBA"));
-		}
 		DropItemDragDropOperation->DropItemSlot = this;
-
 		if (BaseItemStateRow)
 		{
 			if (DragWidgetClass)

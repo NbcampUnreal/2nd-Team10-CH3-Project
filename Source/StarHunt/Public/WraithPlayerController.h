@@ -62,7 +62,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	void CloseEquipment();
 
-	void ShowDropItems(TArray<TSharedPtr<FString>*>* DropItems);
+	void ShowDropItems(TArray<TSharedPtr<FString>>* DropItems);
 	void ShowDropItems(TArray<ADropItemActor*>* DropItemActors);
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	void CloseDropItems();

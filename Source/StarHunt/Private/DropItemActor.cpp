@@ -48,14 +48,17 @@ void ADropItemActor::ItemsUpdate()
 	}
 }
 
-void ADropItemActor::BeginPlay()
+void ADropItemActor::SetItemIDs(TArray<FString> SpawnItemIDs)
 {
-	Super::BeginPlay();
-
-	for (FString& ID : ItemId)
+	for (FString& ID : SpawnItemIDs)
 	{
 		ItemIDs.Add(MakeShared<FString>(ID));
 	}
+}
+
+void ADropItemActor::BeginPlay()
+{
+	Super::BeginPlay();
 }
 
 void ADropItemActor::OnItemBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)

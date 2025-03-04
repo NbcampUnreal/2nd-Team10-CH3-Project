@@ -6,7 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "ItemSpawnComponent.generated.h"
 
-
+class ADropItemActor;
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class STARHUNT_API UItemSpawnComponent : public UActorComponent
 {
@@ -18,9 +18,8 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item|Spawn")
 	UDataTable* SpawnRateTable;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item|Spawn")
+	TSubclassOf<ADropItemActor> DropItemActorClass;
 public:	
-
-	AActor* DropItem();
-	AActor* DropItem(FVector& Location);
-	AActor* DropItem(FVector& Location, FRotator& Rotator);
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 };
