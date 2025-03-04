@@ -20,6 +20,22 @@ public:
 	ABaseGun();
 
 public:
+	//총 종류
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GunIStatus")
+	EGunType GunType;
+
+	// 총 장착 AnimMontage
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GunIStatus")
+	UAnimMontage* EquipMontage;
+
+	// 총 해제 AnimMontage
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GunIStatus")
+	UAnimMontage* UnEquipMontage;
+
+	// 총 발사 AnimMontage
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GunIStatus")
+	UAnimMontage* FireMontage;
+	
 	// 발사
 	UFUNCTION(BlueprintCallable)
 	virtual void Fire() override;
@@ -82,9 +98,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GunIStatus")
 	ERarity Rarity;
 
-	//총 종류
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GunIStatus")
-	EGunType GunType;
+	
 
 	// 발사 속도 타이머
 	FTimerHandle FireRateTimerHandle;

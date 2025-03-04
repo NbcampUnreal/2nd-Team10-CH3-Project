@@ -10,29 +10,33 @@ AWraithPlayerController::AWraithPlayerController()
 	  LookAction(nullptr),
 	  CameraMode(nullptr),
 	  Zoom(nullptr),
-	  Crouch(nullptr)
+	  Crouch(nullptr),
+	  Swap1(nullptr),
+	  Swap2(nullptr),
+	  Swap3(nullptr),
+	  InventoryOpenAction(nullptr)
 {
 }
 
 void AWraithPlayerController::ShowInventory()
 {
-    if (HUDWidgetClass)
-    {
-        HUDWidgetInstance = CreateWidget<UInventoryUserWidget>(this, HUDWidgetClass);
-        if (HUDWidgetInstance)
-        {
-            HUDWidgetInstance->AddToViewport();
-        }
-    }
+	if (HUDWidgetClass)
+	{
+		HUDWidgetInstance = CreateWidget<UInventoryUserWidget>(this, HUDWidgetClass);
+		if (HUDWidgetInstance)
+		{
+			HUDWidgetInstance->AddToViewport();
+		}
+	}
 }
 
 void AWraithPlayerController::CloseInventory()
 {
-    if (HUDWidgetInstance)
-    {
-        HUDWidgetInstance->RemoveFromParent();
-        HUDWidgetInstance = nullptr;
-    }
+	if (HUDWidgetInstance)
+	{
+		HUDWidgetInstance->RemoveFromParent();
+		HUDWidgetInstance = nullptr;
+	}
 }
 
 void AWraithPlayerController::BeginPlay()
@@ -40,15 +44,14 @@ void AWraithPlayerController::BeginPlay()
 	Super::BeginPlay();
 
 	if (ULocalPlayer* LocalPlayer = GetLocalPlayer())
-    	{
-    		if (UEnhancedInputLocalPlayerSubsystem* SubSystem = LocalPlayer->GetSubsystem<
-    			UEnhancedInputLocalPlayerSubsystem>())
-    		{
-    			if (InputMappingContext)
-    			{
-    				SubSystem->AddMappingContext(InputMappingContext, 0);
-    			}
-    		}
-    	}
-
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* SubSystem = LocalPlayer->GetSubsystem<
+			UEnhancedInputLocalPlayerSubsystem>())
+		{
+			if (InputMappingContext)
+			{
+				SubSystem->AddMappingContext(InputMappingContext, 0);
+			}
+		}
+	}
 }

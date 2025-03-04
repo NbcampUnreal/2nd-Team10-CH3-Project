@@ -8,6 +8,9 @@
 
 ARifle::ARifle()
 {
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> AnimMontage(TEXT("/Game/Characters/RetargetWraithAnim/RTA_AM_MM_Rifle_Equip.RTA_AM_MM_Rifle_Equip"));
+	EquipMontage = AnimMontage.Object;
+	
 	bIsFiring = false;
 
 	Damage = 5.0f;
