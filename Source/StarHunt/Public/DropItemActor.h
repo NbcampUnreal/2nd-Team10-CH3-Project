@@ -26,14 +26,16 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item|Components")
 	UWidgetComponent* OverheadWidgetComponent;
 
+	TArray<TSharedPtr<FString>> ItemIDs;
 	// test
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item|Components")
-	FString ItemId;
+	TArray<FString> ItemId;
 
 
 	FBaseItemStateRow* GetItemState();
 
 	void ItemDestroy();
+	void ItemsUpdate();
 
 	virtual void BeginPlay() override;
 	UFUNCTION()

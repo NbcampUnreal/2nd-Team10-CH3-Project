@@ -57,6 +57,39 @@ void AWraithPlayerController::CloseEquipment()
         EquipmentHUDWidgetInstance = nullptr;
     }
 }
+void AWraithPlayerController::ShowDropItems(TArray<TSharedPtr<FString>*>* DropItems)
+{
+    OnDropItemsChange.Clear();
+    if (DropItemsHUDWidgetClass && DropItems && DropItems->Num() > 0)
+    {
+        DropItemsHUDWidgetInstance = CreateWidget<UDropItemsWidget>(this, DropItemsHUDWidgetClass);
+        if (DropItemsHUDWidgetInstance)
+        {
+            DropItemsHUDWidgetInstance->AddToViewport();
+            DropItemsHUDWidgetInstance->InitInventory(DropItems);
+        }
+    }
+}
+void AWraithPlayerController::ShowDropItems(TArray<ADropItemActor*>* DropItemActors)
+{
+    if (DropItemsHUDWidgetClass && DropItemActors && DropItemActors->Num() > 0)
+    {
+        DropItemsHUDWidgetInstance = CreateWidget<UDropItemsWidget>(this, DropItemsHUDWidgetClass);
+        if (DropItemsHUDWidgetInstance)
+        {
+            DropItemsHUDWidgetInstance->AddToViewport();
+            DropItemsHUDWidgetInstance->InitInventory(DropItemActors);
+        }
+    }
+}
+void AWraithPlayerController::CloseDropItems()
+{
+    if (DropItemsHUDWidgetInstance)
+    {
+        DropItemsHUDWidgetInstance->RemoveFromParent();
+        DropItemsHUDWidgetInstance = nullptr;
+    }
+}
 void AWraithPlayerController::BeginPlay()
 {
 	Super::BeginPlay();

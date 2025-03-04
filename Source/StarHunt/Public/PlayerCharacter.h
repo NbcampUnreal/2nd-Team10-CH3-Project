@@ -92,10 +92,15 @@ protected:
 	//Inventory
 	UFUNCTION()
 	void ShowInventory();
-	//Inventory
+
 	UFUNCTION()
 	void ShowEquipment();
 
+	UFUNCTION()
+	void ShowDropItems();
+
+	UFUNCTION()
+	bool bIsOpenWindows();
 private:
 	float NormalSpeed;
 	float SprintSpeedMultiplier;
@@ -108,6 +113,7 @@ private:
 	//Inventory
 	bool bIsInventoryOpen;
 	bool bIsEquipmentOpen;
+	bool bIsDropItemsOpen;
 	FTimerHandle CameraTransitionDelayHandle;
 
 	ABaseGun* Weapon;

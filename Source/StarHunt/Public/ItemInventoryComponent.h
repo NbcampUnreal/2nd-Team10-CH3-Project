@@ -8,6 +8,8 @@
 #include "ItemInventoryComponent.generated.h"
 
 class ABaseGun;
+class USphereComponent;
+class ADropItemActor;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class STARHUNT_API UItemInventoryComponent : public UActorComponent
@@ -26,16 +28,22 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void DistoryWeapon();
 
+	TArray<TSharedPtr<FString>*> GetNearbyItems();
+	TArray<ADropItemActor*> GetNearbyItemActors();
+
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon")
 	ABaseGun* Gun;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon")
 	int32 CurrentEquipmentIndex;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item|Components")
+	USphereComponent* CollisionComponent;
 
 	FDelegateHandle GunChangeHandler;
+	TArray<TSharedPtr<FString>*> OverlappingItems;
+	TArray<ADropItemActor*> OverlappingItemActors;
 };
 
 

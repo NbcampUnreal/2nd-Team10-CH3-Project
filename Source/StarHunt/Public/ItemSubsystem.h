@@ -75,6 +75,7 @@ public:
 
 	//총기 관련 로직
 	bool AddGunEquipment(int32 EquipmentIndex, const int32 InventoryIndex);
+	bool AddGunEquipmentByDropGun(int32 EquipmentIndex, const FString& ItemID);
 	bool RemoveGunEquipment(int32 EquipmentIndex);
 	bool ValidAddGunEquipment(int32 EquipmentIndex, const FString& ItemId);
 	bool SwapGunEquipment(const int32 IndexFrom, const int32 IndexTo);

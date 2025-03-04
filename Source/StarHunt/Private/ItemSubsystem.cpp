@@ -281,6 +281,49 @@ bool UItemSubsystem::AddGunEquipment(int32 EquipmentIndex, int32 InventoryIndex)
 	return false;
 }
 
+bool UItemSubsystem::AddGunEquipmentByDropGun(int32 EquipmentIndex, const FString& ItemID)
+{
+	if (FGunItemStateRow* GunItemStateRow = ItemDB->GetGunItemStateRow(ItemID))
+	{
+		if (Equipments.IsValidIndex(EquipmentIndex))
+		{
+			if (Equipments[EquipmentIndex])
+			{
+				//부착물 제거
+				for (auto& FixtureItemPair : Equipments[EquipmentIndex]->FixtureItemIDs)
+				{
+					if (FixtureItemPair.Value != nullptr)
+					{
+						AddItem(*FixtureItemPair.Value);
+					}
+				}
+
+				//제거전 잠시보관
+				if (TSharedPtr<FString> EquipedGunItemID = Equipments[EquipmentIndex]->ItemID)
+				{
+					AddItem(*EquipedGunItemID);
+				}
+
+			}
+
+			Equipments[EquipmentIndex] = MakeShared<FEquipment>(FEquipment(GunItemStateRow->ItemID, GunItemStateRow->FixtureTypes));
+
+			OnEquipmentChange.Broadcast(EquipmentIndex);
+
+
+			for (EGunFixtureType GunFixtureType : GunItemStateRow->FixtureTypes)
+			{
+				OnGunFixtureChange.Broadcast(EquipmentIndex, GunFixtureType);
+			}
+			return true;
+
+		}
+
+		
+	}
+	return false;
+}
+
 bool UItemSubsystem::RemoveGunEquipment(int32 EquipmentIndex)
 {
 	if (Equipments.IsValidIndex(EquipmentIndex))

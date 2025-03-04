@@ -43,6 +43,7 @@ APlayerCharacter::APlayerCharacter()
 	IsTPSMode = true;
 	bIsInventoryOpen = false;
 	bIsEquipmentOpen = false;
+	bIsDropItemsOpen = false;
 }
 
 void APlayerCharacter::SetCurrentState(ECurrentCharacterState CharacterState)
@@ -188,6 +189,15 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 					ETriggerEvent::Started,
 					this,
 					&APlayerCharacter::ShowEquipment
+				);
+			}
+			if (PlayerController->DropItemsOpenAction)
+			{
+				EnhancedInput->BindAction(
+					PlayerController->DropItemsOpenAction,
+					ETriggerEvent::Started,
+					this,
+					&APlayerCharacter::ShowDropItems
 				);
 			}
 		}
@@ -340,8 +350,11 @@ void APlayerCharacter::ShowInventory()
 		if (bIsInventoryOpen)
 		{
 			PlayerController->CloseInventory();
-			PlayerController->bShowMouseCursor = false;
 			bIsInventoryOpen = false;
+			if (!bIsOpenWindows())
+			{
+				PlayerController->bShowMouseCursor = false;
+			}
 		}
 		else
 		{
@@ -359,8 +372,11 @@ void APlayerCharacter::ShowEquipment()
 		if (bIsEquipmentOpen)
 		{
 			PlayerController->CloseEquipment();
-			PlayerController->bShowMouseCursor = false;
 			bIsEquipmentOpen = false;
+			if (!bIsOpenWindows())
+			{
+				PlayerController->bShowMouseCursor = false;
+			}
 		}
 		else
 		{
@@ -369,4 +385,39 @@ void APlayerCharacter::ShowEquipment()
 			bIsEquipmentOpen = true;
 		}
 	}
+}
+
+void APlayerCharacter::ShowDropItems()
+{
+	if (AWraithPlayerController* PlayerController = Cast<AWraithPlayerController>(GetController()))
+	{
+		if (bIsDropItemsOpen)
+		{
+			PlayerController->CloseDropItems();
+			bIsDropItemsOpen = false;
+			if (!bIsOpenWindows())
+			{
+				PlayerController->bShowMouseCursor = false;
+			}
+		}
+		else
+		{
+			if (ItemInventoryComponent)
+			{
+				ItemInventoryComponent->GetNearbyItemActors();
+				PlayerController->ShowDropItems(&ItemInventoryComponent->OverlappingItemActors);
+				PlayerController->bShowMouseCursor = true;
+			}
+			bIsDropItemsOpen = true;
+		}
+	}
+}
+
+bool APlayerCharacter::bIsOpenWindows()
+{
+	if (bIsInventoryOpen || bIsEquipmentOpen || bIsDropItemsOpen)
+	{
+		return true;
+	}
+	return false;
 }
