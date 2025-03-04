@@ -4,14 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/DragDropOperation.h"
-#include "BaseDragDropOperationInterface.h"
+#include "ItemDragDropOperationInterface.h"
 #include "EquipmentDragDropOperation.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class STARHUNT_API UEquipmentDragDropOperation : public UDragDropOperation, public IBaseDragDropOperationInterface
+class STARHUNT_API UEquipmentDragDropOperation : public UDragDropOperation, public IItemDragDropOperationInterface
 {
 	GENERATED_BODY()
 	
@@ -19,13 +19,13 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	int32 SlotIndex;
 	UPROPERTY(VisibleAnywhere)
-	FString SlotType;
+	EInventoryType SlotType;
 
 	
 
-	// IBaseDragDropOperationInterface¿ª(∏¶) ≈Î«ÿ ªÛº”µ 
-	bool DropInventory(int32 DropSlotIndex, const FString& DropSlotType) override;
+	// IBaseDragDropOperationInterfaceÏùÑ(Î•º) ÌÜµÌï¥ ÏÉÅÏÜçÎê®
+	bool DropInventory(int32 DropSlotIndex, EInventoryType DropSlotType) override;
 
-	bool DropEquipment(int32 DropSlotIndex, const FString& DropSlotType) override;
+	bool DropEquipment(int32 DropSlotIndex, EInventoryType DropSlotType) override;
 
 };

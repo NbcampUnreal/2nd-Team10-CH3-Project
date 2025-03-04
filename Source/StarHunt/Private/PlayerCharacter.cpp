@@ -3,6 +3,7 @@
 #include "EnhancedInputComponent.h"
 #include "WraithPlayerController.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "ItemInventoryComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 APlayerCharacter::APlayerCharacter()
@@ -30,6 +31,7 @@ APlayerCharacter::APlayerCharacter()
 	FPSCamera = CreateDefaultSubobject<UChildActorComponent>(TEXT("FPSCamera"));
 	FPSCamera->SetupAttachment(FPSSpringArm);
 
+	ItemInventoryComponent = CreateDefaultSubobject<UItemInventoryComponent>(TEXT("Inventory"));
 
 	NormalSpeed = 600.0f;
 	SprintSpeedMultiplier = 1.7f;
@@ -38,6 +40,7 @@ APlayerCharacter::APlayerCharacter()
 	GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
 
 	IsTPSMode = true;
+	bIsInventoryOpen = false;
 }
 
 void APlayerCharacter::SetCurrentState(ECurrentCharacterState CharacterState)
@@ -148,6 +151,34 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 					&APlayerCharacter::ResetZoom
 				);
 			}
+
+			if (PlayerController->Crouch)
+			{
+				EnhancedInput->BindAction(
+					PlayerController->Crouch,
+					ETriggerEvent::Started,
+					this,
+					&APlayerCharacter::StartCrouch
+				);
+
+				EnhancedInput->BindAction(
+					PlayerController->Crouch,
+					ETriggerEvent::Completed,
+					this,
+					&APlayerCharacter::StopCrouch
+				);
+			}
+		
+
+			if (PlayerController->InventoryOpenAction)
+			{
+				EnhancedInput->BindAction(
+					PlayerController->InventoryOpenAction,
+					ETriggerEvent::Started,
+					this,
+					&APlayerCharacter::ShowInventory
+				);
+			}
 		}
 	}
 }
@@ -175,6 +206,10 @@ void APlayerCharacter::StartJump(const FInputActionValue& value)
 	{
 		Jump();
 	}
+	if (ItemInventoryComponent)
+	{
+		 ItemInventoryComponent->GetWeapon(0);
+	}
 }
 
 void APlayerCharacter::StopJump(const FInputActionValue& value)
@@ -201,6 +236,26 @@ void APlayerCharacter::StopSprint(const FInputActionValue& value)
 	}
 }
 
+void APlayerCharacter::StartCrouch(const FInputActionValue& value)
+{
+	Crouch();
+	UE_LOG(LogTemp, Warning, TEXT("Crouch!!!!!!!!!!!!!!"));
+}
+
+void APlayerCharacter::StopCrouch(const FInputActionValue& value)
+{
+	UnCrouch();
+	UE_LOG(LogTemp, Warning, TEXT("StopCrouch!!!!!!!!!!!!!!"));
+}
+
+// void APlayerCharacter::StartCrouch(const FInputActionValue& value)
+// {
+// }
+//
+// void APlayerCharacter::StopCrouch(const FInputActionValue& value)
+// {
+// }
+
 void APlayerCharacter::Look(const FInputActionValue& value)
 {
 	FVector2D LookInput = value.Get<FVector2D>();
@@ -210,7 +265,7 @@ void APlayerCharacter::Look(const FInputActionValue& value)
 
 	auto Delta = GetControlRotation() - GetActorRotation();
 	Delta.Normalize();
-	
+
 	AimDirection = FMath::RInterpTo(AimDirection, Delta, GetWorld()->GetDeltaSeconds(), 45.0f);
 	AimDirection = FRotator(
 		FMath::ClampAngle(AimDirection.Pitch, -90, 90),
@@ -269,4 +324,23 @@ void APlayerCharacter::ResetZoom()
 	PlayerController->SetViewTargetWithBlend(TPSCamera->GetChildActor(), 0, VTBlend_Linear, 0, false);
 
 	IsZoomed = false;
+}
+
+void APlayerCharacter::ShowInventory()
+{
+	if (AWraithPlayerController* PlayerController = Cast<AWraithPlayerController>(GetController()))
+	{
+		if (bIsInventoryOpen)
+		{
+			PlayerController->CloseInventory();
+			PlayerController->bShowMouseCursor = false;
+			bIsInventoryOpen = false;
+		}
+		else
+		{
+			PlayerController->ShowInventory();
+			PlayerController->bShowMouseCursor = true;
+			bIsInventoryOpen = true;
+		}
+	}
 }

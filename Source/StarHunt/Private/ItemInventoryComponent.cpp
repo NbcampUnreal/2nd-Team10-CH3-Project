@@ -2,6 +2,8 @@
 
 
 #include "ItemInventoryComponent.h"
+#include "ItemBlueprintFunctionLibrary.h"
+#include "BaseGun.h"
 #include "DropItemActor.h"
 // Sets default values for this component's properties
 UItemInventoryComponent::UItemInventoryComponent()
@@ -13,27 +15,28 @@ UItemInventoryComponent::UItemInventoryComponent()
 }
 
 
-// Called when the game starts
-void UItemInventoryComponent::BeginPlay()
-{
-	Super::BeginPlay();
-
-	// ...
-	
-}
 
 AActor* UItemInventoryComponent::GetWeapon(int32 EquipmentIndex)
 {
+	if (UWorld* World = GetWorld())
+	{
+		if (UItemSubsystem* ItemSubsystem = UItemBlueprintFunctionLibrary::GetItemSubsystem())
+		{
+			if (TSharedPtr<FString> ItemID = ItemSubsystem->GetEquipmentGunItemID(EquipmentIndex))
+			{
+				if (FGunItemStateRow* GunItemStateRow = ItemSubsystem->GetGunItemStateRow(*ItemID))
+				{
+					if (UClass* LoadedActorClass = GunItemStateRow->GunSoftClass.LoadSynchronous())
+					{
+						ABaseGun* Gun = World->SpawnActor<ABaseGun>(LoadedActorClass);
+						Gun->SetAbility(GunItemStateRow);
+						return Gun;
+					}
+				}
+			}
+		}
+	}
 
 	return nullptr;
-}
-
-
-// Called every frame
-void UItemInventoryComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
 }
 

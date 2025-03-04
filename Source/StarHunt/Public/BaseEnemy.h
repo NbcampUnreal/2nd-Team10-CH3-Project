@@ -1,9 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
-
+// Copyright Epic Games, Inc. All Rights Reserved.
 #pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "PatrolPath.h"
 #include "BaseEnemy.generated.h"
 
 UCLASS()
@@ -23,6 +24,10 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Score")
 	int32 Score;
 
+	//Patrol Path
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Path")
+	APatrolPath* PatrolPath;
+	
 	// Max Health
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
 	float MaxHealth;
@@ -36,7 +41,7 @@ protected:
 
 	// Healing
 	UFUNCTION(BlueprintCallable, Category = "Health")
-	void AddHealth(float Amount);
+	void AddHealth(const float Amount);
 
 	// Death handling function
 	UFUNCTION(BlueprintCallable, Category = "Health")
@@ -51,4 +56,7 @@ public:
 	// Called to bind functionality to input
 	//virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	//Get Patrol Path
+	UFUNCTION(BlueprintPure, Category = "Path")
+	APatrolPath* GetPatrolPath() const;
 };

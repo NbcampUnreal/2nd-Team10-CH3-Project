@@ -4,7 +4,7 @@
 #include "InventoryDragDropOperation.h"
 #include "ItemBlueprintFunctionLibrary.h"
 
-bool UInventoryDragDropOperation::DropInventory(int32 DropSlotIndex, const FString& DropSlotType)
+bool UInventoryDragDropOperation::DropInventory(int32 DropSlotIndex, EInventoryType DropSlotType)
 {
 
 	if (DropSlotType  == SlotType)
@@ -21,7 +21,7 @@ bool UInventoryDragDropOperation::DropInventory(int32 DropSlotIndex, const FStri
 	return false;
 }
 
-bool UInventoryDragDropOperation::DropEquipment(int32 DropSlotIndex, const FString& DropSlotType)
+bool UInventoryDragDropOperation::DropEquipment(int32 DropSlotIndex, EInventoryType DropSlotType)
 {
 	if (SlotType == DropSlotType)
 	{
@@ -33,6 +33,20 @@ bool UInventoryDragDropOperation::DropEquipment(int32 DropSlotIndex, const FStri
 				ItemSubsystem->RemoveItem(SlotType, SlotIndex);
 				ItemSubsystem->OnInventoryChange.Broadcast(SlotIndex);
 
+				return true;
+			}
+		}
+	}
+	else if (SlotType == EInventoryType::GunFixture && DropSlotType == EInventoryType::Gun)
+	{
+
+		if (UItemSubsystem* ItemSubsystem = UItemBlueprintFunctionLibrary::GetItemSubsystem())
+		{
+
+			if (ItemSubsystem->AddGunFixtureEquipment(DropSlotIndex, SlotIndex))
+			{
+				ItemSubsystem->RemoveItem(SlotType, SlotIndex);
+				ItemSubsystem->OnInventoryChange.Broadcast(SlotIndex);
 				return true;
 			}
 		}

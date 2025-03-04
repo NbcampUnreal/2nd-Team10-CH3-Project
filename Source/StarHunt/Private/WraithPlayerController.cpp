@@ -9,14 +9,36 @@ AWraithPlayerController::AWraithPlayerController()
 	  SprintAction(nullptr),
 	  LookAction(nullptr),
 	  CameraMode(nullptr),
-	  Zoom(nullptr)
+	  Zoom(nullptr),
+	  Crouch(nullptr)
 {
+}
+
+void AWraithPlayerController::ShowInventory()
+{
+    if (HUDWidgetClass)
+    {
+        HUDWidgetInstance = CreateWidget<UInventoryUserWidget>(this, HUDWidgetClass);
+        if (HUDWidgetInstance)
+        {
+            HUDWidgetInstance->AddToViewport();
+        }
+    }
+}
+
+void AWraithPlayerController::CloseInventory()
+{
+    if (HUDWidgetInstance)
+    {
+        HUDWidgetInstance->RemoveFromParent();
+        HUDWidgetInstance = nullptr;
+    }
 }
 
 void AWraithPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	if (ULocalPlayer* LocalPlayer = GetLocalPlayer())
     	{
     		if (UEnhancedInputLocalPlayerSubsystem* SubSystem = LocalPlayer->GetSubsystem<
@@ -28,4 +50,5 @@ void AWraithPlayerController::BeginPlay()
     			}
     		}
     	}
+
 }

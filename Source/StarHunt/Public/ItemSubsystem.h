@@ -25,12 +25,12 @@ struct FInventoryItem
 struct FEquipment
 {
 	TSharedPtr<FString> ItemID;
-	TMap<FString, TSharedPtr<FString>> FixtureItemIDs;
+	TMap<EGunFixtureType, TSharedPtr<FString>> FixtureItemIDs;
 
-	FEquipment(const FString& Id, const TSet<FString> FixtureItemTypes)
+	FEquipment(const FString& Id, const TSet<EGunFixtureType> FixtureItemTypes)
 		:ItemID(MakeShared<FString>(Id))
 	{
-		for (const FString& FixtureItemType : FixtureItemTypes)
+		for (const EGunFixtureType& FixtureItemType : FixtureItemTypes)
 		{
 			FixtureItemIDs.Add(FixtureItemType, nullptr);
 		}
@@ -49,48 +49,52 @@ struct FEquipment
  */
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnInventoryChange, int32);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnEquipmentChange, int32);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnGunFixtureChange, const int32, EGunFixtureType);
+
 UCLASS()
 class STARHUNT_API UItemSubsystem : public UGameInstanceSubsystem
 {
 	GENERATED_BODY()
 	
 public:
-	// æ∆¿Ã≈€ ∞¸∑√ ∑Œ¡˜
+	// ÏïÑÏù¥ÌÖú Í¥ÄÎ†® Î°úÏßÅ
 	UItemSubsystem();
 	bool AddItem(const FString& ItemId);
-	bool SwapItem(const FString&ItemType, const int32 IndexFrom, const int32 IndexTo);
-	bool RemoveItem(const FString& ItemType, int32 InventoryIndex);
-	const TSharedPtr<FString> GetInventoryItemID(const FString& ItemType, int32 InventoryIndex) const;
+	bool SwapItem(EInventoryType ItemType, const int32 IndexFrom, const int32 IndexTo);
+	bool RemoveItem(EInventoryType ItemType, int32 InventoryIndex);
+	const TSharedPtr<FString> GetInventoryItemID(EInventoryType ItemType, int32 InventoryIndex) const;
 	bool ValidAddInventory(const FString& ItemId);
 
 	AActor* SpawnDropItem(const FString& ItemId);
 
-	// æ∆¿Ã≈€ ∞¸∑√ Get
-	const TMap<FString, TArray<TSharedPtr<FInventoryItem>>>* GetInventorys() const;
-	const TArray<TSharedPtr<FInventoryItem>>* GetInventory(const FString& ItemType) const;
-	const int32 GetInventoryEmptyNum(const FString& ItemType) const;
+	// ÏïÑÏù¥ÌÖú Í¥ÄÎ†® Get
+	const TMap<EInventoryType, TArray<TSharedPtr<FInventoryItem>>>* GetInventorys() const;
+	const TArray<TSharedPtr<FInventoryItem>>* GetInventory(EInventoryType ItemType) const;
+	const int32 GetInventoryEmptyNum(EInventoryType ItemType) const;
 	const int32 GetInventoryMaxStock() const;
 
-	//√—±‚ ∞¸∑√ ∑Œ¡˜
+	//Ï¥ùÍ∏∞ Í¥ÄÎ†® Î°úÏßÅ
 	bool AddGunEquipment(int32 EquipmentIndex, const int32 InventoryIndex);
 	bool RemoveGunEquipment(int32 EquipmentIndex);
 	bool ValidAddGunEquipment(int32 EquipmentIndex, const FString& ItemId);
 	bool SwapGunEquipment(const int32 IndexFrom, const int32 IndexTo);
 
-	//√—±‚ ∞¸∑√ Get
+	//Ï¥ùÍ∏∞ Í¥ÄÎ†® Get
 	const TArray< TSharedPtr<FEquipment>>* GetEquipments() const;
 	const TSharedPtr<FString> GetEquipmentGunItemID(const int32 EquipmentIndex) const;
 	
-	//∫Œ¬¯π∞ ∞¸∑√ ∑Œ¡˜
-	bool AddGunFixtureEquipment(int32 EquipmentIndex, const FString& ItemId);
-	bool RemoveGunFixtureEquipment(int32 EquipmentIndex, const FString& ItemId);
-	bool ValidAddGunFixtureEquipment(int32 EquipmentIndex, const FString& ItemId);
+	//Î∂ÄÏ∞©Î¨º Í¥ÄÎ†® Î°úÏßÅ
+	bool AddGunFixtureEquipment(const int32 EquipmentIndex, const int32 InventoryIndex);
+	bool SwapGunFixtureEquipment(const int32 EquipmentIndexFrom, const int32 EquipmentIndexTo, EGunFixtureType GunFixtureType);
+	bool RemoveGunFixtureEquipment(const int32 EquipmentIndex, EGunFixtureType GunFixtureType);
+	bool ValidGunFixtureEquipment(const int32 EquipmentIndex, EGunFixtureType ItemId);
 
-	// ∫Œ¬¯π∞ ∞¸∑√ Get
-	const TMap<FString, TSharedPtr<FString>> GetEquipmentGunFixtureItemID(const int32 EquipmentIndex) const;
+	// Î∂ÄÏ∞©Î¨º Í¥ÄÎ†® Get
+	const TMap<EGunFixtureType, TSharedPtr<FString>> GetEquipmentGunFixtureItemIDs(const int32 EquipmentIndex) const;
+	const TSharedPtr<FString> GetEquipmentGunFixtureItemID(const int32 EquipmentIndex, EGunFixtureType GunFixtureType) const;
 
 
-	//æ∆¿Ã≈€∞¸∑√ DB
+	//ÏïÑÏù¥ÌÖúÍ¥ÄÎ†® DB
 	void SetItemDb(TSubclassOf<UItemDB> DB);
 
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
@@ -108,9 +112,10 @@ public:
 	
 	FOnInventoryChange OnInventoryChange;
 	FOnEquipmentChange OnEquipmentChange;
+	FOnGunFixtureChange OnGunFixtureChange;
 
 private:
-	TMap<FString, TArray<TSharedPtr<FInventoryItem>>> Inventorys;
+	TMap<EInventoryType, TArray<TSharedPtr<FInventoryItem>>> Inventorys;
 	TArray< TSharedPtr<FEquipment>> Equipments;
 
 	int32 InventoryMaxStock;
