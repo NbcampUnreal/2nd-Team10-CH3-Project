@@ -3,6 +3,8 @@
 
 #include "BaseEnemy.h"
 #include "EnemyAIController.h"
+#include "ItemSpawnComponent.h"
+#include "AIEnum.h"
 #include "Animation/AnimInstance.h"
 #include "Animation/AnimMontage.h"
 #include "Animation/AnimSequence.h"
@@ -14,7 +16,9 @@ ABaseEnemy::ABaseEnemy()
 	//PrimaryActorTick.bCanEverTick = true;
 	AIControllerClass = AEnemyAIController::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
-
+	
+	ItemSpawnComp=CreateDefaultSubobject<UItemSpawnComponent>(TEXT("DropItem"));
+	
 	PatrolPath=nullptr;
 	BehaviorTree=nullptr;
 	AttackMontage=nullptr;
@@ -70,14 +74,31 @@ void ABaseEnemy::OnDeath()
 			Brain->StopLogic("Dead");
 		}
 	}
-	
-	//Destroy();
+
+	//Destroy() 3초 뒤 호출
+	FTimerHandle DestroyTimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(
+		DestroyTimerHandle,
+		this,
+		&ABaseEnemy::DelayedDestroy,
+		3.0f,
+		false
+	);
+}
+
+void ABaseEnemy::DelayedDestroy()
+{
+	Destroy();
 }
 
 float ABaseEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-
+	if (AEnemyAIController* AIController=Cast<AEnemyAIController>(GetController()))
+	{
+		AIController->SetAIState(EAIState::Frozen);
+		AIController->SetAttackTarget(DamageCauser);
+	}
 	Health = FMath::Clamp(Health - DamageAmount, 0.0f, MaxHealth);
 	if (Health <= 0.0f) 
 	{

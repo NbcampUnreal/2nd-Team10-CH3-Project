@@ -22,6 +22,8 @@ APlayerCharacter::APlayerCharacter()
 	bIsInventoryOpen = false;
 	bIsEquipmentOpen = false;
 	bIsDropItemsOpen = false;
+
+	Health=MaxHealth=100;
 }
 
 void APlayerCharacter::SetCurrentState(ECurrentCharacterState CharacterState)
@@ -32,6 +34,17 @@ void APlayerCharacter::SetCurrentState(ECurrentCharacterState CharacterState)
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+}
+
+float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	Health = FMath::Clamp(Health - DamageAmount, 0.0f, MaxHealth);
+	if (Health <= 0.0f) 
+	{
+		//Death
+	}
+	return ActualDamage;
 }
 
 void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
