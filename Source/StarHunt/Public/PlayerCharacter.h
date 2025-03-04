@@ -5,7 +5,7 @@
 #include "GameFramework/Character.h"
 #include "PlayerCharacter.generated.h"
 
-class USpringArmComponent;
+class ABaseGun;
 class UItemInventoryComponent;
 struct FInputActionValue;
 
@@ -27,20 +27,6 @@ class STARHUNT_API APlayerCharacter : public ACharacter
 public:
 	APlayerCharacter();
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Camera")
-	USpringArmComponent* TPSSpringArm;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Camera")
-	USpringArmComponent* TPSZoomSpringArm;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Camera")
-	USpringArmComponent* FPSSpringArm;
-
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Camera", meta=(AllowPrivateAccess="true"))
-	UChildActorComponent* TPSCamera;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Camera", meta=(AllowPrivateAccess="true"))
-	UChildActorComponent* TPSZoomCamera;
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Camera", meta=(AllowPrivateAccess="true"))
-	UChildActorComponent* FPSCamera;
 	//Inventory
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Camera", meta=(AllowPrivateAccess="true"))
 	UItemInventoryComponent* ItemInventoryComponent;
@@ -51,8 +37,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="CurrentState")
 	ECurrentCharacterState CurrentCharacterState;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon")
+	ABaseGun* CurrentWeapon;
+	
 	UFUNCTION(Blueprintable)
 	void SetCurrentState(ECurrentCharacterState CharacterState);
+
 	
 protected:
 	virtual void BeginPlay() override;
@@ -73,21 +63,26 @@ protected:
 	void StartCrouch(const FInputActionValue& value);
 	UFUNCTION()
 	void StopCrouch(const FInputActionValue& value);
-	// UFUNCTION()
-	// void StartCrouch(const FInputActionValue& value);
-	// UFUNCTION()
-	// void StopCrouch(const FInputActionValue& value);
 	UFUNCTION()
 	void Look(const FInputActionValue& value);
-	UFUNCTION()
+	UFUNCTION(BlueprintImplementableEvent, Category= "Input")
 	void CameraMode();
-	UFUNCTION()
-	void CameraDelayMode();
-	UFUNCTION()
+	UFUNCTION(BlueprintImplementableEvent, Category= "Input")
 	void Zoom();
-	UFUNCTION()
+	UFUNCTION(BlueprintImplementableEvent, Category= "Input")
 	void ResetZoom();
+	UFUNCTION()
+	void Swap1();
+	UFUNCTION()
+	void Swap2();
+	UFUNCTION()
+	void Swap3();
+	UFUNCTION()
+	void SwapWeapon(int32 EquipmentIndex);
 
+	UFUNCTION(BlueprintCallable)
+	void DestroyCurrentWeapon();
+	
 	//Inventory
 	UFUNCTION()
 	void ShowInventory();
@@ -98,8 +93,7 @@ private:
 	float SprintSpeed;
 	float CameraBlendTime;
 
-	bool IsTPSMode;
-	bool IsZoomed;
+	bool IsSpawnedWeapon;
 
 	//Inventory
 	bool bIsInventoryOpen;

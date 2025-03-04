@@ -33,6 +33,12 @@ public:
 	UInputAction* Zoom;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Input")
 	UInputAction* Crouch;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Input")
+	UInputAction* Swap1;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Input")
+	UInputAction* Swap2;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Input")
+	UInputAction* Swap3;
 	//Inventory
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
 	UInputAction* InventoryOpenAction;
