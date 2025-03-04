@@ -5,7 +5,14 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "PatrolPath.h"
+#include "BehaviorTree/BehaviorTree.h"
 #include "BaseEnemy.generated.h"
+
+//전방 선언
+enum class EMovementSpeed : uint8;
+
+//Delegate 선언
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAttackEnd);
 
 UCLASS()
 class STARHUNT_API ABaseEnemy : public ACharacter
@@ -20,6 +27,18 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+
+	//Power of Character
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Power")
+	float Power;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Power")
+	bool bIsDead;
+	
+	//Attack Montage
+	UPROPERTY(EditAnywhere, Category="Attack")
+	UAnimMontage* AttackMontage;
+	
 	// Score
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Score")
 	int32 Score;
@@ -33,22 +52,20 @@ protected:
 	float MaxHealth;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
 	float Health;
-	// Get health variables
-	UFUNCTION(BlueprintPure, Category = "Health")
-	float GetHealth() const;
-	UFUNCTION(BlueprintPure, Category = "Health")
-	float GetMaxHealth() const;
 
-	// Healing
-	UFUNCTION(BlueprintCallable, Category = "Health")
-	void AddHealth(const float Amount);
+	//사거리 관련 변수
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
+	float AttackRadius;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
+	float DefendRadius;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
+	UBehaviorTree* BehaviorTree;
 
 	// Death handling function
 	UFUNCTION(BlueprintCallable, Category = "Health")
 	virtual void OnDeath();
 
-	// Damage handling function
-	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 public:	
 	// Called every frame
 	//virtual void Tick(float DeltaTime) override;
@@ -59,4 +76,36 @@ public:
 	//Get Patrol Path
 	UFUNCTION(BlueprintPure, Category = "Path")
 	APatrolPath* GetPatrolPath() const;
+
+	// Get health variables
+	UFUNCTION(BlueprintPure, Category = "Health")
+	float GetHealth() const;
+	UFUNCTION(BlueprintPure, Category = "Health")
+	float GetMaxHealth() const;
+	// Healing
+	UFUNCTION(BlueprintCallable, Category = "Health")
+	void AddHealth(const float Amount);
+	// Damage handling function
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+	
+	UFUNCTION(BlueprintCallable, Category = "Movement")
+	virtual void SetMovementSpeed(const EMovementSpeed Speed);
+
+	//Get BehaviorTree
+	UFUNCTION(BlueprintPure, Category = "AI")
+	UBehaviorTree* GetBehaviorTree() const;
+
+	UFUNCTION(BlueprintCallable, Category = "AI")
+	virtual void Attack();
+
+	UPROPERTY(BlueprintAssignable, Category="Attack")
+	FOnAttackEnd OnAttackEnd;
+
+	UFUNCTION()
+	void OnMontageEnded(UAnimMontage* Montage, bool bInterrupted);
+	UFUNCTION()
+	float GetAttackRadius() const;
+	UFUNCTION()
+	float GetDefendRadius() const;
 };
+

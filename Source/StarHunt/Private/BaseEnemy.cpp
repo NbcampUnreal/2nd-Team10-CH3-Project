@@ -3,6 +3,9 @@
 
 #include "BaseEnemy.h"
 #include "EnemyAIController.h"
+#include "Animation/AnimInstance.h"
+#include "Animation/AnimMontage.h"
+#include "Animation/AnimSequence.h"
 
 // Sets default values
 ABaseEnemy::ABaseEnemy()
@@ -13,14 +16,22 @@ ABaseEnemy::ABaseEnemy()
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
 	PatrolPath=nullptr;
+	BehaviorTree=nullptr;
+	AttackMontage=nullptr;
+	Power=0;
+	Health=MaxHealth=0.0f;
+	Score=0;
+	AttackRadius=0.0f;
+	DefendRadius=0.0f;
+	bIsDead=false;
 }
 
 // Called when the game starts or when spawned
 void ABaseEnemy::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
+
 
 float ABaseEnemy::GetHealth() const
 {
@@ -41,7 +52,26 @@ void ABaseEnemy::OnDeath()
 {
 	// Deliver Score to Game Instance
 
-	Destroy();
+	if (USkeletalMeshComponent* SMesh=GetMesh())
+	{
+		//래그돌 효과
+		SMesh->SetSimulatePhysics(true);
+		SMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	}
+	
+	if (AEnemyAIController* EnemyController=Cast<AEnemyAIController>(GetController()))
+	{
+		//상태 Dead로 변경
+		EnemyController->SetAIState(EAIState::Dead);
+		bIsDead=true;
+		if (UBrainComponent* Brain=EnemyController->GetBrainComponent())
+		{
+			//BehaviorTree 동작 중단
+			Brain->StopLogic("Dead");
+		}
+	}
+	
+	//Destroy();
 }
 
 float ABaseEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -56,10 +86,58 @@ float ABaseEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent
 	return ActualDamage;
 }
 
+void ABaseEnemy::SetMovementSpeed(const EMovementSpeed Speed)
+{
+	
+}
+
 APatrolPath* ABaseEnemy::GetPatrolPath() const
 {
 	return PatrolPath;
 }
+
+
+
+UBehaviorTree* ABaseEnemy::GetBehaviorTree() const
+{
+	return BehaviorTree;
+}
+
+void ABaseEnemy::Attack()
+{
+	//메시 유효 
+	if (!GetMesh()) return;
+
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	//둘다 유효
+	if (AnimInstance&&AttackMontage)
+	{
+		//몽타주 실행
+		AnimInstance->Montage_Play(AttackMontage);
+		//몽타주 끝났을 때 이벤트 바인딩
+		AnimInstance->OnMontageEnded.Clear();
+		AnimInstance->OnMontageEnded.AddDynamic(this,&ABaseEnemy::OnMontageEnded);
+	}
+}
+
+void ABaseEnemy::OnMontageEnded(UAnimMontage* Montage, bool bInterrupted)
+{
+	if (Montage==AttackMontage)
+	{
+		OnAttackEnd.Broadcast();
+	}
+}
+
+float ABaseEnemy::GetAttackRadius() const
+{
+	return AttackRadius;
+}
+
+float ABaseEnemy::GetDefendRadius() const
+{
+	return DefendRadius;
+}
+
 
 // Called every frame
 //void ABaseEnemy::Tick(float DeltaTime)
