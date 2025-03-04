@@ -26,10 +26,7 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
-	UItemSpawnComponent* ItemSpawnComp;
+	
 	
 	//Power of Character
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Power")

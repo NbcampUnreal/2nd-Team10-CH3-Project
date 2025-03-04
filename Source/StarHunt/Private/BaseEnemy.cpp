@@ -17,8 +17,6 @@ ABaseEnemy::ABaseEnemy()
 	AIControllerClass = AEnemyAIController::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 	
-	ItemSpawnComp=CreateDefaultSubobject<UItemSpawnComponent>(TEXT("DropItem"));
-	
 	PatrolPath=nullptr;
 	BehaviorTree=nullptr;
 	AttackMontage=nullptr;
