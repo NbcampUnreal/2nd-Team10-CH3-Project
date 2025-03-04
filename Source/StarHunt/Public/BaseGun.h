@@ -40,6 +40,11 @@ protected:
 	// 발사 과정
 	virtual void FireProgress();
 
+	// 총알 소환
+	virtual class ABaseBullet* SpawnBullet();
+
+	FRotator CaculateAimRotator();
+
 protected:
 	// 루트 컴포넌트
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GunIComponent")
@@ -54,6 +59,10 @@ protected:
 	// 에디터에서 총알 종류 선택 가능
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Gun|Bullet")
 	TSubclassOf<class ABaseBullet> BulletClass;
+
+	// 사격 오차 범위
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "GunIStatus")
+	float SpreadAngle;
 
 	// 데미지
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "GunIStatus")
@@ -81,6 +90,8 @@ protected:
 
 	// 발사 속도 타이머
 	FTimerHandle FireRateTimerHandle;
+	// 장전 타이머
+	FTimerHandle ReloadTimerHandle;
 
 	// 타이머 관련 변수
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GunIStatus")

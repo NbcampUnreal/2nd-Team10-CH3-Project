@@ -6,9 +6,6 @@
 #include "GameFramework/Actor.h"
 #include "BaseBullet.generated.h"
 
-class UStaticMeshComponent;
-class UProjectileMovementComponent;
-
 UCLASS(Abstract)
 class STARHUNT_API ABaseBullet : public AActor
 {
@@ -26,10 +23,10 @@ protected:
 	class USphereComponent* Collision;
 	// 스태틱 메시
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Bullet|Component")
-	UStaticMeshComponent* StaticMesh;
+	class UStaticMeshComponent* StaticMesh;
 	// 발사체
     UPROPERTY(VisibleAnywhere, Category = "Bullet|Component")
-    UProjectileMovementComponent* ProjectileMovement;
+	class UProjectileMovementComponent* ProjectileMovement;
 
 	// 총알 데미지
     float BulletDamage;

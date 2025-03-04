@@ -10,14 +10,6 @@ UShooterGameInstance::UShooterGameInstance()
 	TotalPlayTime = 0.f;
 }
 
-void UShooterGameInstance::Init()
-{
-	Super::Init();
-
-	UItemSubsystem* ItemSubsystem = GetSubsystem<UItemSubsystem>();
-	ItemSubsystem->SetItemDb(ItemDBClass);
-}
-
 void UShooterGameInstance::AddToScore(int32 Amount)
 {
 	TotalScore += Amount;
