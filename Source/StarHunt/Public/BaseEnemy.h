@@ -31,6 +31,9 @@ protected:
 	//Power of Character
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Power")
 	float Power;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Power")
+	bool bIsDead;
 	
 	//Attack Montage
 	UPROPERTY(EditAnywhere, Category="Attack")
@@ -86,14 +89,14 @@ public:
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	
 	UFUNCTION(BlueprintCallable, Category = "Movement")
-	void SetMovementSpeed(const EMovementSpeed Speed);
+	virtual void SetMovementSpeed(const EMovementSpeed Speed);
 
 	//Get BehaviorTree
 	UFUNCTION(BlueprintPure, Category = "AI")
 	UBehaviorTree* GetBehaviorTree() const;
 
 	UFUNCTION(BlueprintCallable, Category = "AI")
-	void Attack();
+	virtual void Attack();
 
 	UPROPERTY(BlueprintAssignable, Category="Attack")
 	FOnAttackEnd OnAttackEnd;

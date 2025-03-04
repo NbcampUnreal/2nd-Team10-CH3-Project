@@ -6,7 +6,6 @@
 #include "Animation/AnimInstance.h"
 #include "Animation/AnimMontage.h"
 #include "Animation/AnimSequence.h"
-#include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
 ABaseEnemy::ABaseEnemy()
@@ -22,15 +21,15 @@ ABaseEnemy::ABaseEnemy()
 	Power=0;
 	Health=MaxHealth=0.0f;
 	Score=0;
-	AttackRadius=150.0f;
-	DefendRadius=350.0f;
+	AttackRadius=0.0f;
+	DefendRadius=0.0f;
+	bIsDead=false;
 }
 
 // Called when the game starts or when spawned
 void ABaseEnemy::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 
@@ -53,7 +52,26 @@ void ABaseEnemy::OnDeath()
 {
 	// Deliver Score to Game Instance
 
-	Destroy();
+	if (USkeletalMeshComponent* SMesh=GetMesh())
+	{
+		//래그돌 효과
+		SMesh->SetSimulatePhysics(true);
+		SMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	}
+	
+	if (AEnemyAIController* EnemyController=Cast<AEnemyAIController>(GetController()))
+	{
+		//상태 Dead로 변경
+		EnemyController->SetAIState(EAIState::Dead);
+		bIsDead=true;
+		if (UBrainComponent* Brain=EnemyController->GetBrainComponent())
+		{
+			//BehaviorTree 동작 중단
+			Brain->StopLogic("Dead");
+		}
+	}
+	
+	//Destroy();
 }
 
 float ABaseEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -68,30 +86,17 @@ float ABaseEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent
 	return ActualDamage;
 }
 
+void ABaseEnemy::SetMovementSpeed(const EMovementSpeed Speed)
+{
+	
+}
+
 APatrolPath* ABaseEnemy::GetPatrolPath() const
 {
 	return PatrolPath;
 }
 
-void ABaseEnemy::SetMovementSpeed(const EMovementSpeed Speed)
-{
-	if (UCharacterMovementComponent* MovementComp = GetCharacterMovement())
-	{
-		switch (Speed)
-		{
-			case EMovementSpeed::Idle:
-				MovementComp->MaxWalkSpeed = 0.0f;
-			case EMovementSpeed::Walking:
-				MovementComp->MaxWalkSpeed = 100.0f;
-			case EMovementSpeed::Jogging:
-				MovementComp->MaxWalkSpeed = 300.0f;
-			case EMovementSpeed::Sprinting:
-				MovementComp->MaxWalkSpeed = 500.0f;
-			default:
-				break;
-		}
-	}
-}
+
 
 UBehaviorTree* ABaseEnemy::GetBehaviorTree() const
 {
@@ -132,6 +137,7 @@ float ABaseEnemy::GetDefendRadius() const
 {
 	return DefendRadius;
 }
+
 
 // Called every frame
 //void ABaseEnemy::Tick(float DeltaTime)
