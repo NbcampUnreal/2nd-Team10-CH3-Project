@@ -4,6 +4,8 @@
 
 #include "BaseGun.h"
 #include "BaseBullet.h"
+#include "Kismet/GameplayStatics.h"
+#include "AimingSystem.h"
 
 ABaseGun::ABaseGun()
 {
@@ -21,12 +23,14 @@ ABaseGun::ABaseGun()
 
 	GunFixtureComponent = CreateDefaultSubobject<UGunFixtureComponent>(TEXT("GunFixtureComponent"));
 
+	SpreadAngle = 0.0f;
 	Damage = 1.0f;
 	FireRate = 1.0f;
 	ReloadTime = 1.0f;
 	MaxAmmo = 1;
 	CurrentAmmo = MaxAmmo;
 	bIsFiring = false;
+	BulletClass = ABaseBullet::StaticClass();
 }
 
 void ABaseGun::Fire()
@@ -87,12 +91,12 @@ bool ABaseGun::CanAttack()
 	}
 	if (CurrentAmmo <= 0)
 	{
-		//UE_LOG(LogTemp, Warning, TEXT("No Bullet"));
+		UE_LOG(LogTemp, Warning, TEXT("No Bullet"));
 		return false;
 	}
 	if (bIsFiring)
 	{
-		//UE_LOG(LogTemp, Warning, TEXT("Cool Time"));
+		UE_LOG(LogTemp, Warning, TEXT("Cool Time"));
 		return false;
 	}
 
@@ -108,15 +112,12 @@ void ABaseGun::FireProgress()
 {
 	if (CurrentAmmo <= 0) return;
 
-	// 탄환 생성
-	FVector SpawnLocation = BulletSpawnLocation->GetComponentLocation();
-	FRotator SpawnRotation = GetActorRotation();
-	ABaseBullet* SpawnedBullet = GetWorld()->SpawnActor<ABaseBullet>(BulletClass, SpawnLocation, SpawnRotation);
+	// 총알 소환
+	ABaseBullet* SpawnedBullet = SpawnBullet();
 
 	if (!SpawnedBullet) return;
 
-	// 총알의 소유자를 총으로 설정
-	SpawnedBullet->SetOwner(this);
+
 	// 총알에 데미지 전달
 	float SumDamage = Damage;
 	if (GunFixtureComponent)
@@ -133,3 +134,43 @@ void ABaseGun::FireProgress()
 	//UE_LOG(LogTemp, Warning, TEXT("Bullet : %d / %d"), CurrentAmmo, MaxAmmo);
 }
 
+ABaseBullet* ABaseGun::SpawnBullet()
+{
+	// 총알 위치, 방향 설정
+	FVector SpawnLocation = BulletSpawnLocation->GetComponentLocation();
+	FRotator SpawnRotation = CaculateAimRotator();
+
+	float Angle = SpreadAngle / 2.0f;
+	SpawnRotation.Yaw += FMath::FRandRange(-Angle, Angle);
+	SpawnRotation.Pitch += FMath::FRandRange(-Angle, Angle);
+	ABaseBullet* SpawnedBullet = GetWorld()->SpawnActor<ABaseBullet>(BulletClass, SpawnLocation, SpawnRotation);
+
+	if (SpawnedBullet)
+	{
+		// 총알의 소유자를 총으로 설정
+		SpawnedBullet->SetOwner(this);
+
+		return SpawnedBullet;
+	}
+	else
+	{
+		return nullptr;
+	}
+}
+
+FRotator ABaseGun::CaculateAimRotator()
+{
+	APlayerController* PlayerController = Cast<APlayerController>(GetWorld()->GetFirstPlayerController());
+
+	if (PlayerController)
+	{
+		TObjectPtr<UAimingSystem> AimingSystem = NewObject<UAimingSystem>();
+		FVector SpawnLocation = BulletSpawnLocation->GetComponentLocation();
+
+		return AimingSystem->GetTargetRotation(PlayerController, SpawnLocation);
+	}
+	else
+	{
+		return GetActorRotation();
+	}
+}

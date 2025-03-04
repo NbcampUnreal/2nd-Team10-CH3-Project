@@ -13,7 +13,15 @@ UCLASS()
 class STARHUNT_API AMeleeEnemy : public ABaseEnemy
 {
 	GENERATED_BODY()
+
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category="Attack")
+	float AttackRange;
 	
 public:
 	AMeleeEnemy();
+	void BeginPlay() override;
+	virtual void SetMovementSpeed(EMovementSpeed Speed) override;
+	
+	void HandleAttackMontageNotify(FName NotifyName, const FBranchingPointNotifyPayload& Payload);
 };

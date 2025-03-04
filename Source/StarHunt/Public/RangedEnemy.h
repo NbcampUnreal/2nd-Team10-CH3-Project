@@ -17,4 +17,7 @@ class STARHUNT_API ARangedEnemy : public ABaseEnemy
 public:
 	ARangedEnemy();
 
+	virtual void SetMovementSpeed(const EMovementSpeed Speed) override;
+
+	virtual void Attack() override;
 };

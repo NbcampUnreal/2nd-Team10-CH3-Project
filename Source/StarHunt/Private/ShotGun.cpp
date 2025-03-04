@@ -6,7 +6,7 @@
 
 AShotGun::AShotGun()
 {
-    NumberOfBullets = 8;
+    NumberOfPellets = 8;
     SpreadAngle = 10.0f;
     Damage = 35.0f;
     FireRate = 1.5f;
@@ -17,25 +17,13 @@ AShotGun::AShotGun()
 
 void AShotGun::FireProgress()
 {
-    FVector SpawnLocation = BulletSpawnLocation->GetComponentLocation();
-    FRotator BaseRotation = GetActorRotation();
-
-    for (int32 i = 0; i < NumberOfBullets; i++)
+    for (int32 i = 0; i < NumberOfPellets; i++)
     {
-        float RandomYaw = FMath::FRandRange(-SpreadAngle / 2.0f, SpreadAngle / 2.0f);
-        float RandomPitch = FMath::FRandRange(-SpreadAngle / 2.0f, SpreadAngle / 2.0f);
-
-        FRotator BulletRotation = BaseRotation;
-        BulletRotation.Yaw += RandomYaw;
-        BulletRotation.Pitch += RandomPitch;
-
-        ABaseBullet* SpawnedBullet = GetWorld()->SpawnActor<ABaseBullet>(BulletClass, SpawnLocation, BulletRotation);
+        ABaseBullet* SpawnedBullet = SpawnBullet();
 
         if (!SpawnedBullet) return;
 
-        SpawnedBullet->SetOwner(this);
-        SpawnedBullet->SetBulletDamage(Damage / NumberOfBullets);
-        
+        SpawnedBullet->SetBulletDamage(Damage / NumberOfPellets);
     }
 
     CurrentAmmo--;
