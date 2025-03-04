@@ -1,8 +1,8 @@
 #include "PlayerCharacter.h"
 
+#include "BaseGun.h"
 #include "EnhancedInputComponent.h"
 #include "WraithPlayerController.h"
-#include "GameFramework/SpringArmComponent.h"
 #include "ItemInventoryComponent.h"
 #include "BaseGun.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -10,27 +10,6 @@
 APlayerCharacter::APlayerCharacter()
 {
 	PrimaryActorTick.bCanEverTick = false;
-
-	TPSSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("TPSSpringArm"));
-	TPSSpringArm->SetupAttachment(RootComponent);
-	TPSSpringArm->bUsePawnControlRotation = true;
-
-	TPSZoomSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("TPSZoomSpringArm"));
-	TPSZoomSpringArm->SetupAttachment(RootComponent);
-	TPSZoomSpringArm->bUsePawnControlRotation = true;
-
-	FPSSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("FPSSpringArm"));
-	FPSSpringArm->SetupAttachment(GetMesh(), TEXT("head"));
-	FPSSpringArm->bUsePawnControlRotation = true;
-
-	TPSCamera = CreateDefaultSubobject<UChildActorComponent>(TEXT("TPSCamera"));
-	TPSCamera->SetupAttachment(TPSSpringArm);
-
-	TPSZoomCamera = CreateDefaultSubobject<UChildActorComponent>(TEXT("TPSZoomCamera"));
-	TPSZoomCamera->SetupAttachment(TPSZoomSpringArm);
-
-	FPSCamera = CreateDefaultSubobject<UChildActorComponent>(TEXT("FPSCamera"));
-	FPSCamera->SetupAttachment(FPSSpringArm);
 
 	ItemInventoryComponent = CreateDefaultSubobject<UItemInventoryComponent>(TEXT("Inventory"));
 
@@ -40,7 +19,6 @@ APlayerCharacter::APlayerCharacter()
 
 	GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
 
-	IsTPSMode = true;
 	bIsInventoryOpen = false;
 	bIsEquipmentOpen = false;
 	bIsDropItemsOpen = false;
@@ -54,11 +32,6 @@ void APlayerCharacter::SetCurrentState(ECurrentCharacterState CharacterState)
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
-	if (AWraithPlayerController* PlayerController = Cast<AWraithPlayerController>(GetController()))
-	{
-		PlayerController->SetViewTargetWithBlend(TPSCamera->GetChildActor(), 0, VTBlend_Linear, 0, false);
-	}
 }
 
 void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -127,7 +100,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 					PlayerController->CameraMode,
 					ETriggerEvent::Started,
 					this,
-					&APlayerCharacter::CameraDelayMode
+					&APlayerCharacter::CameraMode
 				);
 			}
 
@@ -171,7 +144,37 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 					&APlayerCharacter::StopCrouch
 				);
 			}
-		
+
+			if (PlayerController->Swap1)
+			{
+				EnhancedInput->BindAction(
+					PlayerController->Swap1,
+					ETriggerEvent::Started,
+					this,
+					&APlayerCharacter::Swap1
+				);
+			}
+
+			if (PlayerController->Swap2)
+			{
+				EnhancedInput->BindAction(
+					PlayerController->Swap2,
+					ETriggerEvent::Started,
+					this,
+					&APlayerCharacter::Swap2
+				);
+			}
+
+			if (PlayerController->Swap3)
+			{
+				EnhancedInput->BindAction(
+					PlayerController->Swap3,
+					ETriggerEvent::Started,
+					this,
+					&APlayerCharacter::Swap3
+				);
+			}
+
 
 			if (PlayerController->InventoryOpenAction)
 			{
@@ -256,22 +259,12 @@ void APlayerCharacter::StopSprint(const FInputActionValue& value)
 void APlayerCharacter::StartCrouch(const FInputActionValue& value)
 {
 	Crouch();
-	UE_LOG(LogTemp, Warning, TEXT("Crouch!!!!!!!!!!!!!!"));
 }
 
 void APlayerCharacter::StopCrouch(const FInputActionValue& value)
 {
 	UnCrouch();
-	UE_LOG(LogTemp, Warning, TEXT("StopCrouch!!!!!!!!!!!!!!"));
 }
-
-// void APlayerCharacter::StartCrouch(const FInputActionValue& value)
-// {
-// }
-//
-// void APlayerCharacter::StopCrouch(const FInputActionValue& value)
-// {
-// }
 
 void APlayerCharacter::Look(const FInputActionValue& value)
 {
@@ -290,57 +283,69 @@ void APlayerCharacter::Look(const FInputActionValue& value)
 		0);
 }
 
-void APlayerCharacter::CameraMode()
+void APlayerCharacter::Swap1()
 {
-	if (IsZoomed) return;
+	SwapWeapon(0);
+}
 
-	AWraithPlayerController* PlayerController = Cast<AWraithPlayerController>(GetController());
-	if (!PlayerController) return;
+void APlayerCharacter::Swap2()
+{
+	SwapWeapon(1);
+}
 
-	if (IsTPSMode)
+void APlayerCharacter::Swap3()
+{
+	SwapWeapon(2);
+}
+
+void APlayerCharacter::SwapWeapon(int32 EquipmentIndex)
+{
+	ABaseGun* WeaponInstance = Cast<ABaseGun>(ItemInventoryComponent->GetWeapon(EquipmentIndex));
+	if (!WeaponInstance) return;
+	
+	UWorld* World = GetWorld();
+	if (!World) return;
+
+	TSubclassOf<ABaseGun> WeaponClass = WeaponInstance->GetClass();
+
+	if (CurrentWeapon == WeaponInstance)
 	{
-		PlayerController->SetViewTargetWithBlend(FPSCamera->GetChildActor(), 0, VTBlend_Linear, 0, false);
+		PlayAnimMontage(CurrentWeapon->UnEquipMontage);
 	}
-	else
+	else if (CurrentWeapon == nullptr || CurrentWeapon != WeaponInstance)
 	{
-		PlayerController->SetViewTargetWithBlend(TPSCamera->GetChildActor(), 0, VTBlend_Linear, 0, false);
+		CurrentWeapon = World->SpawnActor<ABaseGun>(WeaponClass);
 	}
 
-	IsTPSMode = !IsTPSMode;
+	if (CurrentWeapon)
+	{
+		switch (CurrentWeapon->GunType)
+		{
+		case EGunType::Pistol:
+			SetCurrentState(ECurrentCharacterState::Pistol);
+			AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, "Pistol");
+			break;
+		case EGunType::Rifle:
+			SetCurrentState(ECurrentCharacterState::Rifle);
+			AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, "Rifle");
+			break;
+		case EGunType::ShotGun:
+			SetCurrentState(ECurrentCharacterState::Shotgun);
+			AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, "Shotgun");
+			break;
+		}
+
+		PlayAnimMontage(CurrentWeapon->EquipMontage);
+	}
 }
 
-void APlayerCharacter::CameraDelayMode()
+void APlayerCharacter::DestroyCurrentWeapon()
 {
-	GetWorld()->GetTimerManager().SetTimer(
-		CameraTransitionDelayHandle,
-		this,
-		&APlayerCharacter::CameraMode,
-		0.2f,
-		false
-	);
-}
-
-void APlayerCharacter::Zoom()
-{
-	if (!IsTPSMode || IsZoomed) return;
-
-	AWraithPlayerController* PlayerController = Cast<AWraithPlayerController>(GetController());
-	if (!PlayerController) return;
-
-	PlayerController->SetViewTargetWithBlend(TPSZoomCamera->GetChildActor(), 0, VTBlend_Linear, 0, false);
-	IsZoomed = true;
-}
-
-void APlayerCharacter::ResetZoom()
-{
-	if (!IsZoomed) return;
-
-	AWraithPlayerController* PlayerController = Cast<AWraithPlayerController>(GetController());
-	if (!PlayerController) return;
-
-	PlayerController->SetViewTargetWithBlend(TPSCamera->GetChildActor(), 0, VTBlend_Linear, 0, false);
-
-	IsZoomed = false;
+	if (CurrentWeapon)
+	{
+		CurrentWeapon->Destroy();
+		CurrentWeapon = nullptr;
+	}
 }
 
 void APlayerCharacter::ShowInventory()

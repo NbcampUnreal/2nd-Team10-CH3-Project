@@ -11,6 +11,9 @@ AWraithPlayerController::AWraithPlayerController()
 	  CameraMode(nullptr),
 	  Zoom(nullptr),
 	  Crouch(nullptr),
+	  Swap1(nullptr),
+	  Swap2(nullptr),
+	  Swap3(nullptr),
     InventoryOpenAction(nullptr),
     EquipmentOpenAction(nullptr)
 {
@@ -95,15 +98,14 @@ void AWraithPlayerController::BeginPlay()
 	Super::BeginPlay();
 
 	if (ULocalPlayer* LocalPlayer = GetLocalPlayer())
-    	{
-    		if (UEnhancedInputLocalPlayerSubsystem* SubSystem = LocalPlayer->GetSubsystem<
-    			UEnhancedInputLocalPlayerSubsystem>())
-    		{
-    			if (InputMappingContext)
-    			{
-    				SubSystem->AddMappingContext(InputMappingContext, 0);
-    			}
-    		}
-    	}
-
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* SubSystem = LocalPlayer->GetSubsystem<
+			UEnhancedInputLocalPlayerSubsystem>())
+		{
+			if (InputMappingContext)
+			{
+				SubSystem->AddMappingContext(InputMappingContext, 0);
+			}
+		}
+	}
 }
