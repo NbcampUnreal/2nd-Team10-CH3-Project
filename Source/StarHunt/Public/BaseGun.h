@@ -25,17 +25,30 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GunIStatus")
 	EGunType GunType;
 
-	// 총 장착 AnimMontage
+	// 총 장착 PlayerAnimMontage
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GunIStatus")
 	UAnimMontage* EquipMontage;
 
-	// 총 해제 AnimMontage
+	// 총 해제 PlayerAnimMontage
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GunIStatus")
 	UAnimMontage* UnEquipMontage;
 
-	// 총 발사 AnimMontage
+	// 총 발사 PlayerAnimMontage
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GunIStatus")
 	UAnimMontage* FireMontage;
+
+	// 총 장전 PlayerAnimMontage
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GunIStatus")
+	UAnimMontage* ReloadMontage;
+
+
+	// 총 발사 GunAnimMontage
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GunIStatus")
+	UAnimMontage* GunFireMontage;
+
+	// 총 장전 GunReloadMontage
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GunIStatus")
+	UAnimMontage* GunReloadMontage;
 	
 	// 발사
 	UFUNCTION(BlueprintCallable)

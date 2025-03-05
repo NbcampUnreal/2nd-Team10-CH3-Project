@@ -4,7 +4,6 @@
 #include "EnhancedInputComponent.h"
 #include "WraithPlayerController.h"
 #include "ItemInventoryComponent.h"
-#include "BaseGun.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 APlayerCharacter::APlayerCharacter()
@@ -13,11 +12,13 @@ APlayerCharacter::APlayerCharacter()
 
 	ItemInventoryComponent = CreateDefaultSubobject<UItemInventoryComponent>(TEXT("Inventory"));
 
-	NormalSpeed = 600.0f;
-	SprintSpeedMultiplier = 1.7f;
+	NormalSpeed = 180.0f;
+	SprintSpeedMultiplier = 3.0f;
 	SprintSpeed = NormalSpeed * SprintSpeedMultiplier;
 
 	GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
+
+	CurrentWeapon = nullptr;
 
 	bIsInventoryOpen = false;
 	bIsEquipmentOpen = false;
@@ -32,6 +33,7 @@ void APlayerCharacter::SetCurrentState(ECurrentCharacterState CharacterState)
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	PlayerAnimInstance = GetMesh()->GetAnimInstance();
 }
 
 void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -175,6 +177,32 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 				);
 			}
 
+			if (PlayerController->Fire)
+			{
+				EnhancedInput->BindAction(
+					PlayerController->Fire,
+					ETriggerEvent::Started,
+					this,
+					&APlayerCharacter::FireWeapon
+				);
+
+				EnhancedInput->BindAction(
+					PlayerController->Fire,
+					ETriggerEvent::Completed,
+					this,
+					&APlayerCharacter::StopFireWeapon
+				);
+			}
+
+			if (PlayerController->Reload)
+			{
+				EnhancedInput->BindAction(
+					PlayerController->Reload,
+					ETriggerEvent::Started,
+					this,
+					&APlayerCharacter::ReloadWeapon
+				);
+			}
 
 			if (PlayerController->InventoryOpenAction)
 			{
@@ -258,6 +286,8 @@ void APlayerCharacter::StopSprint(const FInputActionValue& value)
 
 void APlayerCharacter::StartCrouch(const FInputActionValue& value)
 {
+	if (GetCharacterMovement()->IsFalling()) return;
+
 	Crouch();
 }
 
@@ -285,57 +315,101 @@ void APlayerCharacter::Look(const FInputActionValue& value)
 
 void APlayerCharacter::Swap1()
 {
-	SwapWeapon(0);
+	SpawnWeapon(0);
 }
 
 void APlayerCharacter::Swap2()
 {
-	SwapWeapon(1);
+	SpawnWeapon(1);
 }
 
 void APlayerCharacter::Swap3()
 {
-	SwapWeapon(2);
+	SpawnWeapon(2);
 }
 
-void APlayerCharacter::SwapWeapon(int32 EquipmentIndex)
+void APlayerCharacter::SpawnWeapon(int32 EquipmentIndex)
 {
-	ABaseGun* WeaponInstance = Cast<ABaseGun>(ItemInventoryComponent->GetWeapon(EquipmentIndex));
+	ABaseGun* WeaponInstance = ItemInventoryComponent->GetWeapon(EquipmentIndex);
 	if (!WeaponInstance) return;
-	
+
 	UWorld* World = GetWorld();
 	if (!World) return;
 
 	TSubclassOf<ABaseGun> WeaponClass = WeaponInstance->GetClass();
 
-	if (CurrentWeapon == WeaponInstance)
+	if (CurrentWeapon != nullptr && CurrentWeapon->GetClass() == WeaponInstance->GetClass()) // 여기가 문제인듯?
 	{
 		PlayAnimMontage(CurrentWeapon->UnEquipMontage);
+		SetCurrentState(ECurrentCharacterState::None);
+		return;
 	}
-	else if (CurrentWeapon == nullptr || CurrentWeapon != WeaponInstance)
+
+	if (CurrentWeapon == nullptr)
 	{
 		CurrentWeapon = World->SpawnActor<ABaseGun>(WeaponClass);
 	}
 
+	if (CurrentWeapon != nullptr && CurrentWeapon->GetClass() != WeaponInstance->GetClass())
+	{
+		PlayAnimMontage(CurrentWeapon->UnEquipMontage);
+		CurrentWeapon->Destroy();
+		CurrentWeapon = nullptr;
+		CurrentWeapon = World->SpawnActor<ABaseGun>(WeaponClass);
+	}
+
+	SwapWeapon();
+}
+
+void APlayerCharacter::SwapWeapon()
+{
 	if (CurrentWeapon)
 	{
 		switch (CurrentWeapon->GunType)
 		{
 		case EGunType::Pistol:
 			SetCurrentState(ECurrentCharacterState::Pistol);
-			AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, "Pistol");
+			CurrentWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale,
+			                                 "Pistol");
 			break;
 		case EGunType::Rifle:
 			SetCurrentState(ECurrentCharacterState::Rifle);
-			AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, "Rifle");
+			CurrentWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale,
+			                                 "Rifle");
 			break;
 		case EGunType::ShotGun:
 			SetCurrentState(ECurrentCharacterState::Shotgun);
-			AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, "Shotgun");
+			CurrentWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale,
+			                                 "Shotgun");
 			break;
 		}
-
 		PlayAnimMontage(CurrentWeapon->EquipMontage);
+	}
+}
+
+void APlayerCharacter::FireWeapon()
+{
+	if (CurrentWeapon && !PlayerAnimInstance->Montage_IsPlaying(CurrentWeapon->FireMontage))
+	{
+		// GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
+		UE_LOG(LogTemp, Warning, TEXT("%f"), GetCharacterMovement()->MaxWalkSpeed);
+		PlayAnimMontage(CurrentWeapon->FireMontage);
+	}
+}
+
+void APlayerCharacter::StopFireWeapon()
+{
+	if (CurrentWeapon)
+	{
+		CurrentWeapon->StopFire();
+	}
+}
+
+void APlayerCharacter::ReloadWeapon()
+{
+	if (CurrentWeapon)
+	{
+		PlayAnimMontage(CurrentWeapon->ReloadMontage);
 	}
 }
 

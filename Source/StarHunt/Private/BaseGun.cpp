@@ -31,6 +31,9 @@ ABaseGun::ABaseGun()
 	CurrentAmmo = MaxAmmo;
 	bIsFiring = false;
 	BulletClass = ABaseBullet::StaticClass();
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> AnimMontage(TEXT("/Game/Characters/RetargetWraithAnim/AM_MM_Unequip.AM_MM_Unequip"));
+	UnEquipMontage = AnimMontage.Object;
 }
 
 void ABaseGun::Fire()
@@ -42,6 +45,7 @@ void ABaseGun::Fire()
 	// 타이머로 발사 속도 제한
 	bIsFiring = true;
 	GetWorld()->GetTimerManager().SetTimer(FireRateTimerHandle, this, &ABaseGun::ResetFireTimer, FireRate, false);
+	UE_LOG(LogTemp, Warning, TEXT("Current Ammo : %d"), CurrentAmmo);
 }
 
 void ABaseGun::StopFire()
@@ -60,6 +64,8 @@ void ABaseGun::Reload()
 	}
 
 	CurrentAmmo = MaxAmmo;
+
+	UE_LOG(LogTemp, Warning, TEXT("Current Ammo : %d"), CurrentAmmo);
 }
 
 

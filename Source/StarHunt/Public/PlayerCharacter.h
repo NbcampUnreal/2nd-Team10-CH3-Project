@@ -44,7 +44,6 @@ public:
 	UFUNCTION(Blueprintable)
 	void SetCurrentState(ECurrentCharacterState CharacterState);
 
-	
 protected:
 	virtual void BeginPlay() override;
 
@@ -79,7 +78,15 @@ protected:
 	UFUNCTION()
 	void Swap3();
 	UFUNCTION()
-	void SwapWeapon(int32 EquipmentIndex);
+	void SpawnWeapon(int32 EquipmentIndex);
+	UFUNCTION()
+	void SwapWeapon();
+	UFUNCTION()
+	void FireWeapon();
+	UFUNCTION()
+	void StopFireWeapon();
+	UFUNCTION()
+	void ReloadWeapon();
 
 	UFUNCTION(BlueprintCallable)
 	void DestroyCurrentWeapon();
@@ -102,8 +109,10 @@ private:
 	float SprintSpeed;
 	float CameraBlendTime;
 
+	UAnimInstance* PlayerAnimInstance;
+	
 	bool IsSpawnedWeapon;
-
+	
 	//Inventory
 	bool bIsInventoryOpen;
 	bool bIsEquipmentOpen;
@@ -112,3 +121,5 @@ private:
 
 	ABaseGun* Weapon;
 };
+
+

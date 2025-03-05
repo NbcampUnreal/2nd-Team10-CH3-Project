@@ -58,6 +58,7 @@ ABaseGun* UItemInventoryComponent::GetWeapon(int32 EquipmentIndex)
 					{
 						CurrentEquipmentIndex = EquipmentIndex;
 						Gun = World->SpawnActor<ABaseGun>(LoadedActorClass);
+						// Gun = Cast<ABaseGun>(LoadedActorClass);
 						if (Gun)
 						{
 							Gun->StartItemSubsystem(EquipmentIndex, GunItemStateRow);
