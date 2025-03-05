@@ -41,6 +41,11 @@ public:
 	UInputAction* Swap2;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Input")
 	UInputAction* Swap3;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Input")
+	UInputAction* Fire;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Input")
+	UInputAction* Reload;
+	
 	//Inventory
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
 	UInputAction* InventoryOpenAction;	

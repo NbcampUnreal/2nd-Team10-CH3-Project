@@ -26,4 +26,5 @@ void UShooterGameInstance::Init()
 void UShooterGameInstance::AddToScore(int32 Amount)
 {
 	TotalScore += Amount;
+	
 }

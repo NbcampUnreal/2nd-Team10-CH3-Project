@@ -88,7 +88,15 @@ protected:
 	UFUNCTION()
 	void Swap3();
 	UFUNCTION()
-	void SwapWeapon(int32 EquipmentIndex);
+	void SpawnWeapon(int32 EquipmentIndex);
+	UFUNCTION()
+	void SwapWeapon();
+	UFUNCTION()
+	void FireWeapon();
+	UFUNCTION()
+	void StopFireWeapon();
+	UFUNCTION()
+	void ReloadWeapon();
 	UFUNCTION()
 	void UseQuickSlot0();
 
@@ -112,9 +120,10 @@ private:
 	float SprintSpeedMultiplier;
 	float SprintSpeed;
 	float CameraBlendTime;
-
-	bool IsSpawnedWeapon;
-
+	bool IsSprint;
+	
+	UAnimInstance* PlayerAnimInstance;
+	
 	//Inventory
 	bool bIsInventoryOpen;
 	bool bIsEquipmentOpen;
@@ -123,4 +132,5 @@ private:
 
 	ABaseGun* Weapon;
 };
+
 

@@ -14,6 +14,8 @@ AWraithPlayerController::AWraithPlayerController()
 	  Swap1(nullptr),
 	  Swap2(nullptr),
 	  Swap3(nullptr),
+	  Fire(nullptr),
+	  Reload(nullptr)
     QuickSlot1(nullptr),
     InventoryOpenAction(nullptr),
     EquipmentOpenAction(nullptr)
@@ -84,6 +86,7 @@ void AWraithPlayerController::ShowDropItems(TArray<ADropItemActor*>* DropItemAct
         }
     }
 }
+
 void AWraithPlayerController::CloseDropItems()
 {
     if (ItemShowHUDWidgetInstance)
