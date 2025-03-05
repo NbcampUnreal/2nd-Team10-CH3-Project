@@ -10,6 +10,7 @@
 #include "Animation/AnimInstance.h"
 #include "Animation/AnimMontage.h"
 #include "Animation/AnimSequence.h"
+#include "Perception/AISense_Damage.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -23,12 +24,14 @@ ABaseEnemy::ABaseEnemy()
 	PatrolPath=nullptr;
 	BehaviorTree=nullptr;
 	AttackMontage=nullptr;
+	HitMontage=nullptr;
 	Power=0;
 	Health=MaxHealth=0.0f;
 	Score=0;
 	AttackRadius=0.0f;
 	DefendRadius=0.0f;
 	bIsDead=false;
+	
 
 	// //HP Bar 설정
 	// HPBar=CreateDefaultSubobject<UWidgetComponent>(TEXT("HPBar"));
@@ -144,13 +147,30 @@ void ABaseEnemy::DelayedDestroy()
 float ABaseEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	Health = FMath::Clamp(Health - DamageAmount, 0.0f, MaxHealth);
+	//피격 애니메이션 재생
+	if (HitMontage)
+	{
+		StopAnimMontage();
+		float a=PlayAnimMontage(HitMontage, true);	
+		UE_LOG(LogTemp, Warning, TEXT("Hit with %f"),a);
+	}
 	if (AEnemyAIController* AIController=Cast<AEnemyAIController>(GetController()))
 	{
 		AIController->SetAIState(EAIState::Frozen);
-		AIController->SetAttackTarget(DamageCauser);
 	}
-	Health = FMath::Clamp(Health - DamageAmount, 0.0f, MaxHealth);
-	// UpdateHPBar();
+	//데미지 인식 이벤트 호출
+	if (DamageCauser)
+	{
+		UAISense_Damage::ReportDamageEvent(
+			GetWorld(),
+			this,
+			EventInstigator->GetPawn(),
+			ActualDamage,
+			GetActorLocation(),
+			DamageCauser->GetActorLocation()
+		);
+	}
 	if (Health <= 0.0f) 
 	{
 		OnDeath();

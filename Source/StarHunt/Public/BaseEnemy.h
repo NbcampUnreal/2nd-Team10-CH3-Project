@@ -11,7 +11,6 @@
 //전방 선언
 enum class EMovementSpeed : uint8;
 class UItemSpawnComponent;
-class UWidgetComponent;
 //Delegate 선언
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAttackEnd);
 
@@ -39,6 +38,10 @@ protected:
 	//Attack Montage
 	UPROPERTY(EditAnywhere, Category="Attack")
 	UAnimMontage* AttackMontage;
+
+	//Hit Montage
+	UPROPERTY(EditAnywhere, Category="Attack")
+	UAnimMontage* HitMontage;
 	
 	// Score
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Score")

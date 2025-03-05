@@ -173,7 +173,7 @@ void AEnemyAIController::HandleSenseHearing(const FVector& SoundLocation)
 
 void AEnemyAIController::HandleSenseDamage(AActor* DamageCauser)
 {
-	if (CurrentState==EAIState::Passive || CurrentState==EAIState::Investigating || CurrentState==EAIState::Frozen)
+	if (CurrentState==EAIState::Passive || CurrentState==EAIState::Investigating)
 	{
 		SetAttackTarget(DamageCauser);
 		SetAIState(EAIState::Attacking);
