@@ -287,6 +287,7 @@ void APlayerCharacter::StartSprint(const FInputActionValue& value)
 	if (GetCharacterMovement())
 	{
 		GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
+		IsSprint = true;
 	}
 }
 
@@ -295,6 +296,7 @@ void APlayerCharacter::StopSprint(const FInputActionValue& value)
 	if (GetCharacterMovement())
 	{
 		GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
+		IsSprint = false;
 	}
 }
 
@@ -363,8 +365,7 @@ void APlayerCharacter::SpawnWeapon(int32 EquipmentIndex)
 	{
 		CurrentWeapon = World->SpawnActor<ABaseGun>(WeaponClass);
 	}
-
-	if (CurrentWeapon != nullptr && CurrentWeapon->GetClass() != WeaponInstance->GetClass())
+	else if (CurrentWeapon != nullptr && CurrentWeapon->GetClass() != WeaponInstance->GetClass())
 	{
 		PlayAnimMontage(CurrentWeapon->UnEquipMontage);
 		CurrentWeapon->Destroy();
@@ -377,6 +378,8 @@ void APlayerCharacter::SpawnWeapon(int32 EquipmentIndex)
 
 void APlayerCharacter::SwapWeapon()
 {
+	UE_LOG(LogTemp, Warning, TEXT("%s"), *UEnum::GetValueAsString(CurrentWeapon->GunType));
+
 	if (CurrentWeapon)
 	{
 		switch (CurrentWeapon->GunType)
@@ -397,17 +400,20 @@ void APlayerCharacter::SwapWeapon()
 			                                 "Shotgun");
 			break;
 		}
+
 		PlayAnimMontage(CurrentWeapon->EquipMontage);
 	}
 }
 
 void APlayerCharacter::FireWeapon()
 {
+	if (IsSprint) return;
+	
 	if (CurrentWeapon && !PlayerAnimInstance->Montage_IsPlaying(CurrentWeapon->FireMontage))
 	{
-		// GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
-		UE_LOG(LogTemp, Warning, TEXT("%f"), GetCharacterMovement()->MaxWalkSpeed);
 		PlayAnimMontage(CurrentWeapon->FireMontage);
+		// UE_LOG(LogTemp, Warning, TEXT("%s"), *CurrentWeapon->GetName());
+		// CurrentWeapon->Fire();
 	}
 }
 

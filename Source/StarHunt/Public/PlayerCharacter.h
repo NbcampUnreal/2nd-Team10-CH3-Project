@@ -118,10 +118,9 @@ private:
 	float SprintSpeedMultiplier;
 	float SprintSpeed;
 	float CameraBlendTime;
-
-	UAnimInstance* PlayerAnimInstance;
+	bool IsSprint;
 	
-	bool IsSpawnedWeapon;
+	UAnimInstance* PlayerAnimInstance;
 	
 	//Inventory
 	bool bIsInventoryOpen;

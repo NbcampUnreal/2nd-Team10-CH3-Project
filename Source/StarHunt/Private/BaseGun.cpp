@@ -45,7 +45,6 @@ void ABaseGun::Fire()
 	// 타이머로 발사 속도 제한
 	bIsFiring = true;
 	GetWorld()->GetTimerManager().SetTimer(FireRateTimerHandle, this, &ABaseGun::ResetFireTimer, FireRate, false);
-	UE_LOG(LogTemp, Warning, TEXT("Current Ammo : %d"), CurrentAmmo);
 }
 
 void ABaseGun::StopFire()
