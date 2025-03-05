@@ -3,18 +3,22 @@
 
 #include "BaseEnemy.h"
 #include "EnemyAIController.h"
+#include "ItemSpawnComponent.h"
+#include "AIEnum.h"
+#include "PlayerCharacter.h"
 #include "Animation/AnimInstance.h"
 #include "Animation/AnimMontage.h"
 #include "Animation/AnimSequence.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ABaseEnemy::ABaseEnemy()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	//PrimaryActorTick.bCanEverTick = true;
+	// PrimaryActorTick.bCanEverTick = true;
 	AIControllerClass = AEnemyAIController::StaticClass();
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
-
+	
 	PatrolPath=nullptr;
 	BehaviorTree=nullptr;
 	AttackMontage=nullptr;
@@ -24,12 +28,19 @@ ABaseEnemy::ABaseEnemy()
 	AttackRadius=0.0f;
 	DefendRadius=0.0f;
 	bIsDead=false;
+
+	// //HP Bar 설정
+	// HPBar=CreateDefaultSubobject<UWidgetComponent>(TEXT("HPBar"));
+	// HPBar->SetupAttachment(RootComponent);
+	// HPBar->SetWidgetSpace(EWidgetSpace::World);
 }
 
 // Called when the game starts or when spawned
 void ABaseEnemy::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	// UpdateHPBar();
 }
 
 
@@ -46,6 +57,7 @@ float ABaseEnemy::GetMaxHealth() const
 void ABaseEnemy::AddHealth(const float Amount)
 {
 	Health = FMath::Clamp(Health + Amount, 0.0f, MaxHealth);
+	// UpdateHPBar();
 }
 
 void ABaseEnemy::OnDeath()
@@ -70,15 +82,68 @@ void ABaseEnemy::OnDeath()
 			Brain->StopLogic("Dead");
 		}
 	}
-	
-	//Destroy();
+
+	//Destroy() 3초 뒤 호출
+	FTimerHandle DestroyTimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(
+		DestroyTimerHandle,
+		this,
+		&ABaseEnemy::DelayedDestroy,
+		3.0f,
+		false
+	);
 }
+
+void ABaseEnemy::DelayedDestroy()
+{
+	Destroy();
+}
+
+// void ABaseEnemy::UpdateHPBar() const
+// {
+// 	if (!HPBar) return;
+//
+// 	if (UUserWidget* WidgetInstance=HPBar->GetUserWidgetObject())
+// 	{
+// 		if (UProgressBar* HP=Cast<UProgressBar>(WidgetInstance->GetWidgetFromName(TEXT("HPBar"))))
+// 		{
+// 			const float Percent= MaxHealth>0.0f?Health/MaxHealth:0.0f;
+// 			HP->SetPercent(Percent);
+// 		}
+// 	}
+// 	
+// }
+//
+// void ABaseEnemy::Tick(float DeltaSeconds)
+// {
+// 	Super::Tick(DeltaSeconds);
+//
+// 	if (!HPBar&&!GetWorld()) return;
+// 	
+// 	APlayerCharacter* Player=Cast<APlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+// 	if (!Player) return;
+// 	//플레이어 위치
+// 	FVector PlayerLocation=Player->GetActorLocation();
+// 	//몬스터의 위치
+// 	FVector EnemyLocation=GetActorLocation();
+//
+// 	FRotator LookAtRotation=(PlayerLocation-EnemyLocation).Rotation();
+// 	if (UWidgetComponent* BarWidget=Cast<UWidgetComponent>(HPBar))
+// 	{
+// 		BarWidget->SetWorldRotation(FRotator(0.f, LookAtRotation.Yaw, 0.f));
+// 	}
+// }
 
 float ABaseEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
-
+	if (AEnemyAIController* AIController=Cast<AEnemyAIController>(GetController()))
+	{
+		AIController->SetAIState(EAIState::Frozen);
+		AIController->SetAttackTarget(DamageCauser);
+	}
 	Health = FMath::Clamp(Health - DamageAmount, 0.0f, MaxHealth);
+	// UpdateHPBar();
 	if (Health <= 0.0f) 
 	{
 		OnDeath();

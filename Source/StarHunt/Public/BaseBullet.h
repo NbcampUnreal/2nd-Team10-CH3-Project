@@ -36,6 +36,8 @@ public:
     void SetBulletDamage(float Damage);
 	UFUNCTION(BlueprintCallable)
 	float GetBulletDamage() const;
+	UFUNCTION(BlueprintCallable)
+	UProjectileMovementComponent* GetProjectileComp();
 
 protected:
 	// 총알 충돌 이벤트

@@ -9,10 +9,10 @@
 
 AMeleeEnemy::AMeleeEnemy()
 {
-	Score = 100;
-	Health = 500;
+	Score = 100.0f;
+	Health = 500.0f;
 	MaxHealth = Health;
-	Power=20;
+	Power=20.0f;
 	AttackRadius=150.0f;
 	DefendRadius=350.0f;
 	AttackRange=200.0f;
@@ -53,6 +53,7 @@ void AMeleeEnemy::HandleAttackMontageNotify(FName NotifyName, const FBranchingPo
 			FCollisionShape::MakeSphere(Radius),
 			Params
 		);
+		TSet<AActor*> DamagedActors; //중복 방지를 위한 Set
 		// 공격 범위에 걸린 액터들 중에 Player의 클래스에 해당하는게 있다면 데미지 적용
 		if (bHit)
 		{
@@ -60,24 +61,29 @@ void AMeleeEnemy::HandleAttackMontageNotify(FName NotifyName, const FBranchingPo
 			{
 				if (AActor* HitActor=Hit.GetActor())
 				{
-					if (ACharacter* HitCharacter=Cast<ACharacter>(HitActor))
+					if (!DamagedActors.Contains(HitActor)) //중복 검사, 한 액터당 한번의 Damage 적용
 					{
-						if (APlayerCharacter* Player=Cast<APlayerCharacter>(HitCharacter))
+						if (ACharacter* HitCharacter=Cast<ACharacter>(HitActor))
 						{
-							UGameplayStatics::ApplyDamage
-							(
-								Player,
-								Power,
-								GetController(),
-								this,
-								UDamageType::StaticClass()
-							);
+							if (APlayerCharacter* Player=Cast<APlayerCharacter>(HitCharacter))
+							{
+								UE_LOG(LogTemp, Warning, TEXT("Slash"));
+								UGameplayStatics::ApplyDamage
+								(
+									Player,
+									Power,
+									GetController(),
+									this,
+									UDamageType::StaticClass()
+								);
+								DamagedActors.Add(HitActor); //중복 방지 위해 Damage를 한번 적용한 대상 Set에 추가
+							}
 						}
 					}
 				}
 			}
 		}
-	}
+	}				
 }
 
 void AMeleeEnemy::SetMovementSpeed(const EMovementSpeed Speed)

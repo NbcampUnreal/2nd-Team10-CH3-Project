@@ -44,12 +44,21 @@ public:
 	UFUNCTION(Blueprintable)
 	void SetCurrentState(ECurrentCharacterState CharacterState);
 
+	UFUNCTION(BlueprintCallable)
+	float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+
 	
 protected:
 	virtual void BeginPlay() override;
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
+	float Health;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
+	float MaxHealth;
+	
 	UFUNCTION()
 	void Move(const FInputActionValue& value);
 	UFUNCTION()
@@ -114,3 +123,4 @@ private:
 
 	ABaseGun* Weapon;
 };
+

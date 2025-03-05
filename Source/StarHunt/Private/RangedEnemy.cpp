@@ -3,7 +3,10 @@
 
 #include "RangedEnemy.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "BaseBullet.h"
+#include "Kismet/GameplayStatics.h"
 #include "AIEnum.h"
+#include "GameFramework/ProjectileMovementComponent.h"
 
 ARangedEnemy::ARangedEnemy()
 {
@@ -39,5 +42,28 @@ void ARangedEnemy::SetMovementSpeed(const EMovementSpeed Speed)
 void ARangedEnemy::Attack()
 {
 	Super::Attack();
+	Fire();
+}
+
+void ARangedEnemy::Fire()
+{
+	if (!BulletClass) return;
+	FVector Start=GetMesh()->GetBoneLocation("pistol_cylinder",EBoneSpaces::WorldSpace);
+	FRotator SpawnRotation=GetActorRotation();
+
+	if (ACharacter* Player=Cast<ACharacter>(GetWorld()->GetFirstPlayerController()->GetPawn()))
+	{
+		FVector Direction=(Player->GetActorLocation()-Start).GetSafeNormal();
+		DrawDebugLine(GetWorld(),Start,Start+Direction*5000,FColor::Red,false,1.0f,0,2.0f);
+		if (ABaseBullet* Bullet=GetWorld()->SpawnActor<ABaseBullet>(BulletClass,Start,SpawnRotation))
+		{
+			Bullet->SetBulletDamage(Power);
+			if (UProjectileMovementComponent* MovementComp=Bullet->GetProjectileComp())
+			{
+				MovementComp->bRotationFollowsVelocity=true;
+				MovementComp->Velocity=Direction*MovementComp->GetMaxSpeed();
+			}
+		}
+	}
 }
 
