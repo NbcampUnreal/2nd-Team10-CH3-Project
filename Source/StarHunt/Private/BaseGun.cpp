@@ -31,6 +31,9 @@ ABaseGun::ABaseGun()
 	CurrentAmmo = MaxAmmo;
 	bIsFiring = false;
 	BulletClass = ABaseBullet::StaticClass();
+
+	static ConstructorHelpers::FObjectFinder<UAnimMontage> AnimMontage(TEXT("/Game/Characters/RetargetWraithAnim/AM_MM_Unequip.AM_MM_Unequip"));
+	UnEquipMontage = AnimMontage.Object;
 }
 
 void ABaseGun::Fire()
@@ -60,6 +63,8 @@ void ABaseGun::Reload()
 	}
 
 	CurrentAmmo = MaxAmmo;
+
+	UE_LOG(LogTemp, Warning, TEXT("Current Ammo : %d"), CurrentAmmo);
 }
 
 
