@@ -4,6 +4,7 @@
 #include "BaseEnemy.h"
 #include "EnemyAIController.h"
 #include "ItemSpawnComponent.h"
+#include "ShooterGameInstance.h"
 #include "AIEnum.h"
 #include "PlayerCharacter.h"
 #include "Animation/AnimInstance.h"
@@ -63,7 +64,13 @@ void ABaseEnemy::AddHealth(const float Amount)
 void ABaseEnemy::OnDeath()
 {
 	// Deliver Score to Game Instance
-
+	if (UWorld* World=GetWorld())
+	{
+		if (UShooterGameInstance* GameInstance=Cast<UShooterGameInstance>(World->GetGameInstance()))
+		{
+			GameInstance->AddToScore(Score);
+		}
+	}
 	if (USkeletalMeshComponent* SMesh=GetMesh())
 	{
 		//래그돌 효과
