@@ -15,7 +15,7 @@ AWraithPlayerController::AWraithPlayerController()
 	  Swap2(nullptr),
 	  Swap3(nullptr),
 	  Fire(nullptr),
-	  Reload(nullptr)
+	  Reload(nullptr),
     QuickSlot1(nullptr),
     InventoryOpenAction(nullptr),
     EquipmentOpenAction(nullptr)
