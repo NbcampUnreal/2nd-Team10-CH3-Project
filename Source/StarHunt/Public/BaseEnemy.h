@@ -11,6 +11,7 @@
 //전방 선언
 enum class EMovementSpeed : uint8;
 class UItemSpawnComponent;
+class UWidgetComponent;
 //Delegate 선언
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAttackEnd);
 
@@ -52,6 +53,8 @@ protected:
 	float MaxHealth;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
 	float Health;
+	// UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
+	// UWidgetComponent* HPBar;
 
 	//사거리 관련 변수
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
@@ -109,5 +112,9 @@ public:
 	float GetDefendRadius() const;
 	UFUNCTION()
 	void DelayedDestroy();
+	// UFUNCTION()
+	// void UpdateHPBar() const;
+
+	// virtual void Tick(float DeltaSeconds) override;
 };
 
