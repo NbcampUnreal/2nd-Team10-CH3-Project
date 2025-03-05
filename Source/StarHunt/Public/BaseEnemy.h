@@ -10,7 +10,7 @@
 
 //전방 선언
 enum class EMovementSpeed : uint8;
-
+class UItemSpawnComponent;
 //Delegate 선언
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAttackEnd);
 
@@ -26,8 +26,8 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-
+	
+	
 	//Power of Character
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Power")
 	float Power;
@@ -107,5 +107,7 @@ public:
 	float GetAttackRadius() const;
 	UFUNCTION()
 	float GetDefendRadius() const;
+	UFUNCTION()
+	void DelayedDestroy();
 };
 
