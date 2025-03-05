@@ -23,7 +23,7 @@ public:
 
 	void SetSlotIndex(EInventoryType ItemType, const int32 Index);
 	virtual void UpdateSlot();
-	void UpdateSlotAt(int32 Index);
+	virtual void UpdateSlotAt(int32 Index);
 
 	virtual void UpdateUI();
 

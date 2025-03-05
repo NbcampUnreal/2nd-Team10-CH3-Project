@@ -34,3 +34,8 @@ bool UGunFixtureDragDropOperation::DropEquipment(int32 DropSlotIndex, EInventory
 	return false;
 }
 
+bool UGunFixtureDragDropOperation::DropQuickSlot(int32 DropSlotIndex, EInventoryType DropSlotType)
+{
+	return false;
+}
+

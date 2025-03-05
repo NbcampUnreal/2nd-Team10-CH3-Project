@@ -53,3 +53,16 @@ bool UInventoryDragDropOperation::DropEquipment(int32 DropSlotIndex, EInventoryT
 	}
 	return false;
 }
+
+bool UInventoryDragDropOperation::DropQuickSlot(int32 DropSlotIndex, EInventoryType DropSlotType)
+{
+	if (SlotType == DropSlotType)
+	{
+		if (UItemSubsystem* ItemSubsystem = UItemBlueprintFunctionLibrary::GetItemSubsystem())
+		{
+			ItemSubsystem->bSetQuickSlotPointInventoryIndex(DropSlotIndex, DropSlotType, SlotIndex);
+			return true;
+		}
+	}
+	return false;
+}

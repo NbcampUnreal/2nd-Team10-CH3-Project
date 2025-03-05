@@ -97,6 +97,8 @@ protected:
 	void StopFireWeapon();
 	UFUNCTION()
 	void ReloadWeapon();
+	UFUNCTION()
+	void UseQuickSlot0();
 
 	UFUNCTION(BlueprintCallable)
 	void DestroyCurrentWeapon();

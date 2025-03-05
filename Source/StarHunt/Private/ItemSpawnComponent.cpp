@@ -4,7 +4,7 @@
 #include "ItemSpawnComponent.h"
 #include "SpawnItemRow.h"
 #include "DropItemActor.h"
-#include "DropItemActor.h"
+#include "Kismet/KismetMathLibrary.h"
 
 // Sets default values for this component's properties
 UItemSpawnComponent::UItemSpawnComponent()
@@ -25,14 +25,28 @@ void UItemSpawnComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 	for (FSpawnItemRow* SpawnItemRow : SpawnItemRows)
 	{
-		DropItemIDs.Add(SpawnItemRow->ItemID);
+		if (bIsSpawnedItem(SpawnItemRow->SpawnRate))
+		{
+			DropItemIDs.Add(SpawnItemRow->ItemID);
+		}
 	}
 
 	if (GetWorld() && GetOwner())
 	{
-		ADropItemActor* DropItemActor = GetWorld()->SpawnActor<ADropItemActor>(DropItemActorClass, GetOwner()->GetActorLocation(), GetOwner()->GetActorRotation());
-		DropItemActor->SetItemIDs(DropItemIDs);
+		if (ADropItemActor* DropItemActor = GetWorld()->SpawnActor<ADropItemActor>(DropItemActorClass, GetOwner()->GetActorLocation(), GetOwner()->GetActorRotation()))
+		{
+			DropItemActor->SetItemIDs(DropItemIDs);
+		}
 	}
+}
+
+bool UItemSpawnComponent::bIsSpawnedItem(float Rate)
+{
+	if (Rate < UKismetMathLibrary::RandomFloat())
+	{
+		return true;
+	}
+	return false;
 }
 
 

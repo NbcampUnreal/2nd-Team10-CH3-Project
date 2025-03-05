@@ -14,90 +14,86 @@ AWraithPlayerController::AWraithPlayerController()
 	  Swap1(nullptr),
 	  Swap2(nullptr),
 	  Swap3(nullptr),
-	  InventoryOpenAction(nullptr),
-	  EquipmentOpenAction(nullptr),
 	  Fire(nullptr),
-	  Reload(nullptr)
+	  Reload(nullptr),
+    QuickSlot1(nullptr),
+    InventoryOpenAction(nullptr),
+    EquipmentOpenAction(nullptr)
 {
 }
 
 void AWraithPlayerController::ShowInventory()
 {
-	if (InventoryHUDWidgetClass)
-	{
-		InventoryHUDWidgetInstance = CreateWidget<UUserWidget>(this, InventoryHUDWidgetClass);
-		if (InventoryHUDWidgetInstance)
-		{
-			InventoryHUDWidgetInstance->AddToViewport();
-		}
-	}
-}
+    if (ItemShowHUDWidgetClass)
+    {
+        if (!ItemShowHUDWidgetInstance)
+        {
+            ItemShowHUDWidgetInstance = CreateWidget<UItemShowWidget>(this, ItemShowHUDWidgetClass);
 
+        }
+        if (ItemShowHUDWidgetInstance)
+        {
+            ItemShowHUDWidgetInstance->AddToViewport();
+            ItemShowHUDWidgetInstance->ShowInventory();
+        }
+    }
+}
 void AWraithPlayerController::CloseInventory()
 {
-	if (InventoryHUDWidgetInstance)
-	{
-		InventoryHUDWidgetInstance->RemoveFromParent();
-		InventoryHUDWidgetInstance = nullptr;
-	}
+    if (ItemShowHUDWidgetInstance)
+    {
+        ItemShowHUDWidgetInstance->CloseInventory();
+    }
 }
 
 void AWraithPlayerController::ShowEquipment()
 {
-	if (EquipmentHUDWidgetClass)
-	{
-		EquipmentHUDWidgetInstance = CreateWidget<UUserWidget>(this, EquipmentHUDWidgetClass);
-		if (EquipmentHUDWidgetInstance)
-		{
-			EquipmentHUDWidgetInstance->AddToViewport();
-		}
-	}
+    if (ItemShowHUDWidgetClass)
+    {
+        if (!ItemShowHUDWidgetInstance)
+        {
+            ItemShowHUDWidgetInstance = CreateWidget<UItemShowWidget>(this, ItemShowHUDWidgetClass);
+
+        }
+        if (ItemShowHUDWidgetInstance)
+        {
+            ItemShowHUDWidgetInstance->AddToViewport();
+            ItemShowHUDWidgetInstance->ShowEquipment();
+        }
+    }
 }
 
 void AWraithPlayerController::CloseEquipment()
 {
-	if (EquipmentHUDWidgetInstance)
-	{
-		EquipmentHUDWidgetInstance->RemoveFromParent();
-		EquipmentHUDWidgetInstance = nullptr;
-	}
+    if (ItemShowHUDWidgetInstance)
+    {
+        ItemShowHUDWidgetInstance->CloseEquipment();
+    }
 }
-
-void AWraithPlayerController::ShowDropItems(TArray<TSharedPtr<FString>>* DropItems)
-{
-	OnDropItemsChange.Clear();
-	if (DropItemsHUDWidgetClass && DropItems && DropItems->Num() > 0)
-	{
-		DropItemsHUDWidgetInstance = CreateWidget<UDropItemsWidget>(this, DropItemsHUDWidgetClass);
-		if (DropItemsHUDWidgetInstance)
-		{
-			DropItemsHUDWidgetInstance->AddToViewport();
-			DropItemsHUDWidgetInstance->InitInventory(DropItems);
-		}
-	}
-}
-
 void AWraithPlayerController::ShowDropItems(TArray<ADropItemActor*>* DropItemActors)
 {
-	if (DropItemsHUDWidgetClass && DropItemActors && DropItemActors->Num() > 0)
-	{
-		DropItemsHUDWidgetInstance = CreateWidget<UDropItemsWidget>(this, DropItemsHUDWidgetClass);
-		if (DropItemsHUDWidgetInstance)
-		{
-			DropItemsHUDWidgetInstance->AddToViewport();
-			DropItemsHUDWidgetInstance->InitInventory(DropItemActors);
-		}
-	}
+    if (ItemShowHUDWidgetClass)
+    {
+        if (!ItemShowHUDWidgetInstance)
+        {
+            ItemShowHUDWidgetInstance = CreateWidget<UItemShowWidget>(this, ItemShowHUDWidgetClass);
+
+        }
+        if (ItemShowHUDWidgetInstance)
+        {
+            ItemShowHUDWidgetInstance->AddToViewport();
+            ItemShowHUDWidgetInstance->ShowDropItems(DropItemActors);
+        }
+    }
 }
 
 void AWraithPlayerController::CloseDropItems()
 {
-	if (DropItemsHUDWidgetInstance)
-	{
-		DropItemsHUDWidgetInstance->RemoveFromParent();
-		DropItemsHUDWidgetInstance = nullptr;
-	}
-}
+    if (ItemShowHUDWidgetInstance)
+    {
+        ItemShowHUDWidgetInstance->CloseDropItems();
+    }
+} 
 
 void AWraithPlayerController::BeginPlay()
 {

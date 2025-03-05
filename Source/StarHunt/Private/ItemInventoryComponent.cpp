@@ -7,7 +7,9 @@
 #include "BaseGun.h"
 #include "GameFramework/Character.h"
 #include "DropItemActor.h"
+#include "ActivateItem.h"
 #include "WraithPlayerController.h"
+
 // Sets default values for this component's properties
 UItemInventoryComponent::UItemInventoryComponent()
 {
@@ -17,6 +19,7 @@ UItemInventoryComponent::UItemInventoryComponent()
 	// ...
 	CurrentEquipmentIndex = 0;
 	CollisionComponent = CreateDefaultSubobject<USphereComponent>(TEXT("CollisionComponent"));
+	ActivateItem = CreateDefaultSubobject<UActivateItem>(TEXT("ActivateItem"));
 }
 
 
@@ -39,6 +42,27 @@ void UItemInventoryComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	if (UItemSubsystem* ItemSubsystem = UItemBlueprintFunctionLibrary::GetItemSubsystem())
 	{
 		ItemSubsystem->OnEquipmentChange.Remove(GunChangeHandler);
+	}
+}
+
+void UItemInventoryComponent::UseQuickSlotIem(int32 QuickSlotIndex)
+{
+	if (UItemSubsystem* ItemSubsystem = UItemBlueprintFunctionLibrary::GetItemSubsystem())
+	{
+		if (TSharedPtr<FInventoryItem> InventoryItem = ItemSubsystem->GetQuickSlotPointInventoryIndex(QuickSlotIndex).Pin())
+		{
+			if (IActivateItemInterface* ActivateItemInterface = ActivateItem->GetActivateActionClass())
+			{
+				if (ItemSubsystem->RemoveItem(EInventoryType::Consumable, InventoryItem->InventoryIndex))
+				{
+					ActivateItemInterface->SetStatus(InventoryItem->ItemID);
+					ActivateItemInterface->ActivateItem(GetOwner());
+					ItemSubsystem->OnQuickSlotChange.Broadcast(QuickSlotIndex);
+				}
+				// 소모품만 생각, 소모품도 아닐경우는 나중에 고려
+				
+			}
+		}
 	}
 }
 
@@ -67,11 +91,50 @@ ABaseGun* UItemInventoryComponent::GetWeapon(int32 EquipmentIndex)
 				}
 			}
 		}
-		
 	}
 
 	return Gun;
 }
+
+TSubclassOf<ABaseGun> UItemInventoryComponent::GetWeaponClass(int32 EquipmentIndex)
+{
+	if (UItemSubsystem* ItemSubsystem = UItemBlueprintFunctionLibrary::GetItemSubsystem())
+	{
+		if (TSharedPtr<FString> ItemID = ItemSubsystem->GetEquipmentGunItemID(EquipmentIndex))
+		{
+			if (FGunItemStateRow* GunItemStateRow = ItemSubsystem->GetGunItemStateRow(*ItemID))
+			{
+				if (UClass* LoadedActorClass = GunItemStateRow->GunSoftClass.LoadSynchronous())
+				{
+					return LoadedActorClass->StaticClass();
+				}
+			}
+		}
+	}
+
+	return nullptr;
+}
+
+FGunItemStateRow* UItemInventoryComponent::GetWeaponStatus(int32 EquipmentIndex)
+{
+	if (UItemSubsystem* ItemSubsystem = UItemBlueprintFunctionLibrary::GetItemSubsystem())
+	{
+		if (TSharedPtr<FString> ItemID = ItemSubsystem->GetEquipmentGunItemID(EquipmentIndex))
+		{
+			if (FGunItemStateRow* GunItemStateRow = ItemSubsystem->GetGunItemStateRow(*ItemID))
+			{
+				return GunItemStateRow;
+			}
+		}
+	}
+	return nullptr;
+}
+
+void UItemInventoryComponent::SetWeapon(ABaseGun* BaseGun)
+{
+	Gun = BaseGun;
+}
+
 
 void UItemInventoryComponent::WeaponChange(int32 EquipmentIndex)
 {
