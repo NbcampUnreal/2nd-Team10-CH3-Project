@@ -6,15 +6,16 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 #include "Delegates/DelegateCombinations.h"
 #include "ItemDB.h"
+#include "ActivateItem.h"
 #include "ItemSubsystem.generated.h"
-
 
 struct FInventoryItem
 {
 	FString ItemID;
 	int32 Stock;
-	FInventoryItem(FString Id = "", int32 Stock = 0)
-		:ItemID(Id), Stock(Stock)
+	int32 InventoryIndex;
+	FInventoryItem(FString Id = "", int32 Stock = 0, int32 InventoryIndex = -1)
+		:ItemID(Id), Stock(Stock),InventoryIndex(InventoryIndex)
 	{
 	}
 	bool operator==(const FInventoryItem& Other) const
@@ -49,7 +50,9 @@ struct FEquipment
  */
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnInventoryChange, int32);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnEquipmentChange, int32);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnQuickSlotChange, int32);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnGunFixtureChange, const int32, EGunFixtureType);
+
 
 UCLASS()
 class STARHUNT_API UItemSubsystem : public UGameInstanceSubsystem
@@ -70,6 +73,7 @@ public:
 	// 아이템 관련 Get
 	const TMap<EInventoryType, TArray<TSharedPtr<FInventoryItem>>>* GetInventorys() const;
 	const TArray<TSharedPtr<FInventoryItem>>* GetInventory(EInventoryType ItemType) const;
+	const TSharedPtr<FInventoryItem> GetInventoryPtr(EInventoryType ItemType, int32 InventoryIndex) const;
 	const int32 GetInventoryEmptyNum(EInventoryType ItemType) const;
 	const int32 GetInventoryMaxStock() const;
 
@@ -94,6 +98,11 @@ public:
 	const TMap<EGunFixtureType, TSharedPtr<FString>> GetEquipmentGunFixtureItemIDs(const int32 EquipmentIndex) const;
 	const TSharedPtr<FString> GetEquipmentGunFixtureItemID(const int32 EquipmentIndex, EGunFixtureType GunFixtureType) const;
 
+	//퀵슬롯 관련 Get, Set
+	const TWeakPtr<FInventoryItem> GetQuickSlotPointInventoryIndex(int32 QuickSlotIndex) const;
+	bool bSetQuickSlotPointInventoryIndex(int32 QuickSlotIndex, EInventoryType ItemType, int32 InventoryIndex);
+	void SetQuickSlotEmpty(int32 QuickSlotIndex);
+
 
 	//아이템관련 DB
 	void SetItemDb(TSubclassOf<UItemDB> DB);
@@ -114,10 +123,13 @@ public:
 	FOnInventoryChange OnInventoryChange;
 	FOnEquipmentChange OnEquipmentChange;
 	FOnGunFixtureChange OnGunFixtureChange;
+	FOnQuickSlotChange OnQuickSlotChange;
 
 private:
 	TMap<EInventoryType, TArray<TSharedPtr<FInventoryItem>>> Inventorys;
-	TArray< TSharedPtr<FEquipment>> Equipments;
+	TArray<TSharedPtr<FEquipment>> Equipments;
+	TArray<TWeakPtr<FInventoryItem>> QuickSlotPointInventoryIndexs;
+
 
 	int32 InventoryMaxStock;
 	int32 EquipmentMaxStock;

@@ -20,6 +20,8 @@ public:
 	UDataTable* SpawnRateTable;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item|Spawn")
 	TSubclassOf<ADropItemActor> DropItemActorClass;
-public:	
+
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
+	virtual bool bIsSpawnedItem(float Rate);
 };

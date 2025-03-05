@@ -55,3 +55,8 @@ bool UDropItemDragDropOperation::DropEquipment(int32 DropSlotIndex, EInventoryTy
 
 	return false;
 }
+
+bool UDropItemDragDropOperation::DropQuickSlot(int32 DropSlotIndex, EInventoryType DropSlotType)
+{
+	return false;
+}

@@ -2,6 +2,7 @@
 
 
 #include "ItemSubsystem.h"
+#include "HealingItemActivate.h"
 
 UItemSubsystem::UItemSubsystem()
 {
@@ -19,7 +20,7 @@ void UItemSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	Inventorys.Add(EInventoryType::GunFixture, TArray<TSharedPtr<FInventoryItem>>());
 	Inventorys.Add(EInventoryType::Consumable, TArray<TSharedPtr<FInventoryItem>>());
 
-
+	QuickSlotPointInventoryIndexs.SetNum(1);
 
 	for (auto& InventoryPair : Inventorys)
 	{
@@ -95,7 +96,7 @@ bool UItemSubsystem::AddItem(const FString& ItemId)
 			}
 			if (EmptyIndex != -1)
 			{
-				(*Inventory)[EmptyIndex] = MakeShared<FInventoryItem>(FInventoryItem(ItemId, 1));
+				(*Inventory)[EmptyIndex] = MakeShared<FInventoryItem>(FInventoryItem(ItemId, 1, EmptyIndex));
 				OnInventoryChange.Broadcast(EmptyIndex);
 				return true;
 			}
@@ -111,7 +112,16 @@ bool UItemSubsystem::SwapItem(EInventoryType ItemType, const int32 IndexFrom, co
 	{
 		if (TargetInventory->IsValidIndex(IndexFrom) && TargetInventory->IsValidIndex(IndexTo))
 		{
+			if ((*TargetInventory)[IndexFrom] && (*TargetInventory)[IndexFrom].IsValid())
+			{
+				(*TargetInventory)[IndexFrom]->InventoryIndex = IndexTo;
+			}
+			if ((*TargetInventory)[IndexTo] && (*TargetInventory)[IndexTo].IsValid())
+			{
+				(*TargetInventory)[IndexTo]->InventoryIndex = IndexFrom;
+			}
 			TargetInventory->Swap(IndexFrom, IndexTo);
+			
 			OnInventoryChange.Broadcast(IndexFrom);
 			OnInventoryChange.Broadcast(IndexTo);
 			return true;
@@ -152,8 +162,7 @@ bool UItemSubsystem::RemoveItem(EInventoryType ItemType, int32 InventoryIndex)
 					Item->Stock--;
 					if (Item->Stock <= 0)
 					{
-						(*TargetInventory)[InventoryIndex] = nullptr;
-
+						(*TargetInventory)[InventoryIndex].Reset();
 					}
 					OnInventoryChange.Broadcast(InventoryIndex);
 					return true;
@@ -220,6 +229,18 @@ const TMap<EInventoryType, TArray<TSharedPtr<FInventoryItem>>>* UItemSubsystem::
 const TArray<TSharedPtr<FInventoryItem>>* UItemSubsystem::GetInventory(EInventoryType ItemType) const
 {
 	return Inventorys.Find(ItemType);
+}
+
+const TSharedPtr<FInventoryItem> UItemSubsystem::GetInventoryPtr(EInventoryType ItemType, int32 InventoryIndex) const
+{
+	if (const TArray<TSharedPtr<FInventoryItem>>* Inventory = Inventorys.Find(ItemType))
+	{
+		if (Inventory->IsValidIndex(InventoryIndex))
+		{
+			return (*Inventory)[InventoryIndex];
+		}
+	}
+	return nullptr;
 }
 
 const int32 UItemSubsystem::GetInventoryEmptyNum(EInventoryType ItemType) const
@@ -488,6 +509,74 @@ const TSharedPtr<FString> UItemSubsystem::GetEquipmentGunFixtureItemID(const int
 		}
 	}
 	return nullptr;
+}
+
+//회복 아이템 밖에없으니 일단 구현
+//bool UItemSubsystem::bUseQuickSlotItem(int32 QuickSlotIndex)
+//{
+//	if (QuickSlotPointInventoryIndexs.IsValidIndex(QuickSlotIndex))
+//	{
+//		if (TSharedPtr<FInventoryItem> QuickSlotItem = QuickSlotPointInventoryIndexs[QuickSlotIndex])
+//		{
+//			if (QuickSlotItem.IsValid())
+//			{
+//				RemoveItem(EInventoryType::Consumable, QuickSlotItem->InventoryIndex);
+//			}
+//		}
+//	}
+//	return false;
+//}
+//
+//IActivateItemInterface* UItemSubsystem::GetActivateItem(int32 QuickSlotIndex)
+//{
+//	if (QuickSlotPointInventoryIndexs.IsValidIndex(QuickSlotIndex))
+//	{
+//		if (TSharedPtr<FInventoryItem> InventoryItem = QuickSlotPointInventoryIndexs[QuickSlotIndex])
+//		{
+//			if (InventoryItem.IsValid())
+//			{
+//				if (FHealingItemStateRow* HealingItemStateRow = GetHealingItemStateRow(InventoryItem->ItemID))
+//				{
+//					return ActivateItem->GetActivateActionClass();
+//				}
+//
+//			}
+//		}
+//	}
+//	return nullptr;
+//}
+
+const TWeakPtr<FInventoryItem> UItemSubsystem::GetQuickSlotPointInventoryIndex(int32 QuickSlotIndex) const
+{
+	if (QuickSlotPointInventoryIndexs.IsValidIndex(QuickSlotIndex))
+	{
+		return QuickSlotPointInventoryIndexs[QuickSlotIndex];
+	}
+	return nullptr;
+}
+
+bool UItemSubsystem::bSetQuickSlotPointInventoryIndex(int32 QuickSlotIndex, EInventoryType ItemType, int32 InventoryIndex)
+{
+	if (QuickSlotPointInventoryIndexs.IsValidIndex(QuickSlotIndex))
+	{
+		if (TArray<TSharedPtr<FInventoryItem>>* Items = Inventorys.Find(ItemType))
+		{
+			if (Items->IsValidIndex(InventoryIndex))
+			{
+				QuickSlotPointInventoryIndexs[QuickSlotIndex] = (*Items)[InventoryIndex];
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+void UItemSubsystem::SetQuickSlotEmpty(int32 QuickSlotIndex)
+{
+	if (QuickSlotPointInventoryIndexs.IsValidIndex(QuickSlotIndex))
+	{
+		QuickSlotPointInventoryIndexs[QuickSlotIndex] = nullptr;
+	}
 }
 
 const TArray<TSharedPtr<FEquipment>>* UItemSubsystem::GetEquipments() const

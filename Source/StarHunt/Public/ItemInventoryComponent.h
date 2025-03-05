@@ -5,11 +5,13 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "Components/WidgetComponent.h"
+#include "ItemStateRow.h"
 #include "ItemInventoryComponent.generated.h"
 
 class ABaseGun;
 class USphereComponent;
 class ADropItemActor;
+class UActivateItem;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class STARHUNT_API UItemInventoryComponent : public UActorComponent
@@ -24,6 +26,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	ABaseGun* GetWeapon(int32 EquipmentIndex);
 	UFUNCTION(BlueprintCallable)
+	TSubclassOf<ABaseGun> GetWeaponClass(int32 EquipmentIndex);
+	FGunItemStateRow* GetWeaponStatus(int32 EquipmentIndex);
+	UFUNCTION(BlueprintCallable)
+	void SetWeapon(ABaseGun* BaseGun);
+
+	UFUNCTION(BlueprintCallable)
 	void WeaponChange(int32 EquipmentIndex);
 	UFUNCTION(BlueprintCallable)
 	void DistoryWeapon();
@@ -33,6 +41,8 @@ public:
 
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
+	void UseQuickSlotIem(int32 QuickSlotIndex);
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon")
 	ABaseGun* Gun;
@@ -44,6 +54,7 @@ public:
 	FDelegateHandle GunChangeHandler;
 	TArray<TSharedPtr<FString>*> OverlappingItems;
 	TArray<ADropItemActor*> OverlappingItemActors;
+	UActivateItem* ActivateItem;
 };
 
 

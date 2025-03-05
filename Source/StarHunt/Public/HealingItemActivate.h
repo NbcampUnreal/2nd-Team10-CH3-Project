@@ -17,10 +17,12 @@ class STARHUNT_API UHealingItemActivate : public UObject, public IActivateItemIn
 	GENERATED_BODY()
 public:
 	UHealingItemActivate();
-	UHealingItemActivate(FHealingItemStateRow& HealingItemStateRow);
-	// IActivateItemInterfaceÀ»(¸¦) ÅëÇØ »ó¼ÓµÊ
+
+	// IActivateItemInterfaceì„(ë¥¼) í†µí•´ ìƒì†ë¨
 	void ActivateItem(AActor* Activator) override;
+	void SetStatus(const FString& ItemID) override;
 
 private:
 	float HealingAmount;
+
 };

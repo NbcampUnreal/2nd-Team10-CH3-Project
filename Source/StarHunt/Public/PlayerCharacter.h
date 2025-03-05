@@ -80,6 +80,8 @@ protected:
 	void Swap3();
 	UFUNCTION()
 	void SwapWeapon(int32 EquipmentIndex);
+	UFUNCTION()
+	void UseQuickSlot0();
 
 	UFUNCTION(BlueprintCallable)
 	void DestroyCurrentWeapon();

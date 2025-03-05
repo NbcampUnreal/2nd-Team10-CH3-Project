@@ -4,14 +4,18 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
-#include "AcivateItem.generated.h"
+#include "HealingItemActivate.h"
+#include "ActivateItem.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class STARHUNT_API UAcivateItem : public UObject
+class STARHUNT_API UActivateItem : public UObject
 {
 	GENERATED_BODY()
 	
+public:
+	UActivateItem();
+	IActivateItemInterface* GetActivateActionClass();
 };

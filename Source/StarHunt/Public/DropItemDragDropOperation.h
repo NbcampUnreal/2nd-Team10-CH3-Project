@@ -27,4 +27,6 @@ public:
 
 	bool DropEquipment(int32 DropSlotIndex, EInventoryType DropSlotType) override;
 
+	bool DropQuickSlot(int32 DropSlotIndex, EInventoryType DropSlotType) override;
+
 };

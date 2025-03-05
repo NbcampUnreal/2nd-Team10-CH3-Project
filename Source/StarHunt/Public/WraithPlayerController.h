@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
-#include "DropItemsWidget.h"
+#include "ItemShowWidget.h"
 #include "WraithPlayerController.generated.h"
 
 
@@ -48,17 +48,9 @@ public:
 	UInputAction* EquipmentOpenAction;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
 	UInputAction* DropItemsOpenAction;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
+	UInputAction* QuickSlot1;
 	
-	//Inventory UI
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
-	TSubclassOf<UUserWidget> InventoryHUDWidgetClass;
-	UUserWidget* InventoryHUDWidgetInstance;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
-	TSubclassOf<UUserWidget> EquipmentHUDWidgetClass;
-	UUserWidget* EquipmentHUDWidgetInstance;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
-	TSubclassOf<UDropItemsWidget> DropItemsHUDWidgetClass;
-	UDropItemsWidget* DropItemsHUDWidgetInstance;
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	void ShowInventory();
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
@@ -72,6 +64,10 @@ public:
 	void ShowDropItems(TArray<ADropItemActor*>* DropItemActors);
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	void CloseDropItems();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<UItemShowWidget> ItemShowHUDWidgetClass;
+	UItemShowWidget* ItemShowHUDWidgetInstance;
 
 	FOnDropItemsChange OnDropItemsChange;
 protected:

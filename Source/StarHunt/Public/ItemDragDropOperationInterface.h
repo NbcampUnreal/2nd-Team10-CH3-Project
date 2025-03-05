@@ -25,4 +25,5 @@ class STARHUNT_API IItemDragDropOperationInterface
 public:
 	virtual bool DropInventory(int32 DropSlotIndex, EInventoryType DropSlotType) = 0;
 	virtual bool DropEquipment(int32 DropSlotIndex, EInventoryType DropSlotType) = 0;
+	virtual bool DropQuickSlot(int32 DropSlotIndex, EInventoryType DropSlotType) = 0;
 };

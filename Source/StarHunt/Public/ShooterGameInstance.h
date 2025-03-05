@@ -32,7 +32,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "GameData")
 	void AddToScore(int32 Amount);
 
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<UItemDB> ItemDBClass;
 };

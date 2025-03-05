@@ -35,3 +35,8 @@ bool UEquipmentDragDropOperation::DropEquipment(int32 DropSlotIndex, EInventoryT
 
 	return false;
 }
+
+bool UEquipmentDragDropOperation::DropQuickSlot(int32 DropSlotIndex, EInventoryType DropSlotType)
+{
+	return false;
+}

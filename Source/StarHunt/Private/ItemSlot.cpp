@@ -36,6 +36,7 @@ void UItemSlot::UpdateSlot()
 		{
 			BaseItemStateRow = ItemSubsystem->GetBaseItemStateRow(*ItemID);
 			GunItemStateRow = ItemSubsystem->GetGunItemStateRow(*ItemID);
+			InventoryItem = ItemSubsystem->GetInventoryPtr(SlotType, SlotIndex);
 			if (GunItemStateRow)
 			{
 				GunFixtureItemStateRow = nullptr;
@@ -73,19 +74,35 @@ void UItemSlot::UpdateUI()
 		if (TSharedPtr<FString> ItemID = ItemSubsystem->GetInventoryItemID(SlotType, SlotIndex))
 		{
 			BaseItemStateRow = ItemSubsystem->GetBaseItemStateRow(*ItemID);
-			if (UTexture2D* Texture2D = Cast<UTexture2D>(BaseItemStateRow->InventoryIcon))
+
+			int32 Stock = InventoryItem.Pin()->Stock;
+			if (Stock > 1)
 			{
-				if (ItemImage)
+				ItemCount->SetText(FText::AsNumber(InventoryItem.Pin()->Stock));
+			}
+			else
+			{
+				ItemCount->SetText(FText::GetEmpty());
+			}
+			if (ItemImage)
+			{
+				if (UTexture2D* Texture2D = Cast<UTexture2D>(BaseItemStateRow->InventoryIcon))
 				{
 					ItemImage->SetBrushFromTexture(Texture2D);
-					return;
+				}
+				else if(DefaultImageTexture)
+				{
+					ItemImage->SetBrushFromTexture(DefaultImageTexture);
 				}
 			}
 		}
-
-		if (ItemImage && DefaultImageTexture)
+		else
 		{
-			ItemImage->SetBrushFromTexture(DefaultImageTexture);
+			ItemCount->SetText(FText::GetEmpty());
+			if (ItemImage && DefaultImageTexture)
+			{
+				ItemImage->SetBrushFromTexture(DefaultImageTexture);
+			}
 		}
 	}
 }
@@ -107,9 +124,9 @@ void UItemSlot::NativeOnDragDetected(const FGeometry& InGeometry, const FPointer
 				if (UClass* DragWidgetInstance = DragWidgetClass.LoadSynchronous())
 				{
 					UBaseSlot* DragWidget = CreateWidget<UBaseSlot>(GetWorld(), DragWidgetInstance);
-					if (DragWidget)
+					if (DragWidget && DragWidget->ItemImage)
 					{
-						DragWidget->ItemImage->SetBrush(ItemImage->GetBrush());
+						DragWidget->ItemImage->SetBrushFromTexture(BaseItemStateRow->InventoryIcon);
 						InventoryDragDropOperation->DefaultDragVisual = DragWidget;
 					}
 				}

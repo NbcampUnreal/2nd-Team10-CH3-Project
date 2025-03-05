@@ -203,6 +203,15 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 					&APlayerCharacter::ShowDropItems
 				);
 			}
+			if (PlayerController->QuickSlot1)
+			{
+				EnhancedInput->BindAction(
+					PlayerController->QuickSlot1,
+					ETriggerEvent::Started,
+					this,
+					&APlayerCharacter::UseQuickSlot0
+				);
+			}
 		}
 	}
 }
@@ -336,6 +345,14 @@ void APlayerCharacter::SwapWeapon(int32 EquipmentIndex)
 		}
 
 		PlayAnimMontage(CurrentWeapon->EquipMontage);
+	}
+}
+
+void APlayerCharacter::UseQuickSlot0()
+{
+	if (ItemInventoryComponent)
+	{
+		ItemInventoryComponent->UseQuickSlotIem(0);
 	}
 }
 

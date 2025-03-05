@@ -16,5 +16,5 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FString ItemID;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int32 SpawnRate;
+	float SpawnRate;
 };
