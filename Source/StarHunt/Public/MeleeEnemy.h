@@ -22,6 +22,7 @@ public:
 	AMeleeEnemy();
 	void BeginPlay() override;
 	virtual void SetMovementSpeed(EMovementSpeed Speed) override;
-	
+
+	UFUNCTION()
 	void HandleAttackMontageNotify(FName NotifyName, const FBranchingPointNotifyPayload& Payload);
 };
