@@ -8,14 +8,15 @@
 
 APlayerCharacter::APlayerCharacter()
 {
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
 	ItemInventoryComponent = CreateDefaultSubobject<UItemInventoryComponent>(TEXT("Inventory"));
 
 	NormalSpeed = 180.0f;
 	SprintSpeedMultiplier = 3.0f;
 	SprintSpeed = NormalSpeed * SprintSpeedMultiplier;
-
+	Damage = 1.0f;
+	
 	GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
 
 	CurrentWeapon = nullptr;
@@ -24,12 +25,22 @@ APlayerCharacter::APlayerCharacter()
 	bIsEquipmentOpen = false;
 	bIsDropItemsOpen = false;
 
-	Health=MaxHealth=100;
+	Health = MaxHealth = 100;
 }
 
 void APlayerCharacter::SetCurrentState(ECurrentCharacterState CharacterState)
 {
 	CurrentCharacterState = CharacterState;
+}
+
+float APlayerCharacter::GetDamage() const
+{
+	return Damage;
+}
+
+void APlayerCharacter::SetDamage(const float Amount)
+{
+	Damage *= Amount;
 }
 
 void APlayerCharacter::BeginPlay()
@@ -38,12 +49,21 @@ void APlayerCharacter::BeginPlay()
 	PlayerAnimInstance = GetMesh()->GetAnimInstance();
 }
 
-float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+void APlayerCharacter::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+	
+
+	
+}
+
+float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
+                                   AActor* DamageCauser)
 {
 	float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	Health = FMath::Clamp(Health - DamageAmount, 0.0f, MaxHealth);
-	UE_LOG(LogTemp, Warning, TEXT("Health : %f, DamageAmout : %f"), Health, DamageAmount);
-	if (Health <= 0.0f) 
+	UE_LOG(LogTemp, Warning, TEXT("Health : %f, DamageAmount : %f"), Health, DamageAmount);
+	if (Health <= 0.0f)
 	{
 		//Death
 	}
@@ -295,6 +315,7 @@ void APlayerCharacter::StartSprint(const FInputActionValue& value)
 {
 	if (GetCharacterMovement())
 	{
+		StopFireWeapon();
 		GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
 		IsSprint = true;
 	}
@@ -361,37 +382,34 @@ void APlayerCharacter::SpawnWeapon(int32 EquipmentIndex)
 	UWorld* World = GetWorld();
 	if (!World) return;
 
-	TSubclassOf<ABaseGun> WeaponClass = WeaponInstance->GetClass();
-
 	if (CurrentWeapon != nullptr && CurrentWeapon->GetClass() == WeaponInstance->GetClass()) // 여기가 문제인듯?
 	{
-		PlayAnimMontage(CurrentWeapon->UnEquipMontage);
+		PlayAnimMontage(CurrentWeapon->GetUnEquipMontage());
 		SetCurrentState(ECurrentCharacterState::None);
 		return;
 	}
 
 	if (CurrentWeapon == nullptr)
 	{
-		CurrentWeapon = World->SpawnActor<ABaseGun>(WeaponClass);
+		CurrentWeapon = WeaponInstance;
 	}
 	else if (CurrentWeapon != nullptr && CurrentWeapon->GetClass() != WeaponInstance->GetClass())
 	{
-		PlayAnimMontage(CurrentWeapon->UnEquipMontage);
+		PlayAnimMontage(CurrentWeapon->GetUnEquipMontage());
 		CurrentWeapon->Destroy();
 		CurrentWeapon = nullptr;
-		CurrentWeapon = World->SpawnActor<ABaseGun>(WeaponClass);
+		CurrentWeapon = WeaponInstance;
 	}
-
 	SwapWeapon();
 }
 
 void APlayerCharacter::SwapWeapon()
 {
-	UE_LOG(LogTemp, Warning, TEXT("%s"), *UEnum::GetValueAsString(CurrentWeapon->GunType));
+	UE_LOG(LogTemp, Warning, TEXT("%s"), *UEnum::GetValueAsString(CurrentWeapon->GetGunType()));
 
 	if (CurrentWeapon)
 	{
-		switch (CurrentWeapon->GunType)
+		switch (CurrentWeapon->GetGunType())
 		{
 		case EGunType::Pistol:
 			SetCurrentState(ECurrentCharacterState::Pistol);
@@ -410,19 +428,23 @@ void APlayerCharacter::SwapWeapon()
 			break;
 		}
 
-		PlayAnimMontage(CurrentWeapon->EquipMontage);
+		PlayAnimMontage(CurrentWeapon->GetEquipMontage());
 	}
 }
 
 void APlayerCharacter::FireWeapon()
 {
-	if (IsSprint) return;
 	
-	if (CurrentWeapon && !PlayerAnimInstance->Montage_IsPlaying(CurrentWeapon->FireMontage))
+	
+	if (IsSprint) return;
+
+	if (CurrentWeapon && !PlayerAnimInstance->Montage_IsPlaying(CurrentWeapon->GetFireMontage()))
 	{
-		PlayAnimMontage(CurrentWeapon->FireMontage);
-		// UE_LOG(LogTemp, Warning, TEXT("%s"), *CurrentWeapon->GetName());
-		// CurrentWeapon->Fire();
+		if (CurrentWeapon->CanAttack())
+		{
+			PlayAnimMontage(CurrentWeapon->GetFireMontage());
+			
+		}
 	}
 }
 
@@ -431,6 +453,7 @@ void APlayerCharacter::StopFireWeapon()
 	if (CurrentWeapon)
 	{
 		CurrentWeapon->StopFire();
+		
 	}
 }
 
@@ -438,8 +461,24 @@ void APlayerCharacter::ReloadWeapon()
 {
 	if (CurrentWeapon)
 	{
-		PlayAnimMontage(CurrentWeapon->ReloadMontage);
+		PlayAnimMontage(CurrentWeapon->GetReloadMontage());
 	}
+}
+
+void APlayerCharacter::PlayReloadAnim()
+{
+	CurrentWeapon->PlayReloadAnim();
+}
+
+void APlayerCharacter::Recoil()
+{
+	float PitchRecoil = -0.5f;
+	float YawRecoil = FMath::RandRange(-1.0f, 1.0f);
+	
+	CurrentRecoil.Pitch += PitchRecoil;
+	CurrentRecoil.Yaw += YawRecoil;
+	AddControllerPitchInput(CurrentRecoil.Pitch);
+	AddControllerYawInput(CurrentRecoil.Yaw);
 }
 
 void APlayerCharacter::UseQuickSlot0()

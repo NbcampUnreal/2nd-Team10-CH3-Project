@@ -6,7 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "BaseBullet.generated.h"
 
-UCLASS(Abstract)
+UCLASS()
 class STARHUNT_API ABaseBullet : public AActor
 {
 	GENERATED_BODY()
