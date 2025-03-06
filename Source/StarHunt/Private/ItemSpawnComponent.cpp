@@ -24,7 +24,7 @@ void UItemSpawnComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 bool UItemSpawnComponent::bIsSpawnedItem(float Rate)
 {
-	if (Rate < UKismetMathLibrary::RandomFloat())
+	if (Rate > UKismetMathLibrary::RandomFloat())
 	{
 		return true;
 	}

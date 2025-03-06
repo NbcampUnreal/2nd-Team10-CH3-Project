@@ -25,7 +25,9 @@ public:
 	int32 TotalScore;
 	// 총 플레이 타임
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "GameData")
-	float TotalPlayTime;
+	int32 TotalPlayTimeMinute;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "GameData")
+	int32 TotalPlayTimeSec;
 
 	// 플레이어 데이터(HP, 인벤토리 등등)
 

@@ -117,6 +117,9 @@ protected:
 	// 최대 탄창 수
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "GunIStatus")
 	int32 MaxAmmo;
+	// 최대 탄창 수
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "GunIStatus")
+	int32 SumMaxAmmo;
 
 	// 현재 탄창 수
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GunIStatus")

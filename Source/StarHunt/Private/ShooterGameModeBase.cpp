@@ -8,8 +8,8 @@
 
 AShooterGameModeBase::AShooterGameModeBase()
 {
-	GameStateClass = AShooterGameStateBase::StaticClass();
-	
-	DefaultPawnClass = APlayerCharacter::StaticClass();
-	PlayerControllerClass = AWraithPlayerController::StaticClass();
+	//GameStateClass = AShooterGameStateBase::StaticClass();
+	//
+	//DefaultPawnClass = APlayerCharacter::StaticClass();
+	//PlayerControllerClass = AWraithPlayerController::StaticClass();
 }

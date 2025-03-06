@@ -93,7 +93,29 @@ void AWraithPlayerController::CloseDropItems()
     {
         ItemShowHUDWidgetInstance->CloseDropItems();
     }
-} 
+}
+
+void AWraithPlayerController::ShowGameOver()
+{
+    if (ItemShowHUDWidgetInstance)
+    {
+        ItemShowHUDWidgetInstance->RemoveFromParent();
+        ItemShowHUDWidgetInstance = nullptr;
+    }
+
+    if (GameOverHUDWidgetClass)
+    {
+        GameOverHUDWidgetInstance = CreateWidget<UUserWidget>(this, GameOverHUDWidgetClass);
+        if (GameOverHUDWidgetInstance)
+        {
+            GameOverHUDWidgetInstance->AddToViewport();
+
+            bShowMouseCursor = true;
+            SetInputMode(FInputModeUIOnly());
+        }
+    }
+}
+
 
 void AWraithPlayerController::BeginPlay()
 {

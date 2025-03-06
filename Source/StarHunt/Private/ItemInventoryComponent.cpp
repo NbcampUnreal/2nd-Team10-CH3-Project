@@ -59,7 +59,6 @@ void UItemInventoryComponent::UseQuickSlotIem(int32 QuickSlotIndex)
 					ActivateItemInterface->ActivateItem(GetOwner());
 					ItemSubsystem->OnQuickSlotChange.Broadcast(QuickSlotIndex);
 				}
-				// 소모품만 생각, 소모품도 아닐경우는 나중에 고려
 				
 			}
 		}

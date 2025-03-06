@@ -50,16 +50,16 @@ void ABaseGun::StopFire()
 
 void ABaseGun::Reload()
 {
-	int32 SumMaxAmmo = MaxAmmo;
+	SumMaxAmmo = MaxAmmo;
 	if (GunFixtureComponent)
 	{
 		if (FGunFixtureItemStateRow* SumGunFixtureItemStateRow = GunFixtureComponent->GetFixtursStatus())
 		{
-			MaxAmmo += SumGunFixtureItemStateRow->MaxAmmoAmount;
+			SumMaxAmmo += SumGunFixtureItemStateRow->MaxAmmoAmount;
 		}
 	}
 
-	CurrentAmmo = MaxAmmo;
+	CurrentAmmo = SumMaxAmmo;
 
 	UE_LOG(LogTemp, Warning, TEXT("Current Ammo : %d"), CurrentAmmo);
 }
@@ -73,7 +73,8 @@ void ABaseGun::StartItemSubsystem(int32 EquipmentIndex, FGunItemStateRow* GunIte
 		Damage = GunItemStateRow->DamageAmount;
 		FireRate = GunItemStateRow->FireRate;
 		MaxAmmo = GunItemStateRow->MaxAmmo;
-		GunType = GunItemStateRow->GunType;
+		GunType = GunItemStateRow->GunType;	
+		Reload();
 	}
 }
 

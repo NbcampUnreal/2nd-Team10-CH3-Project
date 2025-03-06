@@ -28,12 +28,36 @@ void UItemSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 	}
 
 	Equipments.SetNum(EquipmentMaxStock);
+
 }
 
 
 void UItemSubsystem::Deinitialize()
 {
 	Super::Deinitialize();
+}
+
+void UItemSubsystem::Reset()
+{
+	Inventorys.Empty();
+	QuickSlotPointInventoryIndexs.Empty();
+	Equipments.Empty();
+
+	Inventorys.Add(EInventoryType::Gun, TArray<TSharedPtr<FInventoryItem>>());
+	Inventorys.Add(EInventoryType::GunFixture, TArray<TSharedPtr<FInventoryItem>>());
+	Inventorys.Add(EInventoryType::Consumable, TArray<TSharedPtr<FInventoryItem>>());
+
+	QuickSlotPointInventoryIndexs.SetNum(1);
+
+	for (auto& InventoryPair : Inventorys)
+	{
+		InventoryPair.Value.SetNum(InventoryMaxStock);
+	}
+
+	Equipments.SetNum(EquipmentMaxStock);
+
+	//test 용
+	AddGunEquipmentByDropGun(0, FString("PistolGunCommon1"));
 }
 
 FBaseItemStateRow* UItemSubsystem::GetBaseItemStateRow(const FString& ItemId)

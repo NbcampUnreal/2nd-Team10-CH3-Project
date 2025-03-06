@@ -23,4 +23,17 @@ public:
 
 	// 현재 레벨
 	// 
+	virtual void BeginPlay() override;
+	UFUNCTION(BlueprintCallable)
+	void RestartLevel();
+	UFUNCTION(BlueprintCallable)
+	void ResetGame();
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Level")
+	TArray<FName> LevelMapNames;
+
+	UFUNCTION(BlueprintCallable, Category = "Level")
+	void OnGameOver();
+
+	float StartTime;
 };

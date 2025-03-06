@@ -4,6 +4,7 @@
 #include "EnhancedInputComponent.h"
 #include "WraithPlayerController.h"
 #include "ItemInventoryComponent.h"
+#include "ShooterGameStateBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 APlayerCharacter::APlayerCharacter()
@@ -47,6 +48,7 @@ void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	PlayerAnimInstance = GetMesh()->GetAnimInstance();
+
 }
 
 void APlayerCharacter::Tick(float DeltaSeconds)
@@ -65,7 +67,10 @@ float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 	UE_LOG(LogTemp, Warning, TEXT("Health : %f, DamageAmount : %f"), Health, DamageAmount);
 	if (Health <= 0.0f)
 	{
-		//Death
+		if (AShooterGameStateBase* ShooterGameStateBase = GetWorld()->GetGameState<AShooterGameStateBase>())
+		{
+			ShooterGameStateBase->OnGameOver();
+		}
 	}
 	return ActualDamage;
 }
