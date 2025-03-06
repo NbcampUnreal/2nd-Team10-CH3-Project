@@ -31,22 +31,17 @@ public:
 	//Inventory
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Camera", meta=(AllowPrivateAccess="true"))
 	UItemInventoryComponent* ItemInventoryComponent;
-
-	UPROPERTY(BlueprintReadWrite, Category = "Property")
-	FRotator AimDirection;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="CurrentState")
-	ECurrentCharacterState CurrentCharacterState;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon")
-	ABaseGun* CurrentWeapon;
 	
 	UFUNCTION(Blueprintable)
 	void SetCurrentState(ECurrentCharacterState CharacterState);
-
+	UFUNCTION()
+	float GetDamage() const;
+	UFUNCTION()
+	void SetDamage(const float Amount);
+	
 	UFUNCTION(BlueprintCallable)
 	float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
-	
+
 	UFUNCTION(Blueprintable)
 	void SetHealth(float NowHealth);
 	UFUNCTION(Blueprintable)
@@ -56,10 +51,9 @@ public:
 	UFUNCTION(Blueprintable)
 	float GetMaxHealth();
 
-	
 protected:
 	virtual void BeginPlay() override;
-
+	virtual void Tick(float DeltaSeconds) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 
@@ -67,6 +61,17 @@ protected:
 	float Health;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
 	float MaxHealth;
+	UPROPERTY(BlueprintReadWrite, Category = "Property")
+	FRotator AimDirection;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="CurrentState")
+	ECurrentCharacterState CurrentCharacterState;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon")
+	ABaseGun* CurrentWeapon;
+	
+
+	
 	
 	UFUNCTION()
 	void Move(const FInputActionValue& value);
@@ -106,6 +111,10 @@ protected:
 	void StopFireWeapon();
 	UFUNCTION()
 	void ReloadWeapon();
+	UFUNCTION(BlueprintCallable)
+	void PlayReloadAnim();
+	UFUNCTION()
+	void Recoil();
 	UFUNCTION()
 	void UseQuickSlot0();
 
@@ -128,8 +137,11 @@ private:
 	float NormalSpeed;
 	float SprintSpeedMultiplier;
 	float SprintSpeed;
+	float Damage;
 	float CameraBlendTime;
 	bool IsSprint;
+	FRotator CurrentRecoil;
+	FRotator InitRecoil;
 	
 	UAnimInstance* PlayerAnimInstance;
 	
@@ -141,5 +153,4 @@ private:
 
 	ABaseGun* Weapon;
 };
-
 
