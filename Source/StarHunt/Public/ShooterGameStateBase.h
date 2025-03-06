@@ -34,6 +34,8 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Level")
 	void OnGameOver();
+	UFUNCTION(BlueprintCallable, Category = "Level")
+	void OnGameClear();
 
 	float StartTime;
 };

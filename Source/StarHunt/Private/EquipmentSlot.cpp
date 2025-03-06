@@ -137,7 +137,6 @@ void UEquipmentSlot::NativeOnMouseEnter(const FGeometry& MyGeometry, const FPoin
 
 	if (ItemDetailsWidgetInstance && GunItemStateRow)
 	{
-
 		ItemDetailsWidgetInstance->SetItem(BaseItemStateRow, GunItemStateRow);
 	}
 }

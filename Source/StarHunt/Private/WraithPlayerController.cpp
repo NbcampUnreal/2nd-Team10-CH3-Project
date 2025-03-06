@@ -116,6 +116,27 @@ void AWraithPlayerController::ShowGameOver()
     }
 }
 
+void AWraithPlayerController::ShowGameClear()
+{
+    if (ItemShowHUDWidgetInstance)
+    {
+        ItemShowHUDWidgetInstance->RemoveFromParent();
+        ItemShowHUDWidgetInstance = nullptr;
+    }
+
+    if (GameClearHUDWidgetClass)
+    {
+        GameClearHUDWidgetInstance = CreateWidget<UUserWidget>(this, GameClearHUDWidgetClass);
+        if (GameClearHUDWidgetInstance)
+        {
+            GameClearHUDWidgetInstance->AddToViewport();
+
+            bShowMouseCursor = true;
+            SetInputMode(FInputModeUIOnly());
+        }
+    }
+}
+
 
 void AWraithPlayerController::BeginPlay()
 {

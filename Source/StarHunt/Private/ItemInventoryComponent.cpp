@@ -86,13 +86,14 @@ ABaseGun* UItemInventoryComponent::GetWeapon(int32 EquipmentIndex)
 						{
 							Gun->StartItemSubsystem(EquipmentIndex, GunItemStateRow);
 						}
+						return Gun;
 					}
 				}
 			}
 		}
 	}
-
-	return Gun;
+	Gun = nullptr;
+	return nullptr;
 }
 
 TSubclassOf<ABaseGun> UItemInventoryComponent::GetWeaponClass(int32 EquipmentIndex)

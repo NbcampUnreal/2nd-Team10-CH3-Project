@@ -28,6 +28,8 @@ public:
 	int32 TotalPlayTimeMinute;
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "GameData")
 	int32 TotalPlayTimeSec;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "GameData")
+	int32 CurrentWave;
 
 	// 플레이어 데이터(HP, 인벤토리 등등)
 
