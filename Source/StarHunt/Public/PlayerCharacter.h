@@ -70,8 +70,6 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon")
 	ABaseGun* CurrentWeapon;
 	
-
-	
 	
 	UFUNCTION()
 	void Move(const FInputActionValue& value);

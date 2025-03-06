@@ -377,7 +377,8 @@ void APlayerCharacter::Swap3()
 
 void APlayerCharacter::SpawnWeapon(int32 EquipmentIndex)
 {
-	CurrentWeapon = ItemInventoryComponent->GetWeapon(EquipmentIndex);
+	ABaseGun* WeaponInstance = ItemInventoryComponent->GetWeapon(EquipmentIndex);
+	if (!WeaponInstance) return;
 
 	UWorld* World = GetWorld();
 	if (!World) return;
