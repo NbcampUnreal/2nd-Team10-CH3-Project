@@ -11,6 +11,10 @@ ARifle::ARifle()
 	bIsFiring = false;
 
 	GunType = EGunType::Rifle;
+	PitchRecoil = -0.5f;
+	MinYawRecoil = -0.25f;
+	MaxYawRecoil = 0.25f;
+	
 	Damage = 5.0f;
 	FireRate = 0.1f;
 	ReloadTime = 1.0f;
@@ -18,18 +22,18 @@ ARifle::ARifle()
 	CurrentAmmo = MaxAmmo;
 }
 
-void ARifle::Fire()
-{
-	// 이미 발사 중이라면 추가 호출 무시
-	if (bIsFiring) return;
-
-	bIsFiring = true;
-
-	FireProgress();
-
-	// 마우스를 누르고 있는 동안에는 계속 FireProgress 함수가 실행
-	GetWorld()->GetTimerManager().SetTimer(FireRateTimerHandle, this, &ARifle::FireProgress, FireRate, true);
-}
+// void ARifle::Fire()
+// {
+// 	// 이미 발사 중이라면 추가 호출 무시
+// 	if (bIsFiring) return;
+//
+// 	FireProgress();
+// 	
+// 	bIsFiring = true;
+//
+// 	// 마우스를 누르고 있는 동안에는 계속 FireProgress 함수가 실행
+// 	GetWorld()->GetTimerManager().SetTimer(FireRateTimerHandle, this, &ARifle::FireProgress, FireRate, true);
+// }
 
 void ARifle::StopFire()
 {

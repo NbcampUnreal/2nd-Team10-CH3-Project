@@ -215,11 +215,11 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 			{
 				EnhancedInput->BindAction(
 					PlayerController->Fire,
-					ETriggerEvent::Started,
+					ETriggerEvent::Triggered,
 					this,
 					&APlayerCharacter::FireWeapon
 				);
-
+				
 				EnhancedInput->BindAction(
 					PlayerController->Fire,
 					ETriggerEvent::Completed,
@@ -434,16 +434,15 @@ void APlayerCharacter::SwapWeapon()
 
 void APlayerCharacter::FireWeapon()
 {
-	
-	
 	if (IsSprint) return;
 
-	if (CurrentWeapon && !PlayerAnimInstance->Montage_IsPlaying(CurrentWeapon->GetFireMontage()))
+	if (CurrentWeapon)
 	{
 		if (CurrentWeapon->CanAttack())
 		{
+			UE_LOG(LogTemp, Warning, TEXT("으익"));
 			PlayAnimMontage(CurrentWeapon->GetFireMontage());
-			
+			Recoil();
 		}
 	}
 }
@@ -472,13 +471,8 @@ void APlayerCharacter::PlayReloadAnim()
 
 void APlayerCharacter::Recoil()
 {
-	float PitchRecoil = -0.5f;
-	float YawRecoil = FMath::RandRange(-1.0f, 1.0f);
-	
-	CurrentRecoil.Pitch += PitchRecoil;
-	CurrentRecoil.Yaw += YawRecoil;
-	AddControllerPitchInput(CurrentRecoil.Pitch);
-	AddControllerYawInput(CurrentRecoil.Yaw);
+	AddControllerPitchInput(CurrentWeapon->GetPitchRecoil());
+	AddControllerYawInput(CurrentWeapon->GetYawRecoil());
 }
 
 void APlayerCharacter::UseQuickSlot0()
