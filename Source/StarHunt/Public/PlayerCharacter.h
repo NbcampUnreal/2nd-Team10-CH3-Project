@@ -45,7 +45,7 @@ public:
 	
 protected:
 	virtual void BeginPlay() override;
-	virtual void Tick(float DeltaSeconds) override;
+	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 
@@ -131,8 +131,6 @@ private:
 	bool IsSprint;
 	FRotator CurrentRecoil;
 	FRotator InitRecoil;
-	
-	UAnimInstance* PlayerAnimInstance;
 	
 	//Inventory
 	bool bIsInventoryOpen;

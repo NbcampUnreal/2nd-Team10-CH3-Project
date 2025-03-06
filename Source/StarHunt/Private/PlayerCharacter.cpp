@@ -46,15 +46,11 @@ void APlayerCharacter::SetDamage(const float Amount)
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	PlayerAnimInstance = GetMesh()->GetAnimInstance();
 }
 
-void APlayerCharacter::Tick(float DeltaSeconds)
+void APlayerCharacter::Tick(float DeltaTime)
 {
-	Super::Tick(DeltaSeconds);
-	
-
-	
+	Super::Tick(DeltaTime);
 }
 
 float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
@@ -334,12 +330,18 @@ void APlayerCharacter::StartCrouch(const FInputActionValue& value)
 {
 	if (GetCharacterMovement()->IsFalling()) return;
 
-	Crouch();
+	if (GetCharacterMovement())
+	{
+		Crouch();
+	}
 }
 
 void APlayerCharacter::StopCrouch(const FInputActionValue& value)
 {
-	UnCrouch();
+	if (GetCharacterMovement())
+	{
+		UnCrouch();
+	}
 }
 
 void APlayerCharacter::Look(const FInputActionValue& value)
@@ -440,7 +442,6 @@ void APlayerCharacter::FireWeapon()
 	{
 		if (CurrentWeapon->CanAttack())
 		{
-			UE_LOG(LogTemp, Warning, TEXT("으익"));
 			PlayAnimMontage(CurrentWeapon->GetFireMontage());
 			Recoil();
 		}
@@ -452,13 +453,12 @@ void APlayerCharacter::StopFireWeapon()
 	if (CurrentWeapon)
 	{
 		CurrentWeapon->StopFire();
-		
 	}
 }
 
 void APlayerCharacter::ReloadWeapon()
 {
-	if (CurrentWeapon)
+	if (CurrentWeapon && CurrentWeapon->IsMaxAmmo())
 	{
 		PlayAnimMontage(CurrentWeapon->GetReloadMontage());
 	}
