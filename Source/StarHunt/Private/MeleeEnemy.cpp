@@ -16,6 +16,12 @@ AMeleeEnemy::AMeleeEnemy()
 	AttackRadius=150.0f;
 	DefendRadius=350.0f;
 	AttackRange=200.0f;
+
+	if (ActorHasTag(FName("Boss")))
+	{
+		Health *= 10;
+		MaxHealth = Health;
+	}
 }
 
 void AMeleeEnemy::BeginPlay()

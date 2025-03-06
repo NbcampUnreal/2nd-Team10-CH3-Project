@@ -30,7 +30,7 @@ ABaseEnemy::ABaseEnemy()
 	Score=0;
 	AttackRadius=0.0f;
 	DefendRadius=0.0f;
-	bIsDead=false;
+	bBossIsDead=false;
 	
 
 	// //HP Bar 설정
@@ -72,6 +72,10 @@ void ABaseEnemy::OnDeath()
 	// Deliver Score to Game Instance
 	if (UWorld* World=GetWorld())
 	{
+		if (ActorHasTag(FName("Boss")))
+		{
+			bBossIsDead = true;
+		}
 		ItemSpawnComponent->SpawnedItem();
 		if (UShooterGameInstance* GameInstance=Cast<UShooterGameInstance>(World->GetGameInstance()))
 		{
@@ -87,9 +91,7 @@ void ABaseEnemy::OnDeath()
 	
 	if (AEnemyAIController* EnemyController=Cast<AEnemyAIController>(GetController()))
 	{
-		//상태 Dead로 변경
 		EnemyController->SetAIState(EAIState::Dead);
-		bIsDead=true;
 		if (UBrainComponent* Brain=EnemyController->GetBrainComponent())
 		{
 			//BehaviorTree 동작 중단
