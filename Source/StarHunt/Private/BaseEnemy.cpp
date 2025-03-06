@@ -10,6 +10,7 @@
 #include "Animation/AnimInstance.h"
 #include "Animation/AnimMontage.h"
 #include "Animation/AnimSequence.h"
+#include "Perception/AISense_Damage.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -23,12 +24,14 @@ ABaseEnemy::ABaseEnemy()
 	PatrolPath=nullptr;
 	BehaviorTree=nullptr;
 	AttackMontage=nullptr;
+	HitMontage=nullptr;
 	Power=0;
 	Health=MaxHealth=0.0f;
 	Score=0;
 	AttackRadius=0.0f;
 	DefendRadius=0.0f;
 	bIsDead=false;
+	
 
 	// //HP Bar 설정
 	// HPBar=CreateDefaultSubobject<UWidgetComponent>(TEXT("HPBar"));
@@ -144,13 +147,36 @@ void ABaseEnemy::DelayedDestroy()
 float ABaseEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
 	float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
+	Health = FMath::Clamp(Health - DamageAmount, 0.0f, MaxHealth);
 	if (AEnemyAIController* AIController=Cast<AEnemyAIController>(GetController()))
 	{
 		AIController->SetAIState(EAIState::Frozen);
-		AIController->SetAttackTarget(DamageCauser);
 	}
-	Health = FMath::Clamp(Health - DamageAmount, 0.0f, MaxHealth);
-	// UpdateHPBar();
+	//메시 유효 
+	if (!GetMesh()) return 0.0f;
+
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	//둘다 유효
+	if (AnimInstance&&HitMontage)
+	{
+		//피격 애니메이션 재생
+		AnimInstance->Montage_Play(HitMontage);
+		//몽타주 끝났을 때 이벤트 바인딩
+		AnimInstance->OnMontageEnded.Clear();
+		AnimInstance->OnMontageEnded.AddDynamic(this,&ABaseEnemy::OnMontageEnded);
+	}
+	//데미지 인식 이벤트 호출
+	if (DamageCauser)
+	{
+		UAISense_Damage::ReportDamageEvent(
+			GetWorld(),
+			this,
+			EventInstigator->GetPawn(),
+			ActualDamage,
+			GetActorLocation(),
+			DamageCauser->GetActorLocation()
+		);
+	}
 	if (Health <= 0.0f) 
 	{
 		OnDeath();
@@ -192,11 +218,21 @@ void ABaseEnemy::Attack()
 	}
 }
 
+//Montage가 실행이 끝나면 호출되는 함수
 void ABaseEnemy::OnMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 {
+	//공격 몽타주는 끝나면 델리게이트에 Broadcast하여 종료 알림 (Task 작업고 관련)
 	if (Montage==AttackMontage)
 	{
 		OnAttackEnd.Broadcast();
+	}
+	//피격 모션이 끝나면 상태 Attacking으로 변경
+	if(Montage==HitMontage)
+	{
+		if (AEnemyAIController* EnemyController=Cast<AEnemyAIController>(GetController()))
+		{
+			EnemyController->SetAIState(EAIState::Attacking);
+		}
 	}
 }
 

@@ -58,15 +58,16 @@ void AEnemyAIController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 	
-	//애니메이션의 원활한 적용을 위한 가속도 관련 옵션 설정 (NavMovement나 AIController를 통한 이동 명령에 가속도를 적용)
-	if (ACharacter* Character1 = Cast<ACharacter>(InPawn))
-	{
-		if (UCharacterMovementComponent* MovementComp = Character1->GetCharacterMovement())
-		{
-			MovementComp->bRequestedMoveUseAcceleration=true;
-		}
-	}
+	// //애니메이션의 원활한 적용을 위한 가속도 관련 옵션 설정 (NavMovement나 AIController를 통한 이동 명령에 가속도를 적용)
+	// if (ACharacter* Character1 = Cast<ACharacter>(InPawn))
+	// {
+	// 	if (UCharacterMovementComponent* MovementComp = Character1->GetCharacterMovement())
+	// 	{
+	// 		MovementComp->bRequestedMoveUseAcceleration=true;
+	// 	}
+	// }
 
+	// 초기 상태 Passive 설정 및 블랙보드 키 할당(공격 및 회피 거리)
 	if (ABaseEnemy* Enemy=Cast<ABaseEnemy>(InPawn))
 	{
 		if (UBehaviorTree* BT=Enemy->GetBehaviorTree())
@@ -120,7 +121,7 @@ AActor* AEnemyAIController::GetAttackTarget() const
 {
 	return Target;
 }
-
+// 감지된 지점이나 이동 지점 해당 벡터로 처리
 void AEnemyAIController::SetPointOfInterest(const FVector PointOfInterest)
 {
 	if (UBlackboardComponent* BB=GetBlackboardComponent())
@@ -173,17 +174,19 @@ void AEnemyAIController::HandleSenseHearing(const FVector& SoundLocation)
 
 void AEnemyAIController::HandleSenseDamage(AActor* DamageCauser)
 {
-	if (CurrentState==EAIState::Passive || CurrentState==EAIState::Investigating || CurrentState==EAIState::Frozen)
+	SetAttackTarget(DamageCauser);
+	if (CurrentState==EAIState::Passive || CurrentState==EAIState::Investigating)
 	{
-		SetAttackTarget(DamageCauser);
 		SetAIState(EAIState::Attacking);
 	}
 }
 
 void AEnemyAIController::OnPerceptionUpdated(const TArray<AActor*>&UpdatedActors)
 {
+	//감지된 액터들 모두 순회하며 검사 (시각,청각,피격)
 	for (AActor* Actor : UpdatedActors)
 	{
+		//인식 관련 정보를 담을 변수
 		FAIStimulus Stimulus;
 		if (CanSenseActor(Actor,UAISense_Sight::StaticClass(),Stimulus))
 		{
@@ -202,18 +205,23 @@ void AEnemyAIController::OnPerceptionUpdated(const TArray<AActor*>&UpdatedActors
 
 bool AEnemyAIController::CanSenseActor(AActor* TargetActor, TSubclassOf<UAISense> SenseClass, FAIStimulus& OutStimulus)
 {
+	//Perception 컴포넌트 유효 검사
 	if (!TargetActor || !PerceptionComp)
 	{
 		return false;
 	}
-		
+
+	//설정된 Perception 정보 받아올 변수
 	FActorPerceptionBlueprintInfo PerceptionInfo;
+	//TargetActor에 대해 감지된 정보 받아오기
 	PerceptionComp->GetActorsPerception(TargetActor, PerceptionInfo);
 
+	//받아온 정보 순회
 	for (const FAIStimulus& Stimulus : PerceptionInfo.LastSensedStimuli)
 	{
+		//감지된 Sense의 클래스 특정
 		TSubclassOf<UAISense> DetectedSense=UAIPerceptionSystem::GetSenseClassForStimulus(GetWorld(), Stimulus);
-	
+		//감지되었는지 검사하려던 감각과 동일하다면 인식된 정보 매개변수에 담아 true 반환
 		if (DetectedSense==SenseClass && Stimulus.WasSuccessfullySensed())
 		{
 			OutStimulus=Stimulus;
