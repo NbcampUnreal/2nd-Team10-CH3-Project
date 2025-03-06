@@ -75,6 +75,20 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Menu")
 	void ShowGameClear();
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Menu")
+	TSubclassOf<UUserWidget> MainMenuClass;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Menu")
+	UUserWidget* MainMenuWidgetInstance;
+
+	//메인 메뉴 표시
+	UFUNCTION(BlueprintCallable, Category="Menu")
+	void ShowMainMenu();
+	//게임 시작
+	UFUNCTION(BlueprintCallable, Category = "Menu")
+	void StartGame();
+	
+	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<UItemShowWidget> ItemShowHUDWidgetClass;
 	UItemShowWidget* ItemShowHUDWidgetInstance;

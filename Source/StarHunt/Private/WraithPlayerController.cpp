@@ -1,6 +1,8 @@
 #include "WraithPlayerController.h"
 
 #include "EnhancedInputSubsystems.h"
+#include "ShooterGameInstance.h"
+#include "Kismet/GameplayStatics.h"
 
 AWraithPlayerController::AWraithPlayerController()
 	: InputMappingContext(nullptr),
@@ -18,7 +20,9 @@ AWraithPlayerController::AWraithPlayerController()
 	  Reload(nullptr),
     QuickSlot1(nullptr),
     InventoryOpenAction(nullptr),
-    EquipmentOpenAction(nullptr)
+    EquipmentOpenAction(nullptr),
+    MainMenuClass(nullptr),
+    MainMenuWidgetInstance(nullptr)
 {
 }
 
@@ -138,6 +142,7 @@ void AWraithPlayerController::ShowGameClear()
 }
 
 
+
 void AWraithPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
@@ -153,4 +158,66 @@ void AWraithPlayerController::BeginPlay()
 			}
 		}
 	}
+    //게임 실행 ㅡ> 메인 레벨에서 메인 메뉴 UI 표시
+    FString CurrentMapName=GetWorld()->GetMapName();
+    if (CurrentMapName.Contains("MainMenu"))
+    {
+        ShowMainMenu();
+    }
+}
+
+void AWraithPlayerController::ShowMainMenu()
+{
+    //이미 켜진 메뉴들 다 끄기
+    if (ItemShowHUDWidgetInstance)
+    {
+        ItemShowHUDWidgetInstance->RemoveFromParent();
+        ItemShowHUDWidgetInstance = nullptr;
+    }
+    if (GameClearHUDWidgetInstance)
+    {
+        GameClearHUDWidgetInstance->RemoveFromParent();
+        GameClearHUDWidgetInstance = nullptr;
+    }
+    if (GameOverHUDWidgetInstance)
+    {
+        GameOverHUDWidgetInstance->RemoveFromParent();
+        GameOverHUDWidgetInstance = nullptr;
+    }
+    if (MainMenuWidgetInstance)
+    {
+        MainMenuWidgetInstance->RemoveFromParent();
+        MainMenuWidgetInstance = nullptr;
+    }
+    //메뉴 UI 생성
+    if (MainMenuClass)
+    {
+        MainMenuWidgetInstance=CreateWidget<UUserWidget>(this,MainMenuClass);
+        if (MainMenuWidgetInstance)
+        {
+            MainMenuWidgetInstance->AddToViewport();
+            bShowMouseCursor = true;
+            SetInputMode(FInputModeUIOnly());
+        }
+    }
+}
+
+void AWraithPlayerController::StartGame()
+{
+    if (MainMenuWidgetInstance)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("Called"));
+        MainMenuWidgetInstance->RemoveFromParent();
+        bShowMouseCursor = false;
+        SetInputMode(FInputModeGameOnly());
+    }
+    if (UShooterGameInstance* GameInstance =Cast<UShooterGameInstance>(UGameplayStatics::GetGameInstance(this)))
+    {
+        GameInstance->TotalScore=0;
+        GameInstance->TotalPlayTimeMinute=0;
+        GameInstance->TotalPlayTimeSec=0;
+        GameInstance->CurrentWave=0;
+    }
+    UGameplayStatics::OpenLevel(GetWorld(), FName("Map_SpaceShip"));
+    
 }
