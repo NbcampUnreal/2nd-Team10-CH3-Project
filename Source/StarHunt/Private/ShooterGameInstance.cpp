@@ -9,6 +9,7 @@ UShooterGameInstance::UShooterGameInstance()
 	TotalScore = 0;
 	TotalPlayTimeMinute = 0;
 	TotalPlayTimeSec = 0;
+	CurrentWave = 0;
 }
 
 void UShooterGameInstance::Init()
@@ -23,7 +24,6 @@ void UShooterGameInstance::Init()
 		ItemSubsystem->AddGunEquipmentByDropGun(0, FString("PistolGunCommon1"));
 		ItemSubsystem->AddGunEquipmentByDropGun(1, FString("RifleGunCommon1"));
 		ItemSubsystem->AddGunEquipmentByDropGun(2, FString("ShotGunGunCommon1"));
-
 	}
 }
 

@@ -19,6 +19,7 @@ void AShooterGameStateBase::BeginPlay()
 	if (GetWorld())
 	{
 		StartTime = GetWorld()->GetTimeSeconds();
+
 	}
 }
 
@@ -26,6 +27,7 @@ void AShooterGameStateBase::RestartLevel()
 {
 	if (GetWorld())
 	{
+	
 		if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
 		{
 			if (AWraithPlayerController* WraithPlayerController = Cast<AWraithPlayerController>(PlayerController))
@@ -36,6 +38,10 @@ void AShooterGameStateBase::RestartLevel()
 			}
 		}
 
+		if (UShooterGameInstance* ShooterGameInstance = Cast<UShooterGameInstance>(GetGameInstance()))
+		{
+			ShooterGameInstance->CurrentWave++;
+		}
 		UGameplayStatics::OpenLevel(GetWorld(), *GetWorld()->GetMapName());
 	}
 }
@@ -57,6 +63,14 @@ void AShooterGameStateBase::ResetGame()
 		{
 			ItemSubsystem->Reset();
 		}
+		if (UShooterGameInstance* ShooterGameInstance = Cast<UShooterGameInstance>(GetGameInstance()))
+		{
+			ShooterGameInstance->CurrentWave = 0;
+			ShooterGameInstance->TotalPlayTimeMinute = 0;
+			ShooterGameInstance->TotalPlayTimeSec = 0;
+			ShooterGameInstance->TotalScore = 0;
+		}
+
 		UGameplayStatics::OpenLevel(GetWorld(), *GetWorld()->GetMapName());
 	}
 }
@@ -71,14 +85,46 @@ void AShooterGameStateBase::OnGameOver()
 			{
 				float DiffTime = GetWorld()->GetTimeSeconds() - StartTime;
 
-				ShooterGameInstance->TotalPlayTimeMinute = DiffTime / 60;
-				ShooterGameInstance->TotalPlayTimeSec = static_cast<int32>(DiffTime) % 60;
+				ShooterGameInstance->TotalPlayTimeSec += static_cast<int32>(DiffTime) % 60;
+				if (ShooterGameInstance->TotalPlayTimeSec >= 60)
+				{
+					ShooterGameInstance->TotalPlayTimeSec -= 60;
+					ShooterGameInstance->TotalPlayTimeMinute++;
+				}
+				ShooterGameInstance->TotalPlayTimeMinute += DiffTime / 60;
 			}
 		}
 		if (AWraithPlayerController* WraithPlayerController = Cast<AWraithPlayerController>(PlayerController))
 		{
 			WraithPlayerController->SetPause(true);
 			WraithPlayerController->ShowGameOver();
+		}
+	}
+}
+
+void AShooterGameStateBase::OnGameClear()
+{
+	if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
+	{
+		if (UShooterGameInstance* ShooterGameInstance = Cast<UShooterGameInstance>(GetGameInstance()))
+		{
+			if (GetWorld())
+			{
+				float DiffTime = GetWorld()->GetTimeSeconds() - StartTime;
+
+				ShooterGameInstance->TotalPlayTimeSec += static_cast<int32>(DiffTime) % 60;
+				if (ShooterGameInstance->TotalPlayTimeSec >= 60)
+				{
+					ShooterGameInstance->TotalPlayTimeSec -= 60;
+					ShooterGameInstance->TotalPlayTimeMinute++;
+				}
+				ShooterGameInstance->TotalPlayTimeMinute += DiffTime / 60;
+			}
+		}
+		if (AWraithPlayerController* WraithPlayerController = Cast<AWraithPlayerController>(PlayerController))
+		{
+			WraithPlayerController->SetPause(true);
+			WraithPlayerController->ShowGameClear();
 		}
 	}
 }

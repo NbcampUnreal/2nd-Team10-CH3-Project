@@ -72,6 +72,8 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Menu")
 	void ShowGameOver();
+	UFUNCTION(BlueprintCallable, Category = "Menu")
+	void ShowGameClear();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<UItemShowWidget> ItemShowHUDWidgetClass;
@@ -80,6 +82,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<UUserWidget> GameOverHUDWidgetClass;
 	UUserWidget* GameOverHUDWidgetInstance;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<UUserWidget> GameClearHUDWidgetClass;
+	UUserWidget* GameClearHUDWidgetInstance;
 
 	FOnDropItemsChange OnDropItemsChange;
 protected:
