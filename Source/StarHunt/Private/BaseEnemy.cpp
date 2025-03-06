@@ -148,16 +148,22 @@ float ABaseEnemy::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent
 {
 	float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	Health = FMath::Clamp(Health - DamageAmount, 0.0f, MaxHealth);
-	//피격 애니메이션 재생
-	if (HitMontage)
-	{
-		StopAnimMontage();
-		float a=PlayAnimMontage(HitMontage, true);	
-		UE_LOG(LogTemp, Warning, TEXT("Hit with %f"),a);
-	}
 	if (AEnemyAIController* AIController=Cast<AEnemyAIController>(GetController()))
 	{
 		AIController->SetAIState(EAIState::Frozen);
+	}
+	//메시 유효 
+	if (!GetMesh()) return 0.0f;
+
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	//둘다 유효
+	if (AnimInstance&&HitMontage)
+	{
+		//피격 애니메이션 재생
+		AnimInstance->Montage_Play(HitMontage);
+		//몽타주 끝났을 때 이벤트 바인딩
+		AnimInstance->OnMontageEnded.Clear();
+		AnimInstance->OnMontageEnded.AddDynamic(this,&ABaseEnemy::OnMontageEnded);
 	}
 	//데미지 인식 이벤트 호출
 	if (DamageCauser)
@@ -212,11 +218,21 @@ void ABaseEnemy::Attack()
 	}
 }
 
+//Montage가 실행이 끝나면 호출되는 함수
 void ABaseEnemy::OnMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 {
+	//공격 몽타주는 끝나면 델리게이트에 Broadcast하여 종료 알림 (Task 작업고 관련)
 	if (Montage==AttackMontage)
 	{
 		OnAttackEnd.Broadcast();
+	}
+	//피격 모션이 끝나면 상태 Attacking으로 변경
+	if(Montage==HitMontage)
+	{
+		if (AEnemyAIController* EnemyController=Cast<AEnemyAIController>(GetController()))
+		{
+			EnemyController->SetAIState(EAIState::Attacking);
+		}
 	}
 }
 
