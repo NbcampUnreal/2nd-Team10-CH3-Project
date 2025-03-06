@@ -27,12 +27,16 @@ void ARangedEnemy::SetMovementSpeed(const EMovementSpeed Speed)
 		{
 		case EMovementSpeed::Idle:
 			MovementComp->MaxWalkSpeed = 0.0f;
+			break;
 		case EMovementSpeed::Walking:
 			MovementComp->MaxWalkSpeed = 200.0f;
+			break;
 		case EMovementSpeed::Jogging:
 			MovementComp->MaxWalkSpeed = 300.0f;
+			break;
 		case EMovementSpeed::Sprinting:
 			MovementComp->MaxWalkSpeed = 500.0f;
+			break;
 		default:
 			break;
 		}
