@@ -24,6 +24,7 @@ public:
 	// 현재 레벨
 	// 
 	virtual void BeginPlay() override;
+	
 	UFUNCTION(BlueprintCallable)
 	void RestartLevel();
 	UFUNCTION(BlueprintCallable)

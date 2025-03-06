@@ -6,6 +6,7 @@
 #include "WraithPlayerController.h"
 #include "ItemBlueprintFunctionLibrary.h"
 #include "ShooterGameInstance.h"
+#include "WorldPartition/WorldPartitionStreamingGeneration.h"
 
 AShooterGameStateBase::AShooterGameStateBase()
 {
@@ -22,6 +23,7 @@ void AShooterGameStateBase::BeginPlay()
 
 	}
 }
+
 
 void AShooterGameStateBase::RestartLevel()
 {
