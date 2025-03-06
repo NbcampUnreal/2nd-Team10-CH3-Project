@@ -110,6 +110,8 @@ public:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void Deinitialize() override;
 
+	void Reset();
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "ItemSystem|ItemDb")
 	UItemDB* ItemDB;
 

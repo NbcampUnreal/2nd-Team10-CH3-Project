@@ -22,6 +22,8 @@ public:
 	TSubclassOf<ADropItemActor> DropItemActorClass;
 
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	
+	bool bIsSpawnedItem(float Rate);
 
-	virtual bool bIsSpawnedItem(float Rate);
+	AActor* SpawnedItem();
 };

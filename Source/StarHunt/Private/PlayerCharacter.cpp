@@ -4,6 +4,7 @@
 #include "EnhancedInputComponent.h"
 #include "WraithPlayerController.h"
 #include "ItemInventoryComponent.h"
+#include "ShooterGameStateBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 APlayerCharacter::APlayerCharacter()
@@ -61,10 +62,14 @@ float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 	UE_LOG(LogTemp, Warning, TEXT("Health : %f, DamageAmount : %f"), Health, DamageAmount);
 	if (Health <= 0.0f)
 	{
-		//Death
+		if (AShooterGameStateBase* ShooterGameStateBase = GetWorld()->GetGameState<AShooterGameStateBase>())
+		{
+			ShooterGameStateBase->OnGameOver();
+		}
 	}
 	return ActualDamage;
 }
+
 
 void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -569,4 +574,28 @@ bool APlayerCharacter::bIsOpenWindows()
 		return true;
 	}
 	return false;
+}
+
+void APlayerCharacter::SetHealth(float NowHealth)
+{
+	Health = NowHealth;
+}
+
+void APlayerCharacter::AddHealth(float HealthAmount)
+{
+	Health += HealthAmount;
+	if (Health > MaxHealth)
+	{
+		Health = MaxHealth;
+	}
+}
+
+float APlayerCharacter::GetHealth()
+{
+	return Health;
+}
+
+float APlayerCharacter::GetMaxHealth()
+{
+	return MaxHealth;
 }

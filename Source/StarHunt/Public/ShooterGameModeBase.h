@@ -4,6 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
+#include "PlayerCharacter.h"
+#include "WraithPlayerController.h"
+#include "ShooterGameStateBase.h"
 #include "ShooterGameModeBase.generated.h"
 
 /**
@@ -15,4 +18,5 @@ class STARHUNT_API AShooterGameModeBase : public AGameModeBase
 	GENERATED_BODY()
 	
 	AShooterGameModeBase();
+
 };

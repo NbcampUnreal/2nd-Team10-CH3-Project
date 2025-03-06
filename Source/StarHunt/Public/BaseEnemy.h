@@ -119,5 +119,9 @@ public:
 	// void UpdateHPBar() const;
 
 	// virtual void Tick(float DeltaSeconds) override;
+
+	//아이템
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
+	UItemSpawnComponent* ItemSpawnComponent;
 };
 

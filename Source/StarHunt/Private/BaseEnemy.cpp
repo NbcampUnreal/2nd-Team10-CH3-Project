@@ -37,6 +37,9 @@ ABaseEnemy::ABaseEnemy()
 	// HPBar=CreateDefaultSubobject<UWidgetComponent>(TEXT("HPBar"));
 	// HPBar->SetupAttachment(RootComponent);
 	// HPBar->SetWidgetSpace(EWidgetSpace::World);
+
+	// Item
+	ItemSpawnComponent = CreateDefaultSubobject<UItemSpawnComponent>(TEXT("ItemSpawnComponemt"));
 }
 
 // Called when the game starts or when spawned
@@ -69,6 +72,7 @@ void ABaseEnemy::OnDeath()
 	// Deliver Score to Game Instance
 	if (UWorld* World=GetWorld())
 	{
+		ItemSpawnComponent->SpawnedItem();
 		if (UShooterGameInstance* GameInstance=Cast<UShooterGameInstance>(World->GetGameInstance()))
 		{
 			GameInstance->AddToScore(Score);

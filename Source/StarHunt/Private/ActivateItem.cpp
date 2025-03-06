@@ -11,5 +11,5 @@ UActivateItem::UActivateItem()
 //일단 하나만
 IActivateItemInterface* UActivateItem::GetActivateActionClass()
 {
-	return NewObject<UHealingItemActivate>(this, UHealingItemActivate::StaticClass());
+	return NewObject<UHealingItemActivate>(UHealingItemActivate::StaticClass());
 }

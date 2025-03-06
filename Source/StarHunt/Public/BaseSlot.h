@@ -7,6 +7,7 @@
 #include "ItemSubSystem.h"
 #include "Components/Image.h"
 #include "ItemDetailsWidget.h"
+#include "DragItemWidget.h"
 #include "BaseSlot.generated.h"
 
 /**
@@ -44,7 +45,7 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Slot")
 	EInventoryType SlotType;
 	UPROPERTY(EditAnywhere, Category = "Slot")
-	TSoftClassPtr<UBaseSlot> DragWidgetClass;
+	TSoftClassPtr<UDragItemWidget> DragWidgetClass;
 	UPROPERTY(EditAnywhere, Category = "Slot")
 	TSubclassOf<UItemDetailsWidget> ItemDetailsWidgetClass;
 	UPROPERTY(VisibleAnywhere, Category = "Slot")

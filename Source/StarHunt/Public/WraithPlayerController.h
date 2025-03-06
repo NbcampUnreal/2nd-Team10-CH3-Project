@@ -70,9 +70,16 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Inventory")
 	void CloseDropItems();
 
+	UFUNCTION(BlueprintCallable, Category = "Menu")
+	void ShowGameOver();
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
 	TSubclassOf<UItemShowWidget> ItemShowHUDWidgetClass;
 	UItemShowWidget* ItemShowHUDWidgetInstance;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<UUserWidget> GameOverHUDWidgetClass;
+	UUserWidget* GameOverHUDWidgetInstance;
 
 	FOnDropItemsChange OnDropItemsChange;
 protected:
