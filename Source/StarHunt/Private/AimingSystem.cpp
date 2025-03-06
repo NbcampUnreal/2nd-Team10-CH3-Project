@@ -3,10 +3,7 @@
 
 #include "AimingSystem.h"
 
-UAimingSystem::UAimingSystem()
-{
-    bDebug = false;
-}
+bool UAimingSystem::bDebugMode = false;
 
 FVector UAimingSystem::GetTargetLocation(APlayerController* PlayerController)
 {
@@ -31,8 +28,9 @@ FVector UAimingSystem::GetTargetLocation(APlayerController* PlayerController)
 
     bool bHit = World->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECC_Visibility, QueryParams);
 
+
     // 디버그 모드
-    if (bDebug)
+    if (bDebugMode)
     {
         // 라인 트레이스 경로
         DrawDebugLine(World, TraceStart, TraceEnd, FColor::Red, false, 2.0f, 0, 2.0f);
@@ -43,6 +41,7 @@ FVector UAimingSystem::GetTargetLocation(APlayerController* PlayerController)
             DrawDebugSphere(World, HitResult.ImpactPoint, 10.0f, 12, FColor::Green, false, 2.0f);
         }
     }
+
 
     return bHit ? HitResult.ImpactPoint : TraceEnd;
 }
@@ -58,7 +57,7 @@ FRotator UAimingSystem::GetTargetRotation(APlayerController* PlayerController, c
     return (Target - SpawnLocation).Rotation();
 }
 
-void UAimingSystem::SetDebugMode(bool bIsDebugmode)
+void UAimingSystem::SetDebugMode(bool value)
 {
-    bDebug = bIsDebugmode;
+    bDebugMode = value;
 }

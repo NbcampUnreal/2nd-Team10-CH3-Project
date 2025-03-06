@@ -47,16 +47,11 @@ void APlayerCharacter::SetDamage(const float Amount)
 void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	PlayerAnimInstance = GetMesh()->GetAnimInstance();
-
 }
 
-void APlayerCharacter::Tick(float DeltaSeconds)
+void APlayerCharacter::Tick(float DeltaTime)
 {
-	Super::Tick(DeltaSeconds);
-	
-
-	
+	Super::Tick(DeltaTime);
 }
 
 float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator,
@@ -221,11 +216,11 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 			{
 				EnhancedInput->BindAction(
 					PlayerController->Fire,
-					ETriggerEvent::Started,
+					ETriggerEvent::Triggered,
 					this,
 					&APlayerCharacter::FireWeapon
 				);
-
+				
 				EnhancedInput->BindAction(
 					PlayerController->Fire,
 					ETriggerEvent::Completed,
@@ -340,12 +335,18 @@ void APlayerCharacter::StartCrouch(const FInputActionValue& value)
 {
 	if (GetCharacterMovement()->IsFalling()) return;
 
-	Crouch();
+	if (GetCharacterMovement())
+	{
+		Crouch();
+	}
 }
 
 void APlayerCharacter::StopCrouch(const FInputActionValue& value)
 {
-	UnCrouch();
+	if (GetCharacterMovement())
+	{
+		UnCrouch();
+	}
 }
 
 void APlayerCharacter::Look(const FInputActionValue& value)
@@ -440,16 +441,14 @@ void APlayerCharacter::SwapWeapon()
 
 void APlayerCharacter::FireWeapon()
 {
-	
-	
 	if (IsSprint) return;
 
-	if (CurrentWeapon && !PlayerAnimInstance->Montage_IsPlaying(CurrentWeapon->GetFireMontage()))
+	if (CurrentWeapon)
 	{
 		if (CurrentWeapon->CanAttack())
 		{
 			PlayAnimMontage(CurrentWeapon->GetFireMontage());
-			
+			Recoil();
 		}
 	}
 }
@@ -459,13 +458,12 @@ void APlayerCharacter::StopFireWeapon()
 	if (CurrentWeapon)
 	{
 		CurrentWeapon->StopFire();
-		
 	}
 }
 
 void APlayerCharacter::ReloadWeapon()
 {
-	if (CurrentWeapon)
+	if (CurrentWeapon && CurrentWeapon->IsMaxAmmo())
 	{
 		PlayAnimMontage(CurrentWeapon->GetReloadMontage());
 	}
@@ -478,13 +476,8 @@ void APlayerCharacter::PlayReloadAnim()
 
 void APlayerCharacter::Recoil()
 {
-	float PitchRecoil = -0.5f;
-	float YawRecoil = FMath::RandRange(-1.0f, 1.0f);
-	
-	CurrentRecoil.Pitch += PitchRecoil;
-	CurrentRecoil.Yaw += YawRecoil;
-	AddControllerPitchInput(CurrentRecoil.Pitch);
-	AddControllerYawInput(CurrentRecoil.Yaw);
+	AddControllerPitchInput(CurrentWeapon->GetPitchRecoil());
+	AddControllerYawInput(CurrentWeapon->GetYawRecoil());
 }
 
 void APlayerCharacter::UseQuickSlot0()

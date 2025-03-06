@@ -6,14 +6,10 @@
 
 AShotGun::AShotGun()
 {
-    static ConstructorHelpers::FObjectFinder<UAnimMontage> EquipAnimMontage(TEXT("/Game/Characters/RetargetWraithAnim/RTA_AM_MM_Rifle_Equip.RTA_AM_MM_Rifle_Equip"));
-    EquipMontage = EquipAnimMontage.Object;
-    static ConstructorHelpers::FObjectFinder<UAnimMontage> FireAnimMontage(TEXT("/Game/Characters/RetargetWraithAnim/RTA_AM_MM_Shotgun_Fire.RTA_AM_MM_Shotgun_Fire"));
-    FireMontage = FireAnimMontage.Object;
-    static ConstructorHelpers::FObjectFinder<UAnimMontage> ReloadAnimMontage(TEXT("/Game/Characters/RetargetWraithAnim/RTA_AM_MM_Shotgun_Reload.RTA_AM_MM_Shotgun_Reload"));
-    ReloadMontage = ReloadAnimMontage.Object;
-    
     GunType = EGunType::ShotGun;
+    PitchRecoil = -3.0f;
+    MinYawRecoil = -1.0f;
+    MaxYawRecoil = 1.0f;
     
     NumberOfPellets = 8;
     SpreadAngle = 10.0f;
@@ -29,10 +25,8 @@ void AShotGun::FireProgress()
     for (int32 i = 0; i < NumberOfPellets; i++)
     {
         ABaseBullet* SpawnedBullet = SpawnBullet();
-        UE_LOG(LogTemp, Warning, TEXT("될까?"));
 
         if (!SpawnedBullet) return;
-        UE_LOG(LogTemp, Warning, TEXT("진행?"));
         SpawnedBullet->SetBulletDamage(Damage / NumberOfPellets);
     }
 

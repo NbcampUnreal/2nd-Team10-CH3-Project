@@ -17,7 +17,5 @@ class STARHUNT_API ARifle : public ABaseGun
 public:
 	ARifle();
 
-	virtual void Fire() override;
-
 	virtual void StopFire() override;
 };

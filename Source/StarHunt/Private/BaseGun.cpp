@@ -23,6 +23,8 @@ ABaseGun::ABaseGun()
 
 	GunFixtureComponent = CreateDefaultSubobject<UGunFixtureComponent>(TEXT("GunFixtureComponent"));
 
+	bIsReloading = false;
+	
 	SpreadAngle = 0.0f;
 	Damage = 1.0f;
 	FireRate = 1.0f;
@@ -41,7 +43,10 @@ void ABaseGun::Fire()
 
 	// 타이머로 발사 속도 제한
 	bIsFiring = true;
-	GetWorld()->GetTimerManager().SetTimer(FireRateTimerHandle, this, &ABaseGun::ResetFireTimer, FireRate, false);
+	if (bIsFiring)
+	{
+		GetWorld()->GetTimerManager().SetTimer(FireRateTimerHandle, this, &ABaseGun::ResetFireTimer, FireRate, false);
+	}
 }
 
 void ABaseGun::StopFire()
@@ -97,9 +102,15 @@ bool ABaseGun::CanAttack()
 		UE_LOG(LogTemp, Warning, TEXT("No Bullet"));
 		return false;
 	}
+	
 	if (bIsFiring)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Cool Time"));
+		return false;
+	}
+	if (bIsReloading)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Reload Time"));
 		return false;
 	}
 
@@ -150,6 +161,23 @@ float ABaseGun::GetYawRecoil() const
 {
 	float YawRecoil = FMath::RandRange(MinYawRecoil, MaxYawRecoil);
 	return YawRecoil;
+}
+
+bool ABaseGun::GetIsReloading() const
+{
+	return bIsReloading;
+}
+
+bool ABaseGun::IsMaxAmmo() const
+{
+	if (CurrentAmmo == MaxAmmo)
+	{
+		return false;
+	}
+	else
+	{
+		return true;
+	}
 }
 
 void ABaseGun::PlayFireAnim()

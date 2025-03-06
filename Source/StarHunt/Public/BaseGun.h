@@ -11,7 +11,7 @@
 
 #include "BaseGun.generated.h"
 
-UCLASS(Abstract)
+UCLASS()
 class STARHUNT_API ABaseGun : public AActor, public IGunInterface, public IRarityInterface
 {
 	GENERATED_BODY()
@@ -63,6 +63,10 @@ public:
 	float GetPitchRecoil() const;
 	UFUNCTION()
 	float GetYawRecoil() const;
+	UFUNCTION()
+	bool GetIsReloading() const;
+	UFUNCTION()
+	bool IsMaxAmmo() const;
 protected:
 	
 
@@ -137,8 +141,11 @@ protected:
 	FTimerHandle ReloadTimerHandle;
 
 	// 타이머 관련 변수
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GunIStatus")
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "GunIStatus")
 	bool bIsFiring;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "GunIStatus")
+	bool bIsReloading;
 
 	//총 종류
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GunIStatus")
