@@ -31,9 +31,6 @@ ABaseGun::ABaseGun()
 	CurrentAmmo = MaxAmmo;
 	bIsFiring = false;
 	BulletClass = ABaseBullet::StaticClass();
-
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> AnimMontage(TEXT("/Game/Characters/RetargetWraithAnim/AM_MM_Unequip.AM_MM_Unequip"));
-	UnEquipMontage = AnimMontage.Object;
 }
 
 void ABaseGun::Fire()
@@ -108,6 +105,62 @@ bool ABaseGun::CanAttack()
 	return true;
 }
 
+EGunType ABaseGun::GetGunType() const
+{
+	return GunType;
+}
+
+UAnimMontage* ABaseGun::GetEquipMontage() const
+{
+	return EquipMontage;
+}
+
+UAnimMontage* ABaseGun::GetUnEquipMontage() const
+{
+	return UnEquipMontage;
+}
+
+UAnimMontage* ABaseGun::GetFireMontage() const
+{
+	return FireMontage;
+}
+
+UAnimMontage* ABaseGun::GetReloadMontage() const
+{
+	return ReloadMontage;
+}
+
+UAnimationAsset* ABaseGun::GetGunFireAnimation() const
+{
+	return GunFireAnimation;
+}
+
+UAnimationAsset* ABaseGun::GetGunReloadAnimation() const
+{
+	return GunReloadAnimation;
+}
+
+float ABaseGun::GetPitchRecoil() const
+{
+	return PitchRecoil;
+}
+
+float ABaseGun::GetYawRecoil() const
+{
+	float YawRecoil = FMath::RandRange(MinYawRecoil, MaxYawRecoil);
+	return YawRecoil;
+}
+
+void ABaseGun::PlayFireAnim()
+{
+	GunMesh->PlayAnimation(GunFireAnimation, false);
+}
+
+void ABaseGun::PlayReloadAnim()
+{
+	GunMesh->PlayAnimation(GunReloadAnimation, false);
+}
+
 void ABaseGun::ResetFireTimer()
 {
 	bIsFiring = false;
@@ -117,6 +170,8 @@ void ABaseGun::FireProgress()
 {
 	if (CurrentAmmo <= 0) return;
 
+	PlayFireAnim();
+	
 	// 총알 소환
 	ABaseBullet* SpawnedBullet = SpawnBullet();
 
@@ -148,14 +203,17 @@ ABaseBullet* ABaseGun::SpawnBullet()
 	float Angle = SpreadAngle / 2.0f;
 	SpawnRotation.Yaw += FMath::FRandRange(-Angle, Angle);
 	SpawnRotation.Pitch += FMath::FRandRange(-Angle, Angle);
-	ABaseBullet* SpawnedBullet = GetWorld()->SpawnActor<ABaseBullet>(BulletClass, SpawnLocation, SpawnRotation);
+	FActorSpawnParameters SpawnParameter;
+	SpawnParameter.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	auto* SpawnClass = BulletClass.Get();
+	AActor* SpawnedBullet = GetWorld()->SpawnActor<AActor>(SpawnClass, SpawnLocation, SpawnRotation, SpawnParameter);
 
 	if (SpawnedBullet)
 	{
 		// 총알의 소유자를 총으로 설정
 		SpawnedBullet->SetOwner(this);
 
-		return SpawnedBullet;
+		return Cast<ABaseBullet>(SpawnedBullet);
 	}
 	else
 	{

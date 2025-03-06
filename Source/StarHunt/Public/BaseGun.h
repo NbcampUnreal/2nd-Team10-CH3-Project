@@ -21,34 +21,14 @@ public:
 	ABaseGun();
 
 public:
-	//총 종류
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GunIStatus")
-	EGunType GunType;
+	// 발사 애니메이션 실행
+	UFUNCTION(BlueprintCallable)
+	virtual void PlayFireAnim();
 
-	// 총 장착 PlayerAnimMontage
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GunIStatus")
-	UAnimMontage* EquipMontage;
+	// 장전 애니메이션 실행
+	UFUNCTION(BlueprintCallable)
+	virtual void PlayReloadAnim();
 
-	// 총 해제 PlayerAnimMontage
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GunIStatus")
-	UAnimMontage* UnEquipMontage;
-
-	// 총 발사 PlayerAnimMontage
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GunIStatus")
-	UAnimMontage* FireMontage;
-
-	// 총 장전 PlayerAnimMontage
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GunIStatus")
-	UAnimMontage* ReloadMontage;
-
-
-	// 총 발사 GunAnimMontage
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GunIStatus")
-	UAnimMontage* GunFireMontage;
-
-	// 총 장전 GunReloadMontage
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GunIStatus")
-	UAnimMontage* GunReloadMontage;
 	
 	// 발사
 	UFUNCTION(BlueprintCallable)
@@ -62,9 +42,29 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual void Reload() override final;
 
-protected:
 	// 공격 가능 여부 체크
 	virtual bool CanAttack();
+
+	UFUNCTION()
+	EGunType GetGunType() const;
+	UFUNCTION()
+	UAnimMontage* GetEquipMontage() const;
+	UFUNCTION()
+	UAnimMontage* GetUnEquipMontage() const;
+	UFUNCTION()
+	UAnimMontage* GetFireMontage() const;
+	UFUNCTION()
+	UAnimMontage* GetReloadMontage() const;
+	UFUNCTION()
+	UAnimationAsset* GetGunFireAnimation() const;
+	UFUNCTION()
+	UAnimationAsset* GetGunReloadAnimation() const;
+	UFUNCTION()
+	float GetPitchRecoil() const;
+	UFUNCTION()
+	float GetYawRecoil() const;
+protected:
+	
 
 	// 발사 속도 타이머 초기화
 	void ResetFireTimer();
@@ -78,6 +78,7 @@ protected:
 	FRotator CaculateAimRotator();
 
 protected:
+	
 	// 루트 컴포넌트
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GunIComponent")
 	USceneComponent* Scene;
@@ -136,10 +137,43 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "GunIStatus")
 	bool bIsFiring;
 
+	//총 종류
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "GunIStatus")
+	EGunType GunType;
+	
+	// 총 장착 PlayerAnimMontage
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations")
+	UAnimMontage* EquipMontage;
+
+	// 총 해제 PlayerAnimMontage
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations")
+	UAnimMontage* UnEquipMontage;
+
+	// 총 발사 PlayerAnimMontage
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations")
+	UAnimMontage* FireMontage;
+
+	// 총 장전 PlayerAnimMontage
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations")
+	UAnimMontage* ReloadMontage;
+
+	// 총 발사 애니메이션 에셋
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations")
+	UAnimationAsset* GunFireAnimation;
+
+	// 총 장전 애니메이션 에셋
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animations")
+	UAnimationAsset* GunReloadAnimation;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Recoil")
+	float PitchRecoil;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Recoil")
+	float MinYawRecoil;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Recoil")
+	float MaxYawRecoil;
+
 	//총 부속품 SubSystem연결
 public:
 	virtual void StartItemSubsystem(int32 EquipmentIndex, FGunItemStateRow* GunItemStateRow);
 	virtual void EndItemSubsystem();
-
-
 };

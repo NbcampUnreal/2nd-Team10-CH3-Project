@@ -8,13 +8,6 @@
 
 ARifle::ARifle()
 {
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> EquipAnimMontage(TEXT("/Game/Characters/RetargetWraithAnim/RTA_AM_MM_Rifle_Equip.RTA_AM_MM_Rifle_Equip"));
-	EquipMontage = EquipAnimMontage.Object;
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> FireAnimMontage(TEXT("/Game/Characters/RetargetWraithAnim/RTA_AM_MM_Rifle_Fire.RTA_AM_MM_Rifle_Fire"));
-	FireMontage = FireAnimMontage.Object;
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> ReloadAnimMontage(TEXT("/Game/Characters/RetargetWraithAnim/RTA_AM_MM_Rifle_Reload.RTA_AM_MM_Rifle_Reload"));
-	ReloadMontage = ReloadAnimMontage.Object;
-	
 	bIsFiring = false;
 
 	GunType = EGunType::Rifle;
