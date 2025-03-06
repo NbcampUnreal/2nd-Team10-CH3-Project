@@ -34,25 +34,29 @@ bool UItemSpawnComponent::bIsSpawnedItem(float Rate)
 AActor* UItemSpawnComponent::SpawnedItem()
 {
 	TArray<FSpawnItemRow*> SpawnItemRows;
-	SpawnRateTable->GetAllRows(FString("SpawnItemRows"), SpawnItemRows);
-	TArray<FString> DropItemIDs;
-
-	for (FSpawnItemRow* SpawnItemRow : SpawnItemRows)
+	if (SpawnRateTable)
 	{
-		if (bIsSpawnedItem(SpawnItemRow->SpawnRate))
+		SpawnRateTable->GetAllRows(FString("SpawnItemRows"), SpawnItemRows);
+		TArray<FString> DropItemIDs;
+
+		for (FSpawnItemRow* SpawnItemRow : SpawnItemRows)
 		{
-			DropItemIDs.Add(SpawnItemRow->ItemID);
+			if (bIsSpawnedItem(SpawnItemRow->SpawnRate))
+			{
+				DropItemIDs.Add(SpawnItemRow->ItemID);
+			}
+		}
+
+		if (GetWorld() && GetOwner() && DropItemActorClass)
+		{
+			if (ADropItemActor* DropItemActor = GetWorld()->SpawnActor<ADropItemActor>(DropItemActorClass, GetOwner()->GetActorLocation(), GetOwner()->GetActorRotation()))
+			{
+				DropItemActor->SetItemIDs(DropItemIDs);
+				return DropItemActor;
+			}
 		}
 	}
 
-	if (GetWorld() && GetOwner())
-	{
-		if (ADropItemActor* DropItemActor = GetWorld()->SpawnActor<ADropItemActor>(DropItemActorClass, GetOwner()->GetActorLocation(), GetOwner()->GetActorRotation()))
-		{
-			DropItemActor->SetItemIDs(DropItemIDs);
-			return DropItemActor;
-		}
-	}
 	return nullptr;
 }
 
