@@ -4,6 +4,7 @@
 #include "ItemSlot.h"
 #include "ItemBlueprintFunctionLibrary.h"
 #include "InventoryDragDropOperation.h"
+#include "DragItemWidget.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
 
 void UItemSlot::NativeConstruct()
@@ -123,7 +124,7 @@ void UItemSlot::NativeOnDragDetected(const FGeometry& InGeometry, const FPointer
 			{
 				if (UClass* DragWidgetInstance = DragWidgetClass.LoadSynchronous())
 				{
-					UBaseSlot* DragWidget = CreateWidget<UBaseSlot>(GetWorld(), DragWidgetInstance);
+					UDragItemWidget* DragWidget = CreateWidget<UDragItemWidget>(GetWorld(), DragWidgetInstance);
 					if (DragWidget && DragWidget->ItemImage)
 					{
 						DragWidget->ItemImage->SetBrushFromTexture(BaseItemStateRow->InventoryIcon);

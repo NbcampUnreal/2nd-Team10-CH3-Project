@@ -5,6 +5,8 @@
 #include "Components/SphereComponent.h"
 #include "ItemSubsystem.h"
 #include "Components/WidgetComponent.h"
+#include "Components/StaticMeshComponent.h"
+#include "GameFramework/Character.h"
 #include "ItemBlueprintFunctionLibrary.h"
 // Sets default values
 ADropItemActor::ADropItemActor()
@@ -21,10 +23,13 @@ ADropItemActor::ADropItemActor()
 	CollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &ADropItemActor::OnItemBeginOverlap);
 	CollisionComponent->OnComponentEndOverlap.AddDynamic(this, &ADropItemActor::OnItemEndOverlap);
 
-	OverheadWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("OverHeadWidget"));
-	OverheadWidgetComponent->AddLocalOffset(FVector(0.0f, 0.0f, 20.0f));
+	StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMeshComponent"));
+	StaticMeshComponent->SetupAttachment(RootComponent);
+
+	OverheadWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("Widget"));
 	OverheadWidgetComponent->SetupAttachment(RootComponent);
 }
+
 
 FBaseItemStateRow* ADropItemActor::GetItemState()
 {
@@ -59,21 +64,24 @@ void ADropItemActor::SetItemIDs(TArray<FString> SpawnItemIDs)
 void ADropItemActor::BeginPlay()
 {
 	Super::BeginPlay();
+
+
 }
 
 void ADropItemActor::OnItemBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (OtherActor)
+	if (OtherActor && Cast<ACharacter>(OtherActor) && OverheadWidgetComponent)
 	{
-		if (UItemSubsystem* ItemSubSystem = Cast<UItemSubsystem>(UItemBlueprintFunctionLibrary::GetGameInstanceSubsystem()))
-		{
-		}
-
+		OverheadWidgetComponent->SetVisibility(true);
 	}
 }
 
 void ADropItemActor::OnItemEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
+	if (OverheadWidgetComponent)
+	{
+		OverheadWidgetComponent->SetVisibility(false);
+	}
 }
 
 

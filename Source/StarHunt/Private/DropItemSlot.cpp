@@ -103,7 +103,7 @@ void UDropItemSlot::NativeOnDragDetected(const FGeometry& InGeometry, const FPoi
 			{
 				if (UClass* DragWidgetInstance = DragWidgetClass.LoadSynchronous())
 				{
-					UBaseSlot* DragWidget = CreateWidget<UBaseSlot>(GetWorld(), DragWidgetInstance);
+					UDragItemWidget* DragWidget = CreateWidget<UDragItemWidget>(GetWorld(), DragWidgetInstance);
 					if (DragWidget)
 					{
 						DragWidget->ItemImage->SetBrush(ItemImage->GetBrush());

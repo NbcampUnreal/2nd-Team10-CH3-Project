@@ -276,7 +276,7 @@ bool UItemSubsystem::AddGunEquipment(int32 EquipmentIndex, int32 InventoryIndex)
 					//제거전 잠시보관
 					if (TSharedPtr<FString> EquipedGunItemID = Equipments[EquipmentIndex]->ItemID)
 					{
-						/*AddItem(*EquipedGunItemID);*/
+						AddItem(*EquipedGunItemID);
 					}
 
 				}

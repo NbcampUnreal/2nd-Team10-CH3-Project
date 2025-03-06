@@ -46,6 +46,15 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	float TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
+	
+	UFUNCTION(Blueprintable)
+	void SetHealth(float NowHealth);
+	UFUNCTION(Blueprintable)
+	void AddHealth(float HealthAmount);
+	UFUNCTION(Blueprintable)
+	float GetHealth();
+	UFUNCTION(Blueprintable)
+	float GetMaxHealth();
 
 	
 protected:

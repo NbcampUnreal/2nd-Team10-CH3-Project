@@ -2,6 +2,7 @@
 
 
 #include "HealingItemActivate.h"
+#include "PlayerCharacter.h"
 #include "ItemBlueprintFunctionLibrary.h"
 
 UHealingItemActivate::UHealingItemActivate()
@@ -12,7 +13,10 @@ UHealingItemActivate::UHealingItemActivate()
 
 void UHealingItemActivate::ActivateItem(AActor* Activator)
 {
-	UE_LOG(LogTemp, Warning, TEXT("ActivateHealingItem : %f"), HealingAmount);
+	if (APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(Activator))
+	{
+		PlayerCharacter->AddHealth(HealingAmount);
+	}
 }
 
 void UHealingItemActivate::SetStatus(const FString& ItemID)

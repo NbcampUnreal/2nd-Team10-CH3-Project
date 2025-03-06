@@ -9,6 +9,7 @@
 
 class USphereComponent;
 class UWidgetComponent;
+class UStaticMeshComponent;
 UCLASS()
 class STARHUNT_API ADropItemActor : public AActor
 {
@@ -25,6 +26,8 @@ public:
 	USphereComponent* CollisionComponent;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item|Components")
 	UWidgetComponent* OverheadWidgetComponent;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item|Components")
+	UStaticMeshComponent* StaticMeshComponent;
 
 	TArray<TSharedPtr<FString>> ItemIDs;
 
@@ -49,6 +52,8 @@ public:
 		AActor* OtherActor,
 		UPrimitiveComponent* OtherComp,
 		int32 OtherBodyIndex);
+
+
 private:
 	FBaseItemStateRow* ItemState;
 };

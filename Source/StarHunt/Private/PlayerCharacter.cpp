@@ -50,6 +50,7 @@ float APlayerCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 	return ActualDamage;
 }
 
+
 void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -355,32 +356,34 @@ void APlayerCharacter::Swap3()
 
 void APlayerCharacter::SpawnWeapon(int32 EquipmentIndex)
 {
-	ABaseGun* WeaponInstance = ItemInventoryComponent->GetWeapon(EquipmentIndex);
-	if (!WeaponInstance) return;
+	if (CurrentWeapon)
+	{
+		CurrentWeapon->Destroy();
+	}
+	CurrentWeapon = ItemInventoryComponent->GetWeapon(EquipmentIndex);
 
+	SwapWeapon();
+	if (CurrentWeapon)
+	{
+		return;
+
+	}
 	UWorld* World = GetWorld();
 	if (!World) return;
 
-	TSubclassOf<ABaseGun> WeaponClass = WeaponInstance->GetClass();
-
-	if (CurrentWeapon != nullptr && CurrentWeapon->GetClass() == WeaponInstance->GetClass()) // 여기가 문제인듯?
+	if (CurrentWeapon != nullptr) // 여기가 문제인듯?
 	{
 		PlayAnimMontage(CurrentWeapon->UnEquipMontage);
 		SetCurrentState(ECurrentCharacterState::None);
 		return;
 	}
 
-	if (CurrentWeapon == nullptr)
-	{
-		CurrentWeapon = World->SpawnActor<ABaseGun>(WeaponClass);
-	}
-	else if (CurrentWeapon != nullptr && CurrentWeapon->GetClass() != WeaponInstance->GetClass())
-	{
-		PlayAnimMontage(CurrentWeapon->UnEquipMontage);
-		CurrentWeapon->Destroy();
-		CurrentWeapon = nullptr;
-		CurrentWeapon = World->SpawnActor<ABaseGun>(WeaponClass);
-	}
+	//else if (CurrentWeapon != nullptr)
+	//{
+	//	PlayAnimMontage(CurrentWeapon->UnEquipMontage);
+	//	CurrentWeapon->Destroy();
+	//	CurrentWeapon = nullptr;
+	//}
 
 	SwapWeapon();
 }
@@ -536,4 +539,28 @@ bool APlayerCharacter::bIsOpenWindows()
 		return true;
 	}
 	return false;
+}
+
+void APlayerCharacter::SetHealth(float NowHealth)
+{
+	Health = NowHealth;
+}
+
+void APlayerCharacter::AddHealth(float HealthAmount)
+{
+	Health += HealthAmount;
+	if (Health > MaxHealth)
+	{
+		Health = MaxHealth;
+	}
+}
+
+float APlayerCharacter::GetHealth()
+{
+	return Health;
+}
+
+float APlayerCharacter::GetMaxHealth()
+{
+	return MaxHealth;
 }

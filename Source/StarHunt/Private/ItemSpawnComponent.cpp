@@ -19,6 +19,20 @@ UItemSpawnComponent::UItemSpawnComponent()
 void UItemSpawnComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
+
+}
+
+bool UItemSpawnComponent::bIsSpawnedItem(float Rate)
+{
+	if (Rate < UKismetMathLibrary::RandomFloat())
+	{
+		return true;
+	}
+	return false;
+}
+
+AActor* UItemSpawnComponent::SpawnedItem()
+{
 	TArray<FSpawnItemRow*> SpawnItemRows;
 	SpawnRateTable->GetAllRows(FString("SpawnItemRows"), SpawnItemRows);
 	TArray<FString> DropItemIDs;
@@ -36,17 +50,10 @@ void UItemSpawnComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 		if (ADropItemActor* DropItemActor = GetWorld()->SpawnActor<ADropItemActor>(DropItemActorClass, GetOwner()->GetActorLocation(), GetOwner()->GetActorRotation()))
 		{
 			DropItemActor->SetItemIDs(DropItemIDs);
+			return DropItemActor;
 		}
 	}
-}
-
-bool UItemSpawnComponent::bIsSpawnedItem(float Rate)
-{
-	if (Rate < UKismetMathLibrary::RandomFloat())
-	{
-		return true;
-	}
-	return false;
+	return nullptr;
 }
 
 

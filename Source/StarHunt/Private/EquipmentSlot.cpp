@@ -99,7 +99,7 @@ void UEquipmentSlot::NativeOnDragDetected(const FGeometry& InGeometry, const FPo
 			{
 				if (UClass* DragWidgetInstance = DragWidgetClass.LoadSynchronous())
 				{
-					UBaseSlot* DragWidget = CreateWidget<UBaseSlot>(GetWorld(), DragWidgetInstance);
+					UDragItemWidget* DragWidget = CreateWidget<UDragItemWidget>(GetWorld(), DragWidgetInstance);
 					if (DragWidget)
 					{
 						if (UTexture2D* Texture2D = Cast<UTexture2D>(BaseItemStateRow->InventoryIcon))

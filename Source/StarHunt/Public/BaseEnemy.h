@@ -12,6 +12,7 @@
 enum class EMovementSpeed : uint8;
 class UItemSpawnComponent;
 class UWidgetComponent;
+class UItemSpawnComponent;
 //Delegate 선언
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAttackEnd);
 
@@ -116,5 +117,9 @@ public:
 	// void UpdateHPBar() const;
 
 	// virtual void Tick(float DeltaSeconds) override;
+
+	//아이템
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
+	UItemSpawnComponent* ItemSpawnComponent;
 };
 
