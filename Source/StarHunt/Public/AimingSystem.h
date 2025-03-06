@@ -3,28 +3,26 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UObject/NoExportTypes.h"
+#include "Kismet/BlueprintFunctionLibrary.h"
 #include "AimingSystem.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
-class STARHUNT_API UAimingSystem : public UObject
+class STARHUNT_API UAimingSystem : public UBlueprintFunctionLibrary
 {
 	GENERATED_BODY()
-	
+
 public:
-	UAimingSystem();
+	UFUNCTION(BlueprintCallable)
+	static FVector GetTargetLocation(APlayerController* PlayerController);
 
 	UFUNCTION(BlueprintCallable)
-	FVector GetTargetLocation(APlayerController* PlayerController);
+	static FRotator GetTargetRotation(APlayerController* PlayerController, const FVector& SpawnLocation);
 
 	UFUNCTION(BlueprintCallable)
-	FRotator GetTargetRotation(APlayerController* PlayerController, const FVector& SpawnLocation);
-
-	void SetDebugMode(bool bIsDebugmode);
-protected:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Option")
-	bool bDebug;
+	static void SetDebugMode(bool value);
+private:
+	static bool bDebugMode;
 };
