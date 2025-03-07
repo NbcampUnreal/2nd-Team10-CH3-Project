@@ -20,6 +20,9 @@ public:
 
 	virtual void Init() override;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "GameData")
+	FString Name;
+	
 	// 총 점수
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "GameData")
 	int32 TotalScore;
@@ -35,6 +38,10 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "GameData")
 	void AddToScore(int32 Amount);
+
+	//이름 설정
+	UFUNCTION(BlueprintCallable, Category = "GameData")
+	void SetName(FString Text);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<UItemDB> ItemDBClass;
