@@ -12,6 +12,7 @@
 #include "Animation/AnimSequence.h"
 #include "Perception/AISense_Damage.h"
 #include "Kismet/GameplayStatics.h"
+#include "ShooterGameInstance.h"
 
 // Sets default values
 ABaseEnemy::ABaseEnemy()
@@ -47,6 +48,14 @@ void ABaseEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	if (UShooterGameInstance* ShooterGameInstance = Cast<UShooterGameInstance>(GetGameInstance()))
+	{
+		int32 CurrentWave = ShooterGameInstance->CurrentWave;
+
+		Power *= (1.0f + static_cast<float>(CurrentWave) / 10);
+		MaxHealth *= (1.0f + static_cast<float>(CurrentWave) / 10);
+		Health = MaxHealth;
+	}
 	// UpdateHPBar();
 }
 
