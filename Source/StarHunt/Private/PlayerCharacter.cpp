@@ -2,6 +2,7 @@
 
 #include "BaseGun.h"
 #include "EnhancedInputComponent.h"
+#include "EnhancedInputSubsystems.h"
 #include "WraithPlayerController.h"
 #include "ItemInventoryComponent.h"
 #include "ShooterGameStateBase.h"
