@@ -19,14 +19,21 @@ class STARHUNT_API ABossEnemy : public ABaseEnemy
 public:
 	ABossEnemy();
 	virtual void SetMovementSpeed(const EMovementSpeed Speed) override;
-
+	void BeginPlay() override;
 	virtual void Attack() override;
 
 	UFUNCTION(BlueprintCallable, Category="Attack")
 	void Fire();
 
+	UFUNCTION()
+	void SpecialFire(FName NotifyName, const FBranchingPointNotifyPayload& Payload);
+
 protected:
 	// 에디터에서 총알 종류 선택 가능
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Gun|Bullet")
 	TSubclassOf<class ABaseBullet> BulletClass;
+
+	// 에디터에서 총알 종류 선택 가능
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Gun|Bullet")
+	TSubclassOf<class ABaseBullet> SpecialBulletClass;
 };
