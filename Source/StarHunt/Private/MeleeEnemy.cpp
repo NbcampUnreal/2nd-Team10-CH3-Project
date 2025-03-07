@@ -10,12 +10,18 @@
 AMeleeEnemy::AMeleeEnemy()
 {
 	Score = 100.0f;
-	Health = 500.0f;
+	Health = 10.0f;
 	MaxHealth = Health;
 	Power=20.0f;
 	AttackRadius=150.0f;
 	DefendRadius=350.0f;
 	AttackRange=200.0f;
+
+	if (ActorHasTag(FName("Boss")))
+	{
+		Health *= 10;
+		MaxHealth = Health;
+	}
 }
 
 void AMeleeEnemy::BeginPlay()
@@ -94,12 +100,16 @@ void AMeleeEnemy::SetMovementSpeed(const EMovementSpeed Speed)
 		{
 		case EMovementSpeed::Idle:
 			MovementComp->MaxWalkSpeed = 0.0f;
+			break;
 		case EMovementSpeed::Walking:
 			MovementComp->MaxWalkSpeed = 100.0f;
+			break;
 		case EMovementSpeed::Jogging:
 			MovementComp->MaxWalkSpeed = 300.0f;
+			break;
 		case EMovementSpeed::Sprinting:
 			MovementComp->MaxWalkSpeed = 500.0f;
+			break;
 		default:
 			break;
 		}

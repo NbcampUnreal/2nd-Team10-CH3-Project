@@ -32,8 +32,8 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Power")
 	float Power;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Power")
-	bool bIsDead;
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "State")
+	bool bBossIsDead;
 	
 	//Attack Montage
 	UPROPERTY(EditAnywhere, Category="Attack")
