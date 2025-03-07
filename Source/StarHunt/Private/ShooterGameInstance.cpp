@@ -10,6 +10,7 @@ UShooterGameInstance::UShooterGameInstance()
 	TotalPlayTimeMinute = 0;
 	TotalPlayTimeSec = 0;
 	CurrentWave = 0;
+	Name="";
 }
 
 void UShooterGameInstance::Init()
@@ -31,4 +32,10 @@ void UShooterGameInstance::AddToScore(int32 Amount)
 {
 	TotalScore += Amount;
 	
+}
+
+void UShooterGameInstance::SetName(FString Text)
+{
+	Name=Text;
+	UE_LOG(LogTemp, Display, TEXT("%s"), *Name);
 }

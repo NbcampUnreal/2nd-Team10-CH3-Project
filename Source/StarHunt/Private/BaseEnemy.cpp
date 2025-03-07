@@ -6,7 +6,9 @@
 #include "ItemSpawnComponent.h"
 #include "ShooterGameInstance.h"
 #include "AIEnum.h"
+#include "BossEnemy.h"
 #include "PlayerCharacter.h"
+#include "ShooterGameStateBase.h"
 #include "Animation/AnimInstance.h"
 #include "Animation/AnimMontage.h"
 #include "Animation/AnimSequence.h"
@@ -96,7 +98,14 @@ void ABaseEnemy::OnDeath()
 			Brain->StopLogic("Dead");
 		}
 	}
-
+	if (ABossEnemy* Boss=Cast<ABossEnemy>(GetController()->GetPawn()))
+	{
+		UE_LOG(LogTemp, Display, TEXT("Boss Detected"));
+		if (AShooterGameStateBase* GameState=Cast<AShooterGameStateBase>(GetWorld()->GetGameState()))
+		{
+			GameState->OnGameClear();
+		}
+	}
 	//Destroy() 3초 뒤 호출
 	FTimerHandle DestroyTimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(

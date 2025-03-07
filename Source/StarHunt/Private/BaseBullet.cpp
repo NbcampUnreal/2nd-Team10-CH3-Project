@@ -75,7 +75,7 @@ void ABaseBullet::OnHit(
 
     // ApplyDamage 인수로 들어갈 컨트롤러 변수
     AController* PlayerController = GetWorld()->GetFirstPlayerController();
-    if (OtherActor == PlayerController->GetPawn()) return;
+    
 
     if (PlayerController)
     {

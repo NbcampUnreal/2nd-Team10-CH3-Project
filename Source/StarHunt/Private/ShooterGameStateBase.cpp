@@ -106,6 +106,7 @@ void AShooterGameStateBase::OnGameOver()
 
 void AShooterGameStateBase::OnGameClear()
 {
+	UE_LOG(LogTemp, Display, TEXT("AShooterGameStateBase::OnGameClear"));
 	if (APlayerController* PlayerController = GetWorld()->GetFirstPlayerController())
 	{
 		if (UShooterGameInstance* ShooterGameInstance = Cast<UShooterGameInstance>(GetGameInstance()))
