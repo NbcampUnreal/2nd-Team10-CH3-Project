@@ -109,12 +109,12 @@ void ABossEnemy::SpecialFire(FName NotifyName, const FBranchingPointNotifyPayloa
 			FVector Direction=(Player->GetActorLocation()-Start).GetSafeNormal();
 			//DrawDebugLine(GetWorld(),Start,Start+Direction*5000,FColor::Red,false,1.0f,0,2.0f);
 			//촟알 생성
-			if (ABaseBullet* SpecialBulletClass=GetWorld()->SpawnActor<ABaseBullet>(BulletClass,Start,SpawnRotation))
+			if (ABaseBullet* SpecialBullet=GetWorld()->SpawnActor<ABaseBullet>(BulletClass,Start,SpawnRotation))
 			{
 				//총알 데미지 설정
-				SpecialBulletClass->SetBulletDamage(Power*1.5f);
+				SpecialBullet->SetBulletDamage(Power*1.5f);
 				//총알의 ProjectileMovement 컴포넌트를 획득
-				if (UProjectileMovementComponent* MovementComp=SpecialBulletClass->GetProjectileComp())
+				if (UProjectileMovementComponent* MovementComp=SpecialBullet->GetProjectileComp())
 				{
 					//Velocity의 방향으로 회전값이 수정되는 옵션 true로 설정 (쉽게 말해 Velocity의 방향으로 발사)
 					MovementComp->bRotationFollowsVelocity=true;
