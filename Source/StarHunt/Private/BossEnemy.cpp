@@ -44,6 +44,16 @@ void ABossEnemy::SetMovementSpeed(const EMovementSpeed Speed)
 	}
 }
 
+void ABossEnemy::BeginPlay()
+{
+	Super::BeginPlay();
+	//애니메이션 Notify 이벤트 연결
+	if (UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance())
+	{
+		AnimInstance->OnPlayMontageNotifyBegin.AddDynamic(this,&ABossEnemy::SpecialFire);
+	}
+}
+
 void ABossEnemy::Attack()
 {
 	Super::Attack();
@@ -77,6 +87,41 @@ void ABossEnemy::Fire()
 				MovementComp->bRotationFollowsVelocity=true;
 				//방향벡터와 원하는 속도를 곱해 Velocity 설정
 				MovementComp->Velocity=Direction*MovementComp->GetMaxSpeed();
+			}
+		}
+	}
+}
+
+void ABossEnemy::SpecialFire(FName NotifyName, const FBranchingPointNotifyPayload& Payload)
+{
+	if (NotifyName=="SpecialAttack")
+	{
+		//지정된 총알이 있는지 검사
+		if (!SpecialBulletClass) return;
+		//메시의 권총 실린더 위치를 총알의 시작위치로 지정
+		FVector Start=GetMesh()->GetSocketLocation("Chest")+GetActorForwardVector()*200.0f;
+		//액터 회전 값
+		FRotator SpawnRotation=GetActorRotation();
+		//플레이어가 유효한지 검사
+		if (ACharacter* Player=Cast<ACharacter>(GetWorld()->GetFirstPlayerController()->GetPawn()))
+		{
+			// 총알 시작위치와 플레이어의 위치를 이용해 방향 벡터 계산 및 정규화
+			FVector Direction=(Player->GetActorLocation()-Start).GetSafeNormal();
+			//DrawDebugLine(GetWorld(),Start,Start+Direction*5000,FColor::Red,false,1.0f,0,2.0f);
+			//촟알 생성
+			if (ABaseBullet* SpecialBulletClass=GetWorld()->SpawnActor<ABaseBullet>(BulletClass,Start,SpawnRotation))
+			{
+				//총알 데미지 설정
+				SpecialBulletClass->SetBulletDamage(Power*1.5f);
+				//총알의 ProjectileMovement 컴포넌트를 획득
+				if (UProjectileMovementComponent* MovementComp=SpecialBulletClass->GetProjectileComp())
+				{
+					//Velocity의 방향으로 회전값이 수정되는 옵션 true로 설정 (쉽게 말해 Velocity의 방향으로 발사)
+					MovementComp->bRotationFollowsVelocity=true;
+					//방향벡터와 원하는 속도를 곱해 Velocity 설정
+					MovementComp->Velocity=Direction*MovementComp->GetMaxSpeed();
+					UE_LOG(LogTemp,Warning,TEXT("Special"));
+				}
 			}
 		}
 	}
